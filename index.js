@@ -10,6 +10,8 @@ class Form {
 
 	//form api
 	process(values) {
+		var form = this;
+
 		return new Promise(function (resolve, reject) {
 			//read input values and dump them into their correct input objects
 
@@ -17,7 +19,7 @@ class Form {
 			validate();
 
 			//return the errors
-			resolve(this.errors);
+			resolve(form.errors);
 		});
 	}
 
@@ -70,13 +72,15 @@ class Form {
 
 	//express api
 	express(options) {
+		var form = this;
+
 		//middleware handler!
 		return function (req, res, next) {
 			//add form object to request
-			req.form = this;
+			req.form = form;
 
 			//handle the process
-			this.process(req.body).then(function (errors) {
+			form.process(req.body).then(function (errors) {
 				//next handler
 				next();
 			});
