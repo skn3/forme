@@ -1,7 +1,7 @@
 {
   "name": "forme",
-  "version": "0.0.1",
-  "description": "Sane form handling that supports with support for express and promises",
+  "version": "0.1.0",
+  "description": "Forme has been designed to offer a sane way for handling forms in nodejs",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -10,8 +10,6 @@
   "keywords": [
     "form",
     "forms",
-    "promise",
-    "promises",
     "express",
     "validation"
   ],
@@ -22,6 +20,9 @@
   },
   "homepage": "https://github.com/skn3/forme#readme",
   "dependencies": {
-    "promiserate": "^0.0.1"
+    "async": "^2.0.0-rc.6",
+    "string-template": "^1.0.0",
+    "extend": "^3.0.0",
+    "validator": "^5.4.0"
   }
 }
