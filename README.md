@@ -82,6 +82,7 @@ form.validate(request, function(validated, values, errors){
 - **.min(** size, *[error]* **)** - the input value has to be at least exactly this size when validated
 - **.max(** size, *[error]* **)** - the input value has to be at no greater than this size when validated
 - **.is(** string, *[error]* **)** - ensures the input value is of a particular *type* when validated. Uses [validator](https://github.com/chriso/validator.js)
+- **.match(** string, *[error]* **)** - ensures the input value matches the target input value when validated.
 - **.options(** array/object, *[error]* **)** - ensures the input is one of the specified values when validating. Also provides values to the template vars
 - **.blacklist(** array, *[error]* **)** - value must not be one of the provided values
 - **.callback(** function **)** - allows custom callback to be executed upon validation
