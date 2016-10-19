@@ -30,7 +30,27 @@ You can see see in this example we have added a second argument *'{label} is inv
 - **{label}** the current label for this input, defined with **.label('My Label')**
 - **{name}** the current name for this input. This is the id or machine-name for the input.
 
-## Example
+## Input Type
+
+Forme will intelligently try to guess the input 'type' you have defined. It does this by looking at the API's you have called on the input. You can override the type by calling **.type('email')**. The type is only used when returning the template vars with **forme.template()**, it does not alter how forme handles the input.
+
+When Forme is guessing the input type, it lets the most recently called API take precedence. So for example if we call **.is('email')** and then **.secure()**, the guessed type will be *'password'* and not *'email'*. 
+
+If you have called **.checked()** on an input, then the type will always return *'checkbox'* *(unless overridden with .type())*.
+
+If you have called **.secure()** on an input, then the type will always return *'password'* *(unless overridden with .type())*.
+
+**Examples**
+```javascript
+form.add('some_input').label('Some Input').int() //type="number";
+form.add('some_input').label('Some Input').checked() //type="checkbox";
+form.add('some_input').label('Some Input').secure() //type="password";
+form.add('some_input').label('Some Input').is('email') //type="email";
+form.add('some_input').label('Some Input').is('email').secure() //type="password";
+form.add('some_input').label('Some Input').is('email').secure().type('date') //type="date";
+```
+
+## Static Form Example
 
 A simple static login form.
 
@@ -66,7 +86,7 @@ div.panel.panel-default
                 input.form-control(type=forme.login.input.username.type, name=forme.login.input.username.name, placeholder=forme.login.input.username.placeholder, value=forme.login.input.username.value)
 
             div.form-group
-                input.form-control(type=forme.login.input.username.password, name=forme.login.input.password.name, placeholder=forme.login.input.password.placeholder, value=forme.login.input.password.value)
+                input.form-control(type=forme.login.input.password.type, name=forme.login.input.password.name, placeholder=forme.login.input.password.placeholder, value=forme.login.input.password.value)
 
             input.btn.btn-primary(type='submit', value='Login')
 ```
