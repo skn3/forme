@@ -14,29 +14,45 @@ Forme has no concept of rendering but does provide a simple way to build an temp
 
 The project is still in development so use with caution, however the functionality is there so feel free to have a play!
 
+## Custom Errors
+
+Most input methods allow you to provide a custom error string. For example:
+```javascript
+const forme = require('forme');
+
+const form = forme('login');
+form.add('username').label('Username').require().is('username','{label} is invalid');
+```
+
+You can see see in this example we have added a second argument *'{label} is invalid'* to the **.is()** method. This is our custom error that will be returned should the input fail the **.is()** test. Custom error messages can contain placeholder tokens, which will be automatically converted to useful information.
+ 
+**Placeholder tokens**
+- **{label}** the current label for this input, defined with **.label('My Label')**
+- **{name}** the current name for this input. This is the id or machine-name for the input.
+
 ## Example
 
 A simple static login form.
 
 **setup the static form**
 ```javascript
-var forme = require('forme');
+const forme = require('forme');
 
-var form = forme('login');
-form.add('username').label('Username').require().is('username');
-form.add('password').label('Password').require().secure();
+const form = forme('login');
+form.add('username').label('Username').placeholder('User').require().is('username');
+form.add('password').type('password').label('Password').placeholder('Password').require().secure();
 ```
 
 **render the form (using pug/jade)**
 ```javascript
-var pug = require('pug');
+const pug = require('pug');
 
 form.view(request, function() {
-    var options = {};
-    var locals = form.template();
+    const options = {};
+    const locals = form.template();
     
     //render
-    var html = pug.renderFile('login.pug', merge(options, locals));
+    const html = pug.renderFile('login.pug', merge(options, locals));
 });
 ```
 
@@ -47,10 +63,10 @@ div.panel.panel-default
     div.panel-body
         form(name=forme.login.form.name, method=forme.login.form.method)
             div.form-group
-                input.form-control(type='text', name=forme.login.input.username.name, placeholder='Username', value=forme.login.input.username.value)
+                input.form-control(type=forme.login.input.username.type, name=forme.login.input.username.name, placeholder=forme.login.input.username.placeholder, value=forme.login.input.username.value)
 
             div.form-group
-                input.form-control(type='password', name=forme.login.input.password.name, placeholder='Password', value=forme.login.input.password.value)
+                input.form-control(type=forme.login.input.username.password, name=forme.login.input.password.name, placeholder=forme.login.input.password.placeholder, value=forme.login.input.password.value)
 
             input.btn.btn-primary(type='submit', value='Login')
 ```
@@ -86,7 +102,10 @@ form.validate(request, function(validated, values, errors){
 - **.options(** array/object, *[error]* **)** - ensures the input is one of the specified values when validating. Also provides values to the template vars
 - **.blacklist(** array, *[error]* **)** - value must not be one of the provided values
 - **.callback(** function **)** - allows custom callback to be executed upon validation
-- **.secure()** - prevents storing of this value between page views/sessions
+- **.secure(** *[flag]* **)** - prevents storing of this value between page views/sessions
+- **.checked(** *[flag]* **)** - sets a checkbox defaults checked state
+- **.readonly(** *[flag]* **)** - set input template var *readonly* *(currently only used in form.template() vars. e.g. &lt;input readonly /&gt;)*
+- **.type(** string **)** - override input template var *type*. By default forme will guess a type based on the input properties that you have defined. 
 - **.bool()** - converts the value to a bool
 - **.int()** - converts the value to an int
 - **.string()** - converts the value to a string
