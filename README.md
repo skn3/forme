@@ -36,9 +36,11 @@ Forme will intelligently try to guess the input 'type' you have defined. It does
 
 When Forme is guessing the input type, it lets the most recently called API take precedence. So for example if we call **.is('email')** and then **.secure()**, the guessed type will be *'password'* and not *'email'*. 
 
-If you have called **.checked()** on an input, then the type will always return *'checkbox'* *(unless overridden with .type())*.
+As well as your type being defined by various methods that you have called, the following rules exist. The rules are checked in order, when one of these conditions is met, subsequent conditions are ignored.
 
-If you have called **.secure()** on an input, then the type will always return *'password'* *(unless overridden with .type())*.
+- If you have called **.hidden()** on an input, then the type will always return *'hidden'* *(unless overridden with .type())*.
+- If you have called **.checked()** on an input, then the type will always return *'checkbox'* *(unless overridden with .type())*.
+- If you have called **.secure()** on an input, then the type will always return *'password'* *(unless overridden with .type())*.
 
 **Examples**
 ```javascript
@@ -125,6 +127,7 @@ form.validate(request, function(validated, values, errors){
 - **.secure(** *[flag]* **)** - prevents storing of this value between page views/sessions
 - **.checked(** *[flag]* **)** - sets a checkbox defaults checked state
 - **.readonly(** *[flag]* **)** - set input template var *readonly* *(currently only used in form.template() vars. e.g. &lt;input readonly /&gt;)*
+- **.hidden(** *[flag]* **)** - set input template var *type* to *'hidden'* *(currently only used in form.template() vars. e.g. &lt;input readonly /&gt;)*
 - **.type(** string **)** - override input template var *type*. By default forme will guess a type based on the input properties that you have defined. 
 - **.bool()** - converts the value to a bool
 - **.int()** - converts the value to an int
