@@ -20,7 +20,7 @@ Most input methods allow you to provide a custom error string. For example:
 ```javascript
 const forme = require('forme');
 
-const form = forme().name('login').post('form/process.html');
+const form = forme('login').post('form/process.html');
 form.add('username').label('Username').require().is('username','{label} is invalid');
 ```
 
