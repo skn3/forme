@@ -20,7 +20,7 @@ Most input methods allow you to provide a custom error string. For example:
 ```javascript
 const forme = require('forme');
 
-const form = forme('login');
+const form = forme().name('login').post('form/process.html');
 form.add('username').label('Username').require().is('username','{label} is invalid');
 ```
 
@@ -52,6 +52,49 @@ form.add('some_input').label('Some Input').is('email').secure() //type="password
 form.add('some_input').label('Some Input').is('email').secure().type('date') //type="date";
 ```
 
+## Form.Require() Validation
+
+When you specify **form.require(*conditions, op*)** for a form, you are telling Forme to apply input requirement tests upon validation. This lets you do and/or tests on specific sets of inputs. For each call to **.require()** the form MUST pass that particular test; so if you had multiple .require() then they would all have to pass.
+ 
+```javascript
+ const forme = require('forme');
+ const form = forme('login').post('form/process.html').require([['input1'],['input2']],'or');
+ ```
+ 
+When we call **.require()** we provide conditions to match and also an operator to match them with. Conditions are defined like so:
+ ```javascript
+ const conditions = [
+     //group1
+     [
+         'input1',
+         'input2',
+     ],
+     
+     //group2
+     [
+         'input1',
+         'input3',         
+     ]
+ ];
+ 
+ const forme = require('forme');
+ const form = forme('login').post('form/process.html').require(conditions,'or');
+ ```
+ 
+ The above example translates to hte following conditional check:
+ ```javascript
+ if ((input1.Length && input2.Length) || (input1.Length && input3.Length)) {
+ 
+ }
+ ````
+ 
+ If we changed the op to **'and'** then it would be the equivalent of:
+  ```javascript
+  if ((input1.Length || input2.Length) && (input1.Length || input3.Length)) {
+  
+  }
+  ````
+ 
 ## Static Form Example
 
 A simple static login form.
@@ -60,7 +103,7 @@ A simple static login form.
 ```javascript
 const forme = require('forme');
 
-const form = forme('login');
+const form = forme('login').post('form/process.html');
 form.add('username').label('Username').placeholder('User').require().is('username');
 form.add('password').type('password').label('Password').placeholder('Password').require().secure();
 ```
@@ -83,7 +126,7 @@ form.view(request, function() {
 div.panel.panel-default
     div.panel-heading Login
     div.panel-body
-        form(name=forme.login.form.name, method=forme.login.form.method)
+        form(name=forme.login.form.name, method=forme.login.form.method, action=forme.login.form.action)
             div.form-group
                 input.form-control(type=forme.login.input.username.type, name=forme.login.input.username.name, placeholder=forme.login.input.username.placeholder, value=forme.login.input.username.value)
 
@@ -138,4 +181,9 @@ form.validate(request, function(validated, values, errors){
 
 
 ## Form API
-- **.require(** array/object, operator, *[error]* **)** - and/or validation on single, multiple or groups of inputs 
+- **.name(** string **)** - change the form's name
+- **.get(** string **)** - set the form to get and specify the action address
+- **.post(** string **)** - set the form to post and specify the action address *(a form will default the method to POST)*
+- **.session(** sessionHandler **)** - set the session handler to use. If called with no arguments *(e.g. .session())* then the default session handler will be used. Forms will use teh default session handler unless changed.
+- **.require(** array/object, operator, *[error]* **)** - and/or validation on single, multiple or groups of inputs
+- **.add(** string **)** - add a new input to the form with the given name
