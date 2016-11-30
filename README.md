@@ -159,6 +159,7 @@ form.validate(request, function(validated, values, errors){
 - **.value(** value, *[error]* **)** - sets the default value of this input
 - **.className(** string/array **)** - adds a className(s) to the input *(only used in form.template())* 
 - **.label(string)** - sets the inputs label used in error messages and template vars
+- **.help(string)** - sets the inputs help text *(only used in form.template())*  
 - **.require(** value, *[error]* **)** - makes sure the input value exists when validated
 - **.size(** size, *[error]* **)** - the input value has to be exactly this size when validated
 - **.min(** size, *[error]* **)** - the input value has to be at least exactly this size when validated
