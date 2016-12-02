@@ -200,7 +200,8 @@ form.validate(request, function(validated, values, errors){
 - **.match(** string, *[error]* **)** - ensures the input value matches the target input value when validated.
 - **.options(** array/object, *[error]* **)** - ensures the input is one of the specified values when validating. Also provides values to the template vars
 - **.blacklist(** array, *[error]* **)** - value must not be one of the provided values
-- **.callback(** function **)** - allows custom callback to be executed upon validation
+- **.validate(** function, *[error]* **)** - allow for custom validation routines to be added to inputs
+- **.handler(** function **)** - allows custom handler callback to be executed upon validation. Please use .validate() instead
 - **.secure(** *[flag]* **)** - prevents storing of this value between page views/sessions
 - **.checked(** *[flag]* **)** - sets a checkbox defaults checked state
 - **.readonly(** *[flag]* **)** - set input template var *readonly* *(currently only used in form.template() vars. e.g. &lt;input readonly /&gt;)*
