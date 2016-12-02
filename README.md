@@ -14,7 +14,7 @@ Forme has no concept of rendering but does provide a simple way to build an temp
 
 The project is still in development so use with caution, however the functionality is there so feel free to have a play!
 
-## Custom Errors
+## Custom Errors <a name="customErrors"></a>
 
 Most input methods allow you to provide a custom error string. For example:
 ```javascript
@@ -95,6 +95,38 @@ When we call **.require()** we provide conditions to match and also an operator 
   }
   ````
  
+## Custom Input Validation
+
+Forme lets you define custom input validation for doing more complex data checking. Using the input.validate() method, we can allow a custom callback to execute.
+
+**example of custom validation**
+```javascript
+const forme = require('forme');
+
+const form = forme('login').post('form/process.html');
+form.add('username').label('Username').placeholder('User').require().is('username').validate(function(req, input, state, valid, invalid){
+	//lets use a promise to load the user
+	database.user.load(state.value).then(function(user) {
+		if (user) {
+			//call valid to indicate that we have successfully validated
+			valid();
+		} else {
+			//call invalid to indicate the user doesnt exist.
+			invalid();
+		}
+	});
+}, 'Invalid user');
+```
+Notice in the example above we are using `valid()` and `invalid()` to indicate the result. This allows us to perform async operations and signal to forme when know the answer.
+
+**custom errors**
+
+If you would like to provide a custom error message from within the callback, simply pass a message to  `invalid('error here')`. We can use the same placeholder tokens as described in the [Custom Errors](#customErrors) section.
+
+**overriding the submitted value**
+
+If you want to alter the submitted value within your callback, simply modify the `state.value`. 
+
 ## Static Form Example
 
 A simple static login form.
