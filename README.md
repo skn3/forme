@@ -213,6 +213,8 @@ form.validate(request, function(validated, values, errors){
 - **.float()** - converts the value to a float
 - **.group(** string **)** - specifies a group name for values and template vars. When multiple inputs have the same group name, forme will convert these entries to an object with properties
 - **.permanent(** value **)** - forces the input to always have this value
+- **.context(** string, value **)** - store a named context value in this input. *(Accessible in form.template() and input.validate())*
+- **.context(** string **)** - retrieve a named context value from this input. *(Accessible in form.template() and input.validate())*
 
 
 ## Form API
@@ -222,3 +224,5 @@ form.validate(request, function(validated, values, errors){
 - **.session(** sessionHandler **)** - set the session handler to use. If called with no arguments *(e.g. .session())* then the default session handler will be used. Forms will use teh default session handler unless changed.
 - **.require(** array/object, operator, *[error]* **)** - and/or validation on single, multiple or groups of inputs
 - **.add(** string **)** - add a new input to the form with the given name
+- **.context(** string, value **)** - store a named context value in this form. *(accessible in form.template() and anywhere we have the form object)*
+- **.context(** string **)** - retrieve a named context value from this form. *(accessible in form.template() and anywhere we have the form object)*
