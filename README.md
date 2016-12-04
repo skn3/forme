@@ -131,9 +131,9 @@ If you would like to provide a custom error message from within the callback, si
 If you want to alter the submitted value within your callback, simply modify the `state.value`. 
 
 
-## Custom Input Submit Handling
+## Custom Submit Handling
 
-Forme lets you specify callback routines to be called on your inputs once the entire form has validated successfully. To add a submit handler to an input simply use teh `input.submit()` api. With the `.submit()` handler we have the ability to do anything, just before our form returns back to your main validate callback. 
+Forme lets you specify callback routines to be called on your form/inputs once the entire form has validated successfully. To add a submit handler to an input simply use the `input.submit()` api. To add a submit handler to a form use `form.submit()`. With the `.submit()` handler we have the ability to do execute our own code, just before the form returns back to your main validate callback. 
 
 **example of custom input submit handler**
 ```javascript
@@ -153,6 +153,28 @@ form.add('title').label('Title').placeholder('page title').require().submit(func
 ```
 Notice in the example above we are using `finished()` to indicate that we are done. This allows us to perform async operations and signal to forme when we are `finished()`.
 
+**example of custom form submit handler**
+```javascript
+const forme = require('forme');
+
+const form = forme('login').post('form/process.html').submit(function(req, form, finished){
+    //do something here
+    finished();
+});
+```
+
+## Order of Form Validation
+
+Forme has a super sensible order of execution. The order is as follows:
+
+1. call `form.validate()`
+2. iterate over each input and execute all handlers in order defined. This includes execution of `input.validate()` and `input.handler()`
+3. execute all form handlers in order defined. Currently we only have `form.require()`
+4. iterate over all inputs and execute their `input.submit()` handlers. The order in which you called `input.submit()`, is the order in which they are executed.
+4. execute all `form.submit()` handlers. The order in which you called `form.submit()`, is the order in which they are executed.
+5. callback to `form.validate()` with `validated = true`
+
+During the above execution order, forme might fail the process and skip to step 5 with `validated = false`.
 
 ## Static Form Example
 
@@ -260,3 +282,4 @@ form.validate(request, function(req, form, validated, values, errors){
 - **.view(** req, function **)** - process viewing the form and then callback
 - **.validate(** req, function **)** - process validating the form and then callback
 - **.store(** req, function **)** - process storing the form session and then callback
+- **.submit(** function **)** - allow for custom submit routines to be added to the form. These are called in order just before a valid form returns to your main validate function
