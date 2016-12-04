@@ -14,6 +14,7 @@ Forme has no concept of rendering but does provide a simple way to build an temp
 
 The project is still in development so use with caution, however the functionality is there so feel free to have a play!
 
+
 ## Custom Errors <a name="customErrors"></a>
 
 Most input methods allow you to provide a custom error string. For example:
@@ -29,6 +30,7 @@ You can see see in this example we have added a second argument *'{label} is inv
 **Placeholder tokens**
 - **{label}** the current label for this input, defined with **.label('My Label')**
 - **{name}** the current name for this input. This is the id or machine-name for the input.
+
 
 ## Input Type
 
@@ -95,6 +97,7 @@ When we call **.require()** we provide conditions to match and also an operator 
   }
   ````
  
+ 
 ## Custom Input Validation
 
 Forme lets you define custom input validation for doing more complex data checking. Using the input.validate() method, we can allow a custom callback to execute.
@@ -127,6 +130,30 @@ If you would like to provide a custom error message from within the callback, si
 
 If you want to alter the submitted value within your callback, simply modify the `state.value`. 
 
+
+## Custom Input Submit Handling
+
+Forme lets you specify callback routines to be called on your inputs once the entire form has validated successfully. To add a submit handler to an input simply use teh `input.submit()` api. With the `.submit()` handler we have the ability to do anything, just before our form returns back to your main validate callback. 
+
+**example of custom input submit handler**
+```javascript
+const forme = require('forme');
+
+const form = forme('login').post('form/process.html');
+form.add('title').label('Title').placeholder('page title').require().submit(function(req, input, finished){
+	//lets check for reserved word in title
+	if (input.current() == 'admin') {
+	    //rename this page
+	    input.change(input.current()+ 'renamed');
+	}
+	
+	//finished submit
+	finished();
+});
+```
+Notice in the example above we are using `finished()` to indicate that we are done. This allows us to perform async operations and signal to forme when we are `finished()`.
+
+
 ## Static Form Example
 
 A simple static login form.
@@ -144,7 +171,7 @@ form.add('password').type('password').label('Password').placeholder('Password').
 ```javascript
 const pug = require('pug');
 
-form.view(request, function() {
+form.view(request, function(req, form) {
     const options = {};
     const locals = form.template();
     
@@ -170,14 +197,14 @@ div.panel.panel-default
 
 **process the form (using)**
 ```javascript
-form.validate(request, function(validated, values, errors){
+form.validate(request, function(req, form, validated, values, errors){
     if (!validated) {
         //form validation failed, redirect back to login form
     } else {
         //form validated, so try login 
         if (!login(values.username, values.password)) {
             //failed, so store form data using session handler
-            form.store(req, function(){
+            form.store(req, function(req, form){
                 //redirect back to login form
             });
         } else {
@@ -186,6 +213,7 @@ form.validate(request, function(validated, values, errors){
     }
 });
 ```
+
 
 ## Input API
 - **.value(** value, *[error]* **)** - sets the default value of this input
@@ -201,6 +229,7 @@ form.validate(request, function(validated, values, errors){
 - **.options(** array/object, *[error]* **)** - ensures the input is one of the specified values when validating. Also provides values to the template vars
 - **.blacklist(** array, *[error]* **)** - value must not be one of the provided values
 - **.validate(** function, *[error]* **)** - allow for custom validation routines to be added to inputs
+- **.submit(** function **)** - allow for custom submit routines to be added to inputs. These are called in order just before a valid form returns to your main validate function
 - **.handler(** function **)** - allows custom handler callback to be executed upon validation. Please use .validate() instead
 - **.secure(** *[flag]* **)** - prevents storing of this value between page views/sessions
 - **.checked(** *[flag]* **)** - sets a checkbox defaults checked state
@@ -215,6 +244,8 @@ form.validate(request, function(validated, values, errors){
 - **.permanent(** value **)** - forces the input to always have this value
 - **.context(** string, value **)** - store a named context value in this input. *(Accessible in form.template() and input.validate())*
 - **.context(** string **)** - retrieve a named context value from this input. *(Accessible in form.template() and input.validate())*
+- **.current(** req **)** - get the current value for this input using the request object
+- **.change(** req, value **)** - set the current value for this input using the request object
 
 
 ## Form API
@@ -226,3 +257,6 @@ form.validate(request, function(validated, values, errors){
 - **.add(** string **)** - add a new input to the form with the given name
 - **.context(** string, value **)** - store a named context value in this form. *(accessible in form.template() and anywhere we have the form object)*
 - **.context(** string **)** - retrieve a named context value from this form. *(accessible in form.template() and anywhere we have the form object)*
+- **.view(** req, function **)** - process viewing the form and then callback
+- **.validate(** req, function **)** - process validating the form and then callback
+- **.store(** req, function **)** - process storing the form session and then callback
