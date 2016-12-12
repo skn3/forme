@@ -140,7 +140,7 @@ Forme lets you specify callback routines to be called on your form/inputs once t
 const forme = require('forme');
 
 const form = forme('login').post('form/process.html');
-form.add('title').label('Title').placeholder('page title').require().submit(function(req, input, finished){
+form.add('title').label('Title').placeholder('page title').require().submit(function(req, form, input, finished){
 	//lets check for reserved word in title
 	if (input.current() == 'admin') {
 	    //rename this page
