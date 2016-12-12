@@ -283,3 +283,5 @@ form.validate(request, function(req, form, validated, values, errors){
 - **.validate(** req, function **)** - process validating the form and then callback
 - **.store(** req, function **)** - process storing the form session and then callback
 - **.submit(** function **)** - allow for custom submit routines to be added to the form. These are called in order just before a valid form returns to your main validate function
+- **.values(** req **)** - get all the current values for a submitted form
+- **.value(** req, input/string **)** - get the current submitted value for a speciffic input
