@@ -1,6 +1,6 @@
 # Forme
 
-Forme has been designed to offer a sane way for handling forms in nodejs. A form can be built to handle a user input or even manage data from api requests. Forme does not dictate to you how a form should build, process or render. With forme you can handle forms in the way that suites you.
+Forme has been designed to offer a sane way for handling forms in nodejs using **promises**. A form can be built to handle a user input or even manage data from api requests. Forme does not dictate to you how a form should build, process or render. With forme you can handle forms in the way that suites you.
 
 Your form object is created in such a way that it can be reused for multiple instances of that form. The request object will be used to store any live data when processing a particular instance of the form. You can also create a form per request if you need to add a dynamic set of fields.
 
@@ -107,24 +107,26 @@ Forme lets you define custom input validation for doing more complex data checki
 const forme = require('forme');
 
 const form = forme('login').post('form/process.html');
-form.add('username').label('Username').placeholder('User').require().is('username').validate(function(req, input, state, valid, invalid){
-	//lets use a promise to load the user
-	database.user.load(state.value).then(function(user) {
+form.add('username').label('Username').placeholder('User').require().is('username').validate(function(req, input, state){
+	//our custom validate handler must return a promise
+	//we can also reject with a custom error message.
+	
+	return database.user.load(state.value).then(function(user) {
 		if (user) {
-			//call valid to indicate that we have successfully validated
-			valid();
+			//resolve the promise to indicate that we have successfully validated
+			return Promise.resolve();
 		} else {
-			//call invalid to indicate the user doesnt exist.
-			invalid();
+			//reject the promise to indicate the user doesnt exist.
+			return Promise.reject('invalid user');
 		}
 	});
 }, 'Invalid user');
 ```
-Notice in the example above we are using `valid()` and `invalid()` to indicate the result. This allows us to perform async operations and signal to forme when know the answer.
+Notice in the example above we are using promise resolve / reject to indicate the result. This allows us to perform async operations and signal to forme when know the answer.
 
 **custom errors**
 
-If you would like to provide a custom error message from within the callback, simply pass a message to  `invalid('error here')`. We can use the same placeholder tokens as described in the [Custom Errors](#customErrors) section.
+If you would like to provide a custom error message from within the callback, simply reject the promise with your custom message. We can use the same placeholder tokens as described in the [Custom Errors](#customErrors) section.
 
 **overriding the submitted value**
 
@@ -140,7 +142,9 @@ Forme lets you specify callback routines to be called on your form/inputs once t
 const forme = require('forme');
 
 const form = forme('login').post('form/process.html');
-form.add('title').label('Title').placeholder('page title').require().submit(function(req, form, input, finished){
+form.add('title').label('Title').placeholder('page title').require().submit(function(req, form, input){
+    //our custom submit handler must return a promise
+    
 	//lets check for reserved word in title
 	if (input.current() == 'admin') {
 	    //rename this page
@@ -148,18 +152,18 @@ form.add('title').label('Title').placeholder('page title').require().submit(func
 	}
 	
 	//finished submit
-	finished();
+	return Promise.resolve();
 });
 ```
-Notice in the example above we are using `finished()` to indicate that we are done. This allows us to perform async operations and signal to forme when we are `finished()`.
+Notice in the example above we are using `Promise.resolve()` to indicate that we are done. This allows us to perform async operations using promises and then signal to forme when we are finished.
 
 **example of custom form submit handler**
 ```javascript
 const forme = require('forme');
 
-const form = forme('login').post('form/process.html').submit(function(req, form, finished){
+const form = forme('login').post('form/process.html').submit(function(req, form){
     //do something here
-    finished();
+    return Promise.resolve();
 });
 ```
 
@@ -189,11 +193,11 @@ form.add('username').label('Username').placeholder('User').require().is('usernam
 form.add('password').type('password').label('Password').placeholder('Password').require().secure();
 ```
 
-**render the form (using pug/jade)**
+**render/view the form (using pug/jade)**
 ```javascript
 const pug = require('pug');
 
-form.view(request, function(req, form) {
+form.view(request).then(function(result) {
     const options = {};
     const locals = form.template();
     
@@ -201,6 +205,10 @@ form.view(request, function(req, form) {
     const html = pug.renderFile('login.pug', merge(options, locals));
 });
 ```
+
+The `form.view().then()` result object contains:
+- **.req** - original request object
+- **.form** - the forme object
 
 **pug template (using bootstrap)**
 ```pug
@@ -217,16 +225,16 @@ div.panel.panel-default
             input.btn.btn-primary(type='submit', value='Login')
 ```
 
-**process the form (using)**
+**validate the form**
 ```javascript
-form.validate(request, function(req, form, validated, values, errors){
+form.validate(request).then(function(result){    
     if (!validated) {
         //form validation failed, redirect back to login form
     } else {
         //form validated, so try login 
         if (!login(values.username, values.password)) {
             //failed, so store form data using session handler
-            form.store(req, function(req, form){
+            form.store(req).then(function(result){
                 //redirect back to login form
             });
         } else {
@@ -235,6 +243,17 @@ form.validate(request, function(req, form, validated, values, errors){
     }
 });
 ```
+
+The `form.validate().then()` result object contains:
+- **.req** - original request object
+- **.form** - the forme object
+- **.validated** - true or false, did the form validate
+- **.values** -  object map of submitted/validated values,
+- **.errors** -  array of errors produced,
+
+The `form.store().then()` result object contains:
+- **.req** - original request object
+- **.form** - the forme object
 
 
 ## Input API
@@ -250,9 +269,9 @@ form.validate(request, function(req, form, validated, values, errors){
 - **.match(** string, *[error]* **)** - ensures the input value matches the target input value when validated.
 - **.options(** array/object, *[error]* **)** - ensures the input is one of the specified values when validating. Also provides values to the template vars
 - **.blacklist(** array, *[error]* **)** - value must not be one of the provided values
-- **.validate(** function, *[error]* **)** - allow for custom validation routines to be added to inputs
-- **.submit(** function **)** - allow for custom submit routines to be added to inputs. These are called in order just before a valid form returns to your main validate function
-- **.handler(** function **)** - allows custom handler callback to be executed upon validation. Please use .validate() instead
+- **.validate(** promise/handler, *[error]* **)** - allow for custom validation routines to be added to inputs
+- **.submit(** promise/handler **)** - allow for custom submit routines to be added to inputs. These are called in order just before a valid form returns to your main validate function
+- **.handler(** promise/handler **)** - allows custom handler callback to be executed upon validation. Please use .validate() instead
 - **.secure(** *[flag]* **)** - prevents storing of this value between page views/sessions
 - **.checked(** *[flag]* **)** - sets a checkbox defaults checked state
 - **.readonly(** *[flag]* **)** - set input template var *readonly* *(currently only used in form.template() vars. e.g. &lt;input readonly /&gt;)*
@@ -279,9 +298,9 @@ form.validate(request, function(req, form, validated, values, errors){
 - **.add(** string **)** - add a new input to the form with the given name
 - **.context(** string, value **)** - store a named context value in this form. *(accessible in form.template() and anywhere we have the form object)*
 - **.context(** string **)** - retrieve a named context value from this form. *(accessible in form.template() and anywhere we have the form object)*
-- **.view(** req, function **)** - process viewing the form and then callback
-- **.validate(** req, function **)** - process validating the form and then callback
-- **.store(** req, function **)** - process storing the form session and then callback
-- **.submit(** function **)** - allow for custom submit routines to be added to the form. These are called in order just before a valid form returns to your main validate function
+- **.view(** req **)** - process viewing the form and then return a promise
+- **.validate(** req **)** - process validating the form and then return a promise
+- **.store(** req **)** - process storing the form session and then return a promise
+- **.submit(** promise/handler **)** - allow for custom submit routines to be added to the form. These are called in order just before a valid form returns to your main validate function
 - **.values(** req **)** - get all the current values for a submitted form
 - **.value(** req, input/string **)** - get the current submitted value for a speciffic input
