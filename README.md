@@ -210,17 +210,6 @@ function route(req, res, next) {
 }
 ```
 
-The `form.validate().then()` result object contains:
-- **.req** - original request object
-- **.form** - the forme object
-- **.validated** - true or false, did the form validate
-- **.values** -  object map of submitted/validated values,
-- **.errors** -  array of errors produced,
-
-The `form.store().then()` result object contains:
-- **.req** - original request object
-- **.form** - the forme object
-
 ## Static Form Example
 
 A simple static login form.
