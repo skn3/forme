@@ -260,7 +260,7 @@ The `form.store().then()` result object contains:
 
 An example of creating a dynamic form.
 
-**setup the dynamic form constructor**
+**combined code snippets for dynamic form**
 ```javascript
 const forme = require('forme');
 
@@ -304,13 +304,6 @@ myForm(10).validate(request).then(function(result) {
         }
     }
 });
-```
-
-**render/view the form (using pug/jade)**
-```javascript
-const pug = require('pug');
-
-
 ```
 
 ## Input API
