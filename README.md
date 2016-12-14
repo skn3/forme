@@ -107,10 +107,10 @@ Forme lets you define custom input validation for doing more complex data checki
 const forme = require('forme');
 
 const form = forme('login').post('form/process.html');
-form.add('username').label('Username').placeholder('User').require().is('username').validate(function(req, input, state){
+form.add('username').label('Username').placeholder('User').require().is('username')
+.validate(function(req, form, input, state){
 	//our custom validate handler must return a promise
 	//we can also reject with a custom error message.
-	
 	return database.user.load(state.value).then(function(user) {
 		if (user) {
 			//resolve the promise to indicate that we have successfully validated
@@ -142,7 +142,8 @@ Forme lets you specify callback routines to be called on your form/inputs once t
 const forme = require('forme');
 
 const form = forme('login').post('form/process.html');
-form.add('title').label('Title').placeholder('page title').require().submit(function(req, form, input){
+form.add('title').label('Title').placeholder('page title').require()
+.submit(function(req, form, input){
     //our custom submit handler must return a promise
     
 	//lets check for reserved word in title
@@ -155,7 +156,7 @@ form.add('title').label('Title').placeholder('page title').require().submit(func
 	return Promise.resolve();
 });
 ```
-Notice in the example above we are using `Promise.resolve()` to indicate that we are done. This allows us to perform async operations using promises and then signal to forme when we are finished.
+Notice in the example above we are using `Promise.resolve()` to indicate that we are done. This allows us to perform async operations using promises and then signal to forme when we are finished. We could also return a long running promise (`return new Promise(function(resolve, reject)){});`) and forme will wait for this to complete before continuing.
 
 **example of custom form submit handler**
 ```javascript
@@ -255,6 +256,62 @@ The `form.store().then()` result object contains:
 - **.req** - original request object
 - **.form** - the forme object
 
+## Dynamic Form Example
+
+An example of creating a dynamic form.
+
+**setup the dynamic form constructor**
+```javascript
+const forme = require('forme');
+
+//form constructor function
+function myForm(numFields) {
+    //create form
+    const form = forme('dynamicFormExample').post('form/process.html');
+    
+    //save number of fields in context for useful access to it later
+    form.context('numFields', numFields);
+    
+    //add dynamic number of fields
+    for(let index = 0; index < numFields; index++) {
+        form.add('field_'+index).label('Field '+index);
+    }
+    
+    //done
+    return form;
+}
+
+//view the form
+myForm(10).view(request).then(function(result) {
+    const numFields = result.form.context('numFields');
+    
+    //construct some crude html dynamically (better off doing this in templating engine)
+    let html = '';
+    for(let index = 0; index < numFields; index++) {
+        let fieldName = 'field_'+index;
+        html += '<input name="'+fieldName+'" value="'+result.form.value(result.req, fieldName)+'" type="text" />';
+    }
+});
+
+//validate the form
+myForm(10).validate(request).then(function(result) {
+    const numFields = result.form.context('numFields');
+    
+    //validate all fields
+    for(let index = 0; index < numFields; index++) {
+        if (result.values['field_'+index] == 69) {
+            //redirect back, this number is too racey!
+        }
+    }
+});
+```
+
+**render/view the form (using pug/jade)**
+```javascript
+const pug = require('pug');
+
+
+```
 
 ## Input API
 - **.value(** value, *[error]* **)** - sets the default value of this input
