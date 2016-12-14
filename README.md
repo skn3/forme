@@ -199,7 +199,7 @@ const pug = require('pug');
 
 form.view(request).then(function(result) {
     const options = {};
-    const locals = form.template();
+    const locals = result.form.template();
     
     //render
     const html = pug.renderFile('login.pug', merge(options, locals));
@@ -228,13 +228,13 @@ div.panel.panel-default
 **validate the form**
 ```javascript
 form.validate(request).then(function(result){    
-    if (!validated) {
+    if (!result.validated) {
         //form validation failed, redirect back to login form
     } else {
         //form validated, so try login 
-        if (!login(values.username, values.password)) {
+        if (!login(result.values.username, result.values.password)) {
             //failed, so store form data using session handler
-            form.store(req).then(function(result){
+            result.form.store(result.req).then(function(result){
                 //redirect back to login form
             });
         } else {
