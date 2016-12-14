@@ -181,6 +181,46 @@ Forme has a super sensible order of execution. The order is as follows:
 
 During the above execution order, forme might fail the process and skip to step 5 with `validated = false`.
 
+## Validation/form error in your final `validate.then()`
+
+Forme provides more sensible ways to add custom validation code, but if you want to validate in the final step and produce an error, then you will have to manually `.store()` the form.
+
+**validate the form (using express)**
+```javascript
+function route(req, res, next) {
+    return form.validate(req).then(function(result){    
+        if (!result.validated) {
+            //form validation failed, redirect back to login form
+            res.redirect('back');
+        } else {
+            //form validated, so try something custom here (should really be using input.validate())
+            if (!doSomethingGood()) {
+                //failed, so store form data using session handler
+                result.form.error(req, 'some validation error');
+                
+                return result.form.store(result.req).then(function(result){
+                    //redirect back to login form
+                    res.redirect('back');
+                });
+            } else {
+                //success, do something here
+            }
+        }
+    });
+}
+```
+
+The `form.validate().then()` result object contains:
+- **.req** - original request object
+- **.form** - the forme object
+- **.validated** - true or false, did the form validate
+- **.values** -  object map of submitted/validated values,
+- **.errors** -  array of errors produced,
+
+The `form.store().then()` result object contains:
+- **.req** - original request object
+- **.form** - the forme object
+
 ## Static Form Example
 
 A simple static login form.
