@@ -383,3 +383,4 @@ myForm(10).validate(request).then(function(result) {
 - **.submit(** promise/handler **)** - allow for custom submit routines to be added to the form. These are called in order just before a valid form returns to your main validate function
 - **.values(** req **)** - get all the current values for a submitted form
 - **.value(** req, input/string **)** - get the current submitted value for a speciffic input
+- **.change(** req, input/string, value **)** - set the current submitted value for a speciffic input
