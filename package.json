@@ -20,7 +20,6 @@
   },
   "homepage": "https://github.com/skn3/forme#readme",
   "dependencies": {
-    "async": "^2.0.0-rc.6",
     "string-template": "^1.0.0",
     "extend": "^3.0.0",
     "validator": "^5.4.0"
