@@ -117,7 +117,7 @@ form.add('username').label('Username').placeholder('User').require().is('usernam
 			return Promise.resolve();
 		} else {
 			//reject the promise to indicate the user doesnt exist.
-			return Promise.reject('invalid user');
+			return Promise.reject(new Error('invalid user'));
 		}
 	});
 }, 'Invalid user');
@@ -384,3 +384,4 @@ myForm(10).validate(request).then(function(result) {
 - **.values(** req **)** - get all the current values for a submitted form
 - **.value(** req, input/string **)** - get the current submitted value for a speciffic input
 - **.change(** req, input/string, value **)** - set the current submitted value for a speciffic input
+- **.inputs()** - returns an array of all the input names
