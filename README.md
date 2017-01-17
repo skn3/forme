@@ -4,7 +4,7 @@ Forme has been designed to offer a sane way for handling forms in nodejs using *
 
 Your form object is created in such a way that it can be reused for multiple instances of that form. The request object will be used to store any live data when processing a particular instance of the form. You can also create a form per request if you need to add a dynamic set of fields.
 
-Forme has no concept of rendering but does provide a simple way to build an template vars. The object containing all the variables can then be passed to the appropriate templating engine of choice.
+Forme has no concept of rendering but does provide a simple way to build your template vars. The object containing all the variables can then be passed to the appropriate templating engine of choice.
 
 - Create static or dynamic form objects to handle input in a generic fashion.
 - Easily apply built in input handlers to process and validate your data.
