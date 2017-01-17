@@ -17,7 +17,7 @@ The project is still in development so use with caution, however the functionali
 
 ## Custom Errors <a name="customErrors"></a>
 
-Most input methods allow you to provide a custom error string. For example:
+Many input methods allow you to provide a custom error string. For example:
 ```javascript
 const forme = require('forme');
 
@@ -27,9 +27,15 @@ form.add('username').label('Username').require().is('username','{label} is inval
 
 You can see see in this example we have added a second argument *'{label} is invalid'* to the **.is()** method. This is our custom error that will be returned should the input fail the **.is()** test. Custom error messages can contain placeholder tokens, which will be automatically converted to useful information.
  
-**Placeholder tokens**
-- **{label}** the current label for this input, defined with **.label('My Label')**
-- **{name}** the current name for this input. This is the id or machine-name for the input.
+You can also use placeholder tokens with a small selection of form methods. For example when you call `form.validate(callback, error)`.
+ 
+**Form Placeholder tokens:**
+- **{label}** the current label for the form, defined with **form.label('My Label')**
+- **{name}** the current name for the form. This is the machine-name for the form.
+ 
+**Input Placeholder tokens:**
+- **{label}** the current label for this input, defined with **input.label('My Label')**
+- **{name}** the current name for this input. This is the machine-name for the input.
 
 
 ## Input Type
@@ -98,6 +104,47 @@ When we call **.require()** we provide conditions to match and also an operator 
   ````
  
  
+ ## Custom Form Validation
+ 
+ Forme lets you define custom form validation for doing more complex data checking. Using the form.validate(callback, error) method, we can allow a custom callback to execute.
+ 
+ **Caution: form.validate() is also used to validate a submitted form when a request object is passed in. Make sure you are calling this with the correct arguments.**
+ 
+ **example of custom validation**
+ ```javascript
+ const forme = require('forme');
+ 
+ const form = forme('test').post('form/process.html');
+ 
+ form.add('value1');
+ form.add('value2');
+ 
+ form.validate(function(req, form, state){
+ 	//our custom validate handler must return a promise
+ 	//we can also reject with a custom error message.
+ 	if (state.values.value1 == 'database' || state.values.value2 == 'database') {
+ 	    return Promise.reject(new FormeError('form contained a reserved word'));
+ 	} else {
+ 	    return Promise.resolve();
+ 	}
+ }, 'Invalid values');
+ ```
+ Notice in the example above we are using promise resolve / reject to indicate the result. This allows us to perform async operations and signal to forme when we know the answer.
+ 
+ **state object**
+ 
+ The custom form validation callback receives a state object. This consists of:
+  - **values** - an object containing the current form values.
+ 
+ **custom errors**
+ 
+ If you would like to provide a custom error message from within the callback, simply reject the promise with your custom message. We can use the same placeholder tokens as described in the [Custom Errors](#customErrors) section.
+ 
+ **overriding the submitted value**
+ 
+ If you want to alter the submitted values within your callback, simply modify `state.values`. 
+ 
+ 
 ## Custom Input Validation
 
 Forme lets you define custom input validation for doing more complex data checking. Using the input.validate() method, we can allow a custom callback to execute.
@@ -122,7 +169,12 @@ form.add('username').label('Username').placeholder('User').require().is('usernam
 	});
 }, 'Invalid user');
 ```
-Notice in the example above we are using promise resolve / reject to indicate the result. This allows us to perform async operations and signal to forme when know the answer.
+Notice in the example above we are using promise resolve / reject to indicate the result. This allows us to perform async operations and signal to forme when we know the answer.
+
+ **state object**
+ 
+ The custom input validation callback receives a state object. This consists of:
+  - **value** - the current input value.
 
 **custom errors**
 
@@ -338,7 +390,7 @@ myForm(10).validate(request).then(function(result) {
 ## Input API
 - **.value(** value, *[error]* **)** - sets the default value of this input
 - **.className(** string/array **)** - adds a className(s) to the input *(only used in form.template())* 
-- **.label(string)** - sets the inputs label used in error messages and template vars
+- **.label(** string **)** - sets the inputs label used in error messages and template vars
 - **.help(string)** - sets the inputs help text *(only used in form.template())*  
 - **.require(** value, *[error]* **)** - makes sure the input value exists when validated
 - **.size(** size, *[error]* **)** - the input value has to be exactly this size when validated
@@ -370,6 +422,7 @@ myForm(10).validate(request).then(function(result) {
 
 ## Form API
 - **.name(** string **)** - change the form's name
+- **.label(** string **)** - sets the forms label used in error messages and template vars
 - **.get(** string **)** - set the form to get and specify the action address
 - **.post(** string **)** - set the form to post and specify the action address *(a form will default the method to POST)*
 - **.session(** sessionHandler **)** - set the session handler to use. If called with no arguments *(e.g. .session())* then the default session handler will be used. Forms will use teh default session handler unless changed.
@@ -378,7 +431,8 @@ myForm(10).validate(request).then(function(result) {
 - **.context(** string, value **)** - store a named context value in this form. *(accessible in form.template() and anywhere we have the form object)*
 - **.context(** string **)** - retrieve a named context value from this form. *(accessible in form.template() and anywhere we have the form object)*
 - **.view(** req **)** - process viewing the form and then return a promise
-- **.validate(** req **)** - process validating the form and then return a promise
+- **.validate(** req object **)** - process validating the form and then return a promise
+- **.validate(** function, *[error]* **)** - allow for custom validation routines to be added to form
 - **.store(** req **)** - process storing the form session and then return a promise
 - **.submit(** promise/handler **)** - allow for custom submit routines to be added to the form. These are called in order just before a valid form returns to your main validate function
 - **.values(** req **)** - get all the current values for a submitted form
