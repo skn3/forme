@@ -413,6 +413,7 @@ myForm(10).validate(request).then(function(result) {
 - **.string()** - converts the value to a string
 - **.float()** - converts the value to a float
 - **.group(** string/array **)** - specifies a group for values and template vars. Forme will automatically group value/template information when you specify a group, even if there is only 1 item in the group. You can chain multiple calls to .group() or provide an array of group names. This allows you to create groups at any depth.
+- **.alias(** string **)** - lets you override the *name* of the input when built in template vars or form.values(). Forme still uses the inputs real name internally.
 - **.permanent(** value **)** - forces the input to always have this value
 - **.context(** string, value **)** - store a named context value in this input. *(Accessible in form.template() and input.validate())*
 - **.context(** string **)** - retrieve a named context value from this input. *(Accessible in form.template() and input.validate())*
