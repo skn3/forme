@@ -388,6 +388,7 @@ myForm(10).validate(request).then(function(result) {
 ```
 
 ## Input API
+- **.id(** string **)** - override the id that is generated for template vars. If no id id set the default id will be *'forme_input_[input.name]'* (minus square brackets)
 - **.value(** value, *[error]* **)** - sets the default value of this input
 - **.className(** string/array **)** - adds a className(s) to the input *(only used in form.template())* 
 - **.label(** string **)** - sets the inputs label used in error messages and template vars
@@ -429,7 +430,7 @@ myForm(10).validate(request).then(function(result) {
 - **.session(** sessionHandler **)** - set the session handler to use. If called with no arguments *(e.g. .session())* then the default session handler will be used. Forms will use teh default session handler unless changed.
 - **.require(** array/object, operator, *[error]* **)** - and/or validation on single, multiple or groups of inputs
 - **.add(** string **)** - add a new input to the form with the given name
-- **.context(** string, value **)** - store a named context value in this form. *(accessible in form.template() and anywhere we have the form object)*
+- **.context(** string, value, *[template]* **)** - store a named context value in this form. *(accessible in form.template() and anywhere we have the form object)*
 - **.context(** string **)** - retrieve a named context value from this form. *(accessible in form.template() and anywhere we have the form object)*
 - **.view(** req **)** - process viewing the form and then return a promise
 - **.validate(** req object **)** - process validating the form and then return a promise
@@ -440,3 +441,4 @@ myForm(10).validate(request).then(function(result) {
 - **.value(** req, input/string **)** - get the current submitted value for a speciffic input
 - **.change(** req, input/string, value **)** - set the current submitted value for a speciffic input
 - **.inputs()** - returns an array of all the input names
+- **.template(** **)** - builds all template vars for the form
