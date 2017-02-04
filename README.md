@@ -388,7 +388,7 @@ myForm(10).validate(request).then(function(result) {
 ```
 
 ## Input API
-- **.id(** string **)** - override the id that is generated for template vars. If no id id set the default id will be *'forme_input_[input.name]'* (minus square brackets)
+- **.id(** string **)** - override the id that is generated for template vars. If no id id set the default id will be *'forme_input__[input.name]'* (minus square brackets)
 - **.value(** value, *[error]* **)** - sets the default value of this input
 - **.className(** string/array **)** - adds a className(s) to the input *(only used in form.template())* 
 - **.label(** string **)** - sets the inputs label used in error messages and template vars
