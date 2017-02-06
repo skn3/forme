@@ -420,6 +420,7 @@ myForm(10).validate(request).then(function(result) {
 - **.context(** string **)** - retrieve a named context value from this input. *(Accessible in form.template() and input.validate())*
 - **.current(** req **)** - get the current value for this input using the request object
 - **.change(** req, value **)** - set the current value for this input using the request object
+- **.pipe(** false/true/string **)** - pipe errors generated for this input to a specified target. (false: to self, true: to form, string: to input with matching name)
 
 
 ## Form API
