@@ -129,7 +129,7 @@ When we call **.require()** we provide conditions to match and also an operator 
  	}
  }, 'Invalid values');
  ```
- Notice in the example above we are using promise resolve / reject to indicate the result. This allows us to perform async operations and signal to forme when we know the answer.
+ Notice in the example above we are using promise resolve / reject to indicate the result. This allows us to perform async operations and signal to forme when we know the answer. If we dont return a promise, forme will assume the result was positive.
  
  **state object**
  
@@ -169,7 +169,7 @@ form.add('username').label('Username').placeholder('User').require().is('usernam
 	});
 }, 'Invalid user');
 ```
-Notice in the example above we are using promise resolve / reject to indicate the result. This allows us to perform async operations and signal to forme when we know the answer.
+Notice in the example above we are using promise resolve / reject to indicate the result. This allows us to perform async operations and signal to forme when we know the answer. If we dont return a promise, forme will assume the result was positive.
 
  **state object**
  
@@ -208,7 +208,7 @@ form.add('title').label('Title').placeholder('page title').require()
 	return Promise.resolve();
 });
 ```
-Notice in the example above we are using `Promise.resolve()` to indicate that we are done. This allows us to perform async operations using promises and then signal to forme when we are finished. We could also return a long running promise (`return new Promise(function(resolve, reject)){});`) and forme will wait for this to complete before continuing.
+Notice in the example above we are using `Promise.resolve()` to indicate that we are done. This allows us to perform async operations using promises and then signal to forme when we are finished. We could also return a long running promise (`return new Promise(function(resolve, reject)){});`) and forme will wait for this to complete before continuing. If we dont return a promise, forme will assume the result was positive.
 
 **example of custom form submit handler**
 ```javascript
