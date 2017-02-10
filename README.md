@@ -461,7 +461,7 @@ Notice how we can pass values to the `form.validate(req, values)` call.
 - **.context(** string **)** - retrieve a named context value from this input. *(Accessible in form.template() and input.validate())*
 - **.current(** req **)** - get the current value for this input using the request object
 - **.change(** req, value **)** - set the current value for this input using the request object
-- **.pipe(** false/true/string **)** - pipe errors generated for this input to a specified target. (false: to self, true: to form, string: to input with matching name)
+- **.pipe(** false/true/string **)** - pipe errors generated for this input to a specified target. (false: to self, true: to form, string: to input with matching name. The string can also be any string, these errors can be retrieved with `form.errors(req, 'name')`)
 
 
 ## Form API
@@ -484,3 +484,4 @@ Notice how we can pass values to the `form.validate(req, values)` call.
 - **.change(** req, input/string, value **)** - set the current submitted value for a speciffic input
 - **.inputs()** - returns an array of all the input names
 - **.template(** **)** - builds all template vars for the form
+- **.errors(** req, *[name]* **)** - gets all errors in the form. If a name is provided, then only errors with that matching name are returned. Name can be an input name, or name defined in input.pipe().
