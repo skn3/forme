@@ -119,7 +119,7 @@ When we call **.require()** we provide conditions to match and also an operator 
  form.add('value1');
  form.add('value2');
  
- form.validate(function(req, form, state){
+ form.validate((req, form, state) => {
  	//our custom validate handler must return a promise
  	//we can also reject with a custom error message.
  	if (state.values.value1 == 'database' || state.values.value2 == 'database') {
@@ -155,10 +155,11 @@ const forme = require('forme');
 
 const form = forme('login').post('form/process.html');
 form.add('username').label('Username').placeholder('User').require().is('username')
-.validate(function(req, form, input, state){
+.validate((req, form, input, state) => {
 	//our custom validate handler must return a promise
 	//we can also reject with a custom error message.
-	return database.user.load(state.value).then(function(user) {
+	return database.user.load(state.value)
+	.then(user => {
 		if (user) {
 			//resolve the promise to indicate that we have successfully validated
 			return Promise.resolve();
@@ -195,7 +196,7 @@ const forme = require('forme');
 
 const form = forme('login').post('form/process.html');
 form.add('title').label('Title').placeholder('page title').require()
-.submit(function(req, form, input){
+.submit((req, form, input) => {
     //our custom submit handler must return a promise
     
 	//lets check for reserved word in title
@@ -214,7 +215,7 @@ Notice in the example above we are using `Promise.resolve()` to indicate that we
 ```javascript
 const forme = require('forme');
 
-const form = forme('login').post('form/process.html').submit(function(req, form){
+const form = forme('login').post('form/process.html').submit((req, form) => {
     //do something here
     return Promise.resolve();
 });
@@ -240,7 +241,8 @@ Forme provides more sensible ways to add custom validation code, but if you want
 **validate the form (using express)**
 ```javascript
 function route(req, res, next) {
-    return form.validate(req).then(function(result){    
+    return form.validate(req)
+    .then(result => {    
         if (!result.validated) {
             //form validation failed, redirect back to login form
             res.redirect('back');
@@ -250,7 +252,8 @@ function route(req, res, next) {
                 //failed, so store form data using session handler
                 result.form.error(req, 'some validation error');
                 
-                return result.form.store(result.req).then(function(result){
+                return result.form.store(result.req)
+                .then(result => {
                     //redirect back to login form
                     res.redirect('back');
                 });
@@ -279,7 +282,8 @@ form.add('password').type('password').label('Password').placeholder('Password').
 ```javascript
 const pug = require('pug');
 
-form.view(request).then(function(result) {
+form.view(request)
+.then(result => {
     const options = {};
     const locals = result.form.template();
     
@@ -309,14 +313,16 @@ div.panel.panel-default
 
 **validate the form**
 ```javascript
-form.validate(request).then(function(result){    
+form.validate(request)
+.then(result => {    
     if (!result.validated) {
         //form validation failed, redirect back to login form
     } else {
         //form validated, so try login 
         if (!login(result.values.username, result.values.password)) {
             //failed, so store form data using session handler
-            result.form.store(result.req).then(function(result){
+            result.form.store(result.req)
+            .then(result => {
                 //redirect back to login form
             });
         } else {
@@ -363,7 +369,8 @@ function myForm(numFields) {
 }
 
 //view the form
-myForm(10).view(request).then(function(result) {
+myForm(10).view(request)
+.then((result) => {
     const numFields = result.form.context('numFields');
     
     //construct some crude html dynamically (better off doing this in templating engine)
@@ -375,7 +382,8 @@ myForm(10).view(request).then(function(result) {
 });
 
 //validate the form
-myForm(10).validate(request).then(function(result) {
+myForm(10).validate(request)
+.then(result => {
     const numFields = result.form.context('numFields');
     
     //validate all fields
@@ -386,6 +394,39 @@ myForm(10).validate(request).then(function(result) {
     }
 });
 ```
+
+## Non-Form API/Data Validation Example
+
+Use forme to handle your API data
+
+**setup the api and then validate it**
+```javascript
+const forme = require('forme');
+
+const api = forme('api_do_something');
+api.add('field1').require().int();
+api.add('field2').require().float();
+
+api.validate(request, {
+    field1: 123,
+    field2: 4.567,
+})
+.then(result => {
+    let json = null;
+    
+    if (!result.validated) {
+        json = { succes: false };
+    } else {
+        json = { succes: true };
+    }
+    
+    //send the json back to the user
+    console.log(json);
+});
+```
+
+Notice how we can pass values to the `form.validate(req, values)` call.
+
 
 ## Input API
 - **.id(** string **)** - override the id that is generated for template vars. If no id id set the default id will be *'forme_input__[input.name]'* (minus square brackets)
@@ -433,8 +474,8 @@ myForm(10).validate(request).then(function(result) {
 - **.add(** string **)** - add a new input to the form with the given name
 - **.context(** string, value, *[template]* **)** - store a named context value in this form. *(accessible in form.template() and anywhere we have the form object)*
 - **.context(** string **)** - retrieve a named context value from this form. *(accessible in form.template() and anywhere we have the form object)*
-- **.view(** req **)** - process viewing the form and then return a promise
-- **.validate(** req object **)** - process validating the form and then return a promise
+- **.view(** req, *[values]* **)** - process viewing the form and then return a promise. An object of values can be provided as the second argument. This will replace all non permanent values when processing the form.
+- **.validate(** req object, *[values]* **)** - process validating the form and then return a promise. An object of values can be provided as the second argument. This will replace all non permanent values when processing the form.  
 - **.validate(** function, *[error]* **)** - allow for custom validation routines to be added to form
 - **.store(** req **)** - process storing the form session and then return a promise
 - **.submit(** promise/handler **)** - allow for custom submit routines to be added to the form. These are called in order just before a valid form returns to your main validate function
