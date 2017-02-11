@@ -118,17 +118,17 @@ The above example translates to hte following conditional check:
 if ((input1.Length && input2.Length) || (input1.Length && input3.Length)) {
 }
 ```
- 
+
 If we changed the op to **'and'** then it would be the equivalent of:
 ```javascript
 if ((input1.Length || input2.Length) && (input1.Length || input3.Length)) {
 }
 ```
- 
-## <a name="groupingAndReferencingInputs"></a> Grouping and Referencing inputs 
- 
+
+## <a name="groupingAndReferencingInputs"></a> Grouping and Referencing inputs
+
 Forme lets you add inputs to groups and it lets you set aliases. With these two powerful mechanisms we can have our value data and output generated in a clean way. For example:
- 
+
 ```javascript
 const forme = require('forme');
 const form = forme('some_form');
@@ -139,10 +139,10 @@ for(let index = 0;index < 3;index++) {
    form.add('items__'+index+'__field2').label('Field2').group(['items','item_'+index]).alias('field2').value('bar');
 }
 ```
- 
+
 You can see in this example we are creating 3 sets of inputs each with a unique name. Now we could go ahead and reference this input using that name, but that's not entirely sane for long term development.
 Instead, we are specifying a `.group()` and `.alias()` for this input. You can chain multiple `.group('a').group('b').group('c')` or provide an array of strings. 
- 
+
 When forme generates some form of output, it will now group the values using whatever has been defined. So continuing from the example above:
 
 ```javascript
@@ -154,7 +154,7 @@ form.validate(req)
 
 This would produce the following output:
 
-```json
+```javascript
    {
        items: {
            item_0: {
@@ -170,16 +170,16 @@ This would produce the following output:
                field2: 'bar',
            }
        }
-   }
+   };
 ```
- 
+
 The final piece of the puzzle is how do we now refer to these grouped/aliased inputs? Simple, we just use the group/alias in any function that lets us reference an input. For example:
  
 ```javascript
 const field1 = form.value(req,'items.item_0.field1');
 const field2 = form.value(req,['items','item_0','field2']);
 ```
- 
+
 We can pass a group path as a string separated with `.`, or an array of group segments. The final segment/part of the group should be the alias or name of the input you are referencing.
 
 ## <a name="customFormValidation"></a> Custom Form Validation 
