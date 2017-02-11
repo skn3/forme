@@ -1,6 +1,6 @@
 {
   "name": "forme",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "description": "Forme has been designed to offer a sane way for handling forms in nodejs",
   "main": "index.js",
   "repository": {
