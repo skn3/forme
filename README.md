@@ -89,140 +89,139 @@ form.add('some_input').label('Some Input').is('email').secure().type('date') //t
 When you specify **form.require(*conditions, op*)** for a form, you are telling Forme to apply input requirement tests upon validation. This lets you do and/or tests on specific sets of inputs. For each call to **.require()** the form MUST pass that particular test; so if you had multiple .require() then they would all have to pass.
  
 ```javascript
- const forme = require('forme');
- const form = forme('login').post('form/process.html').require([['input1'],['input2']],'or');
- ```
+const forme = require('forme');
+const form = forme('login').post('form/process.html').require([['input1'],['input2']],'or');
+```
  
 When we call **.require()** we provide conditions to match and also an operator to match them with. Conditions are defined like so:
- ```javascript
- const conditions = [
-     //group1
-     [
-         'input1',
-         'input2',
-     ],
-     
-     //group2
-     [
-         'input1',
-         'input3',         
-     ]
- ];
- 
- const forme = require('forme');
- const form = forme('login').post('form/process.html').require(conditions,'or');
- ```
- 
- The above example translates to hte following conditional check:
- ```javascript
- if ((input1.Length && input2.Length) || (input1.Length && input3.Length)) {
- 
- }
- ```
- 
- If we changed the op to **'and'** then it would be the equivalent of:
-  ```javascript
-  if ((input1.Length || input2.Length) && (input1.Length || input3.Length)) {
-  
-  }
-  ```
- 
- ## <a name="groupingAndReferencingInputs"></a> Grouping and Referencing inputs 
- 
- Forme lets you add inputs to groups and it lets you set aliases. With these two powerful mechanisms we can have our value data and output generated in a clean way. For example:
- 
- ```javascript
- const forme = require('forme');
- const form = forme('some_form');
- 
- //add 10 unique inputs
- for(let index = 0;index < 3;index++) {
-    form.add('items__'+index+'__field1').label('Field1').group(['items','item_'+index]).alias('field1').value('foo');
-    form.add('items__'+index+'__field2').label('Field2').group(['items','item_'+index]).alias('field2').value('bar');
- }
- ```
- 
- You can see in this example we are creating 3 sets of inputs each with a unique name. Now we could go ahead and reference this input using that name, but that's not entirely sane for long term development.
- Instead, we are specifying a `.group()` and `.alias()` for this input. You can chain multiple `.group('a').group('b').group('c')` or provide an array of strings. 
-  
- When forme generates some form of output, it will now group the values using whatever has been defined. So continuing from the example above:
- 
- ```javascript
-  form.validate(req)
-  .then((result) => {
-  	console.log(result.values);
-  });
- ```
+```javascript
+const conditions = [
+    //group1
+    [
+        'input1',
+        'input2',
+    ],
+    
+    //group2
+    [
+        'input1',
+        'input3',         
+    ]
+];
 
- This would produce the following output:
+const forme = require('forme');
+const form = forme('login').post('form/process.html').require(conditions,'or');
+```
+ 
+The above example translates to hte following conditional check:
+```javascript
+if ((input1.Length && input2.Length) || (input1.Length && input3.Length)) {
+}
+```
+ 
+If we changed the op to **'and'** then it would be the equivalent of:
+```javascript
+if ((input1.Length || input2.Length) && (input1.Length || input3.Length)) {
+}
+```
+ 
+## <a name="groupingAndReferencingInputs"></a> Grouping and Referencing inputs 
+ 
+Forme lets you add inputs to groups and it lets you set aliases. With these two powerful mechanisms we can have our value data and output generated in a clean way. For example:
+ 
+```javascript
+const forme = require('forme');
+const form = forme('some_form');
+ 
+//add 10 unique inputs
+for(let index = 0;index < 3;index++) {
+   form.add('items__'+index+'__field1').label('Field1').group(['items','item_'+index]).alias('field1').value('foo');
+   form.add('items__'+index+'__field2').label('Field2').group(['items','item_'+index]).alias('field2').value('bar');
+}
+```
+ 
+You can see in this example we are creating 3 sets of inputs each with a unique name. Now we could go ahead and reference this input using that name, but that's not entirely sane for long term development.
+Instead, we are specifying a `.group()` and `.alias()` for this input. You can chain multiple `.group('a').group('b').group('c')` or provide an array of strings. 
+ 
+When forme generates some form of output, it will now group the values using whatever has been defined. So continuing from the example above:
 
- ```json
-    {
-        items: {
-            item_0: {
-                field1: 'foo',
-                field2: 'bar',
-            },
-            item_1: {
-                field1: 'foo',
-                field2: 'bar',
-            },
-            item_2: {
-                field1: 'foo',
-                field2: 'bar',
-            }
-        }
-    }
- ```
+```javascript
+form.validate(req)
+.then((result) => {
+    console.log(result.values);
+});
+```
+
+This would produce the following output:
+
+```json
+   {
+       items: {
+           item_0: {
+               field1: 'foo',
+               field2: 'bar',
+           },
+           item_1: {
+               field1: 'foo',
+               field2: 'bar',
+           },
+           item_2: {
+               field1: 'foo',
+               field2: 'bar',
+           }
+       }
+   }
+```
  
- The final piece of the puzzle is how do we now refer to these grouped/aliased inputs? Simple, we just use the group/alias in any function that lets us reference an input. For example:
+The final piece of the puzzle is how do we now refer to these grouped/aliased inputs? Simple, we just use the group/alias in any function that lets us reference an input. For example:
  
- ```javascript
- const field1 = form.value(req,'items.item_0.field1');
- const field2 = form.value(req,['items','item_0','field2']);
- ```
+```javascript
+const field1 = form.value(req,'items.item_0.field1');
+const field2 = form.value(req,['items','item_0','field2']);
+```
  
- We can pass a group path as a string separated with `.`, or an array of group segments. The final segment/part of the group should be the alias or name of the input you are referencing.
- 
- ## <a name="customFormValidation"></a> Custom Form Validation 
- 
- Forme lets you define custom form validation for doing more complex data checking. Using the form.validate(callback, error) method, we can allow a custom callback to execute.
- 
- **Caution: form.validate() is also used to validate a submitted form when a request object is passed in. Make sure you are calling this with the correct arguments.**
- 
- **example of custom validation**
- ```javascript
- const forme = require('forme');
- 
- const form = forme('test').post('form/process.html');
- 
- form.add('value1');
- form.add('value2');
- 
- form.validate((req, form, state) => {
- 	//our custom validate handler must return a promise
- 	//we can also reject with a custom error message.
- 	if (state.values.value1 == 'database' || state.values.value2 == 'database') {
- 	    return Promise.reject(new FormeError('form contained a reserved word'));
+We can pass a group path as a string separated with `.`, or an array of group segments. The final segment/part of the group should be the alias or name of the input you are referencing.
+
+## <a name="customFormValidation"></a> Custom Form Validation 
+
+Forme lets you define custom form validation for doing more complex data checking. Using the form.validate(callback, error) method, we can allow a custom callback to execute.
+
+**Caution: form.validate() is also used to validate a submitted form when a request object is passed in. Make sure you are calling this with the correct arguments.**
+
+**example of custom validation**
+```javascript
+const forme = require('forme');
+
+const form = forme('test').post('form/process.html');
+
+form.add('value1');
+form.add('value2');
+
+form.validate((req, form, state) => {
+	//our custom validate handler must return a promise
+	//we can also reject with a custom error message.
+	if (state.values.value1 == 'database' || state.values.value2 == 'database') {
+	    return Promise.reject(new FormeError('form contained a reserved word'));
  	} else {
  	    return Promise.resolve();
  	}
  }, 'Invalid values');
- ```
- Notice in the example above we are using promise resolve / reject to indicate the result. This allows us to perform async operations and signal to forme when we know the answer. If we dont return a promise, forme will assume the result was positive.
- 
- **state object**
- 
- The custom form validation callback receives a state object. This consists of:
-  - **values** - an object containing the current form values.
- 
- **custom errors**
- 
- If you would like to provide a custom error message from within the callback, simply reject the promise with your custom message. We can use the same placeholder tokens as described in the [Custom Errors](#customErrors) section.
- 
- **overriding the submitted value**
- 
- If you want to alter the submitted values within your callback, simply modify `state.values`. 
+```
+
+Notice in the example above we are using promise resolve / reject to indicate the result. This allows us to perform async operations and signal to forme when we know the answer. If we dont return a promise, forme will assume the result was positive.
+
+**state object**
+
+The custom form validation callback receives a state object. This consists of:
+ - **values** - an object containing the current form values.
+
+**custom errors**
+
+If you would like to provide a custom error message from within the callback, simply reject the promise with your custom message. We can use the same placeholder tokens as described in the [Custom Errors](#customErrors) section.
+
+**overriding the submitted value**
+
+If you want to alter the submitted values within your callback, simply modify `state.values`. 
  
  
 ## <a name="customInputValidation"></a> Custom Input Validation 
@@ -252,10 +251,10 @@ form.add('username').label('Username').placeholder('User').require().is('usernam
 ```
 Notice in the example above we are using promise resolve / reject to indicate the result. This allows us to perform async operations and signal to forme when we know the answer. If we dont return a promise, forme will assume the result was positive.
 
- **state object**
- 
- The custom input validation callback receives a state object. This consists of:
-  - **value** - the current input value.
+**state object**
+
+The custom input validation callback receives a state object. This consists of:
+ - **value** - the current input value.
 
 **custom errors**
 
