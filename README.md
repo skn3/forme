@@ -30,7 +30,7 @@ The project is still in development so use with caution, however the functionali
 
 **API/Reference**
 - [Form](#apiForm)
-- [Fnput](#apiInput)
+- [Input](#apiInput)
 
 **Examples**
 - [Static Form](#staticFormExample)
