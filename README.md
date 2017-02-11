@@ -39,9 +39,7 @@ The project is still in development so use with caution, however the functionali
 - [Validate The Form](#validateExample)
 
 
-<a name="customErrors"></a>
-
-## Custom Errors
+## <a name="customErrors"></a> Custom Errors 
 
 Many input methods allow you to provide a custom error string. For example:
 ```javascript
@@ -64,9 +62,7 @@ You can also use placeholder tokens with a small selection of form methods. For 
 - **{name}** the current name for this input. This is the machine-name for the input.
 
 
-<a name="inputType"></a>
-
-## Input Type
+## <a name="inputType"></a> Input Type 
 
 Forme will intelligently try to guess the input 'type' you have defined. It does this by looking at the API's you have called on the input. You can override the type by calling **.type('email')**. The type is only used when returning the template vars with **forme.template()**, it does not alter how forme handles the input.
 
@@ -88,10 +84,7 @@ form.add('some_input').label('Some Input').is('email').secure() //type="password
 form.add('some_input').label('Some Input').is('email').secure().type('date') //type="date";
 ```
 
-
-<a name="formRequireValidation"></a>
-
-## Form.Require() Validation
+## Form.Require() Validation <a name="formRequireValidation"></a>
 
 When you specify **form.require(*conditions, op*)** for a form, you are telling Forme to apply input requirement tests upon validation. This lets you do and/or tests on specific sets of inputs. For each call to **.require()** the form MUST pass that particular test; so if you had multiple .require() then they would all have to pass.
  
@@ -134,10 +127,7 @@ When we call **.require()** we provide conditions to match and also an operator 
   }
   ````
  
- 
- <a name="groupingAndReferencingInputs"></a>
- 
- ## Grouping and Referencing inputs
+ ## <a name="groupingAndReferencingInputs"></a> Grouping and Referencing inputs 
  
  Forme lets you add inputs to groups and it lets you set aliases. With these two powerful mechanisms we can have our value data and output generated in a clean way. For example:
  
@@ -194,10 +184,7 @@ When we call **.require()** we provide conditions to match and also an operator 
  
  We can pass a group path as a string separated with `.`, or an array of group segments. The final segment/part of the group should be the alias or name of the input you are referencing.
  
- 
- <a name="customFormValidation"></a>
- 
- ## Custom Form Validation
+ ## <a name="customFormValidation"></a> Custom Form Validation 
  
  Forme lets you define custom form validation for doing more complex data checking. Using the form.validate(callback, error) method, we can allow a custom callback to execute.
  
@@ -238,9 +225,7 @@ When we call **.require()** we provide conditions to match and also an operator 
  If you want to alter the submitted values within your callback, simply modify `state.values`. 
  
  
- <a name="customInputValidation"></a>
- 
-## Custom Input Validation
+## <a name="customInputValidation"></a> Custom Input Validation 
 
 Forme lets you define custom input validation for doing more complex data checking. Using the input.validate() method, we can allow a custom callback to execute.
 
@@ -281,9 +266,7 @@ If you would like to provide a custom error message from within the callback, si
 If you want to alter the submitted value within your callback, simply modify the `state.value`. 
 
 
-<a name="customSubmitHandling"></a>
-
-## Custom Submit Handling
+## <a name="customSubmitHandling"></a> Custom Submit Handling 
 
 Forme lets you specify callback routines to be called on your form/inputs once the entire form has validated successfully. To add a submit handler to an input simply use the `input.submit()` api. To add a submit handler to a form use `form.submit()`. With the `.submit()` handler we have the ability to do execute our own code, just before the form returns back to your main validate callback. 
 
@@ -318,10 +301,7 @@ const form = forme('login').post('form/process.html').submit((req, form) => {
 });
 ```
 
-
-<a name="orderOfValidation"></a>
-
-## Order of Validation
+## <a name="orderOfValidation"></a> Order of Validation 
 
 Forme has a super sensible order of execution. The order is as follows:
 
@@ -334,10 +314,7 @@ Forme has a super sensible order of execution. The order is as follows:
 
 During the above execution order, forme might fail the process and skip to step 5 with `validated = false`.
 
-
-<a name="validationInFinalThen"></a>
-
-## Validation/form error in your final `validate.then()`
+## Validation/form error in your final `validate.then()` <a name="validationInFinalThen"></a>
 
 Forme provides more sensible ways to add custom validation code, but if you want to validate in the final step and produce an error, then you will have to manually `.store()` the form.
 
@@ -368,10 +345,7 @@ function route(req, res, next) {
 }
 ```
 
-
-<a name="staticFormExample"></a>
-
-## Static Form Example
+## <a name="staticFormExample"></a> Static Form Example 
 
 A simple static login form.
 
@@ -449,10 +423,7 @@ The `form.store().then()` result object contains:
 - **.req** - original request object
 - **.form** - the forme object
 
-
-<a name="dynamicFormExample"></a>
-
-## Dynamic Form Example
+## <a name="dynamicFormExample"></a> Dynamic Form Example 
 
 An example of creating a dynamic form.
 
@@ -504,9 +475,7 @@ myForm(10).validate(request)
 });
 ```
 
-<a name="apiFormExample"></a>
-
-## API Form Example
+## <a name="apiFormExample"></a> API Form Example 
 
 Use forme to handle your API data
 
@@ -539,9 +508,7 @@ api.validate(request, {
 Notice how we can pass values to the `form.validate(req, values)` call.
 
 
-<a name="apiInput"></a>
-
-## Input API
+## <a name="apiInput"></a> Input API 
 - **.id(** string **)** - override the id that is generated for template vars. If no id id set the default id will be *'forme_input__[input.name]'* (minus square brackets)
 - **.className(** string/array **)** - adds a className(s) to the input *(only used in form.template())* 
 - **.label(** string **)** - sets the inputs label used in error messages and template vars
@@ -577,9 +544,7 @@ Notice how we can pass values to the `form.validate(req, values)` call.
 - **.pipe(** false/true/string **)** - pipe errors generated for this input to a specified target. (false: to self, true: to form, string: to input with matching name. The string can also be any string, these errors can be retrieved with `form.errors(req, 'name')`)
 
 
-<a name="apiForm"></a>
-
-## Form API
+## <a name="apiForm"></a> Form API 
 - **.name(** string **)** - change the form's name
 - **.label(** string **)** - sets the forms label used in error messages and template vars
 - **.get(** string **)** - set the form to get and specify the action address
