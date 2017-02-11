@@ -118,14 +118,14 @@ When we call **.require()** we provide conditions to match and also an operator 
  if ((input1.Length && input2.Length) || (input1.Length && input3.Length)) {
  
  }
- ````
+ ```
  
  If we changed the op to **'and'** then it would be the equivalent of:
   ```javascript
   if ((input1.Length || input2.Length) && (input1.Length || input3.Length)) {
   
   }
-  ````
+  ```
  
  ## <a name="groupingAndReferencingInputs"></a> Grouping and Referencing inputs 
  
