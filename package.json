@@ -1,8 +1,11 @@
 {
   "name": "forme",
   "version": "1.2.8",
-  "description": "Forme has been designed to offer a sane way for handling forms in nodejs",
+  "description": "Forme has been designed to offer a sane way for handling forms & validation in nodejs; using promises.",
   "main": "index.js",
+  "scripts": {
+    "start": "node examples/paged/example-paged-multiple-forms.js"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/skn3/forme"

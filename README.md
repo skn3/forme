@@ -146,7 +146,7 @@ Instead, we are specifying a `.group()` and `.alias()` for this input. You can c
 When forme generates some form of output, it will now group the values using whatever has been defined. So continuing from the example above:
 
 ```javascript
-form.validate(req)
+form.validate(storage)
 .then((result) => {
     console.log(result.values);
 });
@@ -176,8 +176,8 @@ This would produce the following output:
 The final piece of the puzzle is how do we now refer to these grouped/aliased inputs? Simple, we just use the group/alias in any function that lets us reference an input. For example:
  
 ```javascript
-const field1 = form.value(req,'items.item_0.field1');
-const field2 = form.value(req,['items','item_0','field2']);
+const field1 = form.value(storage,'items.item_0.field1');
+const field2 = form.value(storage,['items','item_0','field2']);
 ```
 
 We can pass a group path as a string separated with `.`, or an array of group segments. The final segment/part of the group should be the alias or name of the input you are referencing.
@@ -197,7 +197,7 @@ const form = forme('test').post('form/process.html');
 form.add('value1');
 form.add('value2');
 
-form.validate((req, form, state) => {
+form.validate((storage, form, state) => {
 	//our custom validate handler must return a promise
 	//we can also reject with a custom error message.
 	if (state.values.value1 == 'database' || state.values.value2 == 'database') {
@@ -234,7 +234,7 @@ const forme = require('forme');
 
 const form = forme('login').post('form/process.html');
 form.add('username').label('Username').placeholder('User').require().is('username')
-.validate((req, form, input, state) => {
+.validate((storage, form, input, state) => {
 	//our custom validate handler must return a promise
 	//we can also reject with a custom error message.
 	return database.user.load(state.value)
@@ -275,13 +275,13 @@ const forme = require('forme');
 
 const form = forme('login').post('form/process.html');
 form.add('title').label('Title').placeholder('page title').require()
-.submit((req, form, input) => {
+.submit((storage, form, input) => {
     //our custom submit handler must return a promise
     
 	//lets check for reserved word in title
-	if (input.value(req) == 'admin') {
+	if (input.value(storage) == 'admin') {
 	    //rename this page
-	    input.value(req, input.value(req)+ 'renamed');
+	    input.value(storage, input.value(storage)+ 'renamed');
 	}
 	
 	//finished submit
@@ -294,7 +294,7 @@ Notice in the example above we are using `Promise.resolve()` to indicate that we
 ```javascript
 const forme = require('forme');
 
-const form = forme('login').post('form/process.html').submit((req, form) => {
+const form = forme('login').post('form/process.html').submit((storage, form) => {
     //do something here
     return Promise.resolve();
 });
@@ -304,14 +304,15 @@ const form = forme('login').post('form/process.html').submit((req, form) => {
 
 Forme has a super sensible order of execution. The order is as follows:
 
-1. call `form.validate()`
-2. iterate over each input and execute all handlers in order defined. This includes execution of `input.validate()` and `input.handler()`
-3. execute all form handlers in order defined. Currently we only have `form.require()`
+1. call `form.submit(storage)`
+2. iterate over each input and execute all validate handlers in order defined. This includes execution of `input.validate()` and `input.handler()`
+3. execute all form validate handlers in order defined. This includes execution of `form.validate()` and `form.require()`
 4. iterate over all inputs and execute their `input.submit()` handlers. The order in which you called `input.submit()`, is the order in which they are executed.
-4. execute all `form.submit()` handlers. The order in which you called `form.submit()`, is the order in which they are executed.
-5. callback to `form.validate()` with `validated = true`
+5. execute all `form.submit(callback)` handlers. The order in which you called `form.submit(callback)`, is the order in which they are executed.
+6. execute all `form.action(action, callback)` handlers. The order in which you called `form.action(action, callback)`, is the order in which they are executed.
+7. return promise to `form.submit(storage).then(result => {})`.
 
-During the above execution order, forme might fail the process and skip to step 5 with `validated = false`.
+During the above execution order, forme might fail the process and skip to step 7. The result will contain `result.validated = false`.
 
 ## Validation/form error in your final `validate.then()` <a name="validationInFinalThen"></a>
 
@@ -319,8 +320,8 @@ Forme provides more sensible ways to add custom validation code, but if you want
 
 **validate the form (using express)**
 ```javascript
-function route(req, res, next) {
-    return form.validate(req)
+function route(storage, res, next) {
+    return form.validate(storage)
     .then(result => {    
         if (!result.validated) {
             //form validation failed, redirect back to login form
@@ -329,9 +330,9 @@ function route(req, res, next) {
             //form validated, so try something custom here (should really be using input.validate())
             if (!doSomethingGood()) {
                 //failed, so store form data using session handler
-                result.form.error(req, 'some validation error');
+                result.form.error(storage, 'some validation error');
                 
-                return result.form.store(result.req)
+                return result.form.store(result.storage)
                 .then(result => {
                     //redirect back to login form
                     res.redirect('back');
@@ -372,7 +373,7 @@ form.view(request)
 ```
 
 The `form.view().then()` result object contains:
-- **.req** - original request object
+- **.storage** - original request object
 - **.form** - the forme object
 
 **pug template (using bootstrap)**
@@ -400,7 +401,7 @@ form.validate(request)
         //form validated, so try login 
         if (!login(result.values.username, result.values.password)) {
             //failed, so store form data using session handler
-            result.form.store(result.req)
+            result.form.store(result.storage)
             .then(result => {
                 //redirect back to login form
             });
@@ -412,14 +413,14 @@ form.validate(request)
 ```
 
 The `form.validate().then()` result object contains:
-- **.req** - original request object
+- **.storage** - original request object
 - **.form** - the forme object
 - **.validated** - true or false, did the form validate
 - **.values** -  object map of submitted/validated values,
 - **.errors** -  array of errors produced,
 
 The `form.store().then()` result object contains:
-- **.req** - original request object
+- **.storage** - original request object
 - **.form** - the forme object
 
 ## <a name="dynamicFormExample"></a> Dynamic Form Example 
@@ -456,7 +457,7 @@ myForm(10).view(request)
     let html = '';
     for(let index = 0; index < numFields; index++) {
         let fieldName = 'field_'+index;
-        html += '<input name="'+fieldName+'" value="'+result.form.value(result.req, fieldName)+'" type="text" />';
+        html += '<input name="'+fieldName+'" value="'+result.form.value(result.storage, fieldName)+'" type="text" />';
     }
 });
 
@@ -504,7 +505,7 @@ api.validate(request, {
 });
 ```
 
-Notice how we can pass values to the `form.validate(req, values)` call.
+Notice how we can pass values to the `form.validate(storage, values)` call.
 
 
 ## <a name="apiInput"></a> Input API 
@@ -538,9 +539,9 @@ Notice how we can pass values to the `form.validate(req, values)` call.
 - **.context(** string, value **)** - store a named context value in this input. *(Accessible in form.template() and input.validate())*
 - **.context(** string **)** - retrieve a named context value from this input. *(Accessible in form.template() and input.validate())*
 - **.value(** value **)** - sets the default value of this input
-- **.value(** req **)** - get the current value for this input using the request object
-- **.value(** req, value **)** - set the current value for this input using the request object
-- **.pipe(** false/true/string **)** - pipe errors generated for this input to a specified target. (false: to self, true: to form, string: to input with matching name. The string can also be any string, these errors can be retrieved with `form.errors(req, 'name')`)
+- **.value(** storage **)** - get the current value for this input using the request object
+- **.value(** storage, value **)** - set the current value for this input using the request object
+- **.pipe(** false/true/string **)** - pipe errors generated for this input to a specified target. (false: to self, true: to form, string: to input with matching name. The string can also be any string, these errors can be retrieved with `form.errors(storage, 'name')`)
 
 
 ## <a name="apiForm"></a> Form API 
@@ -553,16 +554,16 @@ Notice how we can pass values to the `form.validate(req, values)` call.
 - **.add(** string **)** - add a new input to the form with the given name
 - **.context(** string, value, *[template]* **)** - store a named context value in this form. *(accessible in form.template() and anywhere we have the form object)*
 - **.context(** string **)** - retrieve a named context value from this form. *(accessible in form.template() and anywhere we have the form object)*
-- **.view(** req, *[values]* **)** - process viewing the form and then return a promise. An object of values can be provided as the second argument. This will replace all non permanent values when processing the form.
-- **.validate(** req object, *[values]* **)** - process validating the form and then return a promise. An object of values can be provided as the second argument. This will replace all non permanent values when processing the form.  
+- **.view(** storage, *[values]* **)** - process viewing the form and then return a promise. An object of values can be provided as the second argument. This will replace all non permanent values when processing the form.
+- **.validate(** storage object, *[values]* **)** - process validating the form and then return a promise. An object of values can be provided as the second argument. This will replace all non permanent values when processing the form.  
 - **.validate(** function, *[error]* **)** - allow for custom validation routines to be added to form
-- **.store(** req **)** - process storing the form session and then return a promise
+- **.store(** storage **)** - process storing the form session and then return a promise
 - **.submit(** promise/handler **)** - allow for custom submit routines to be added to the form. These are called in order just before a valid form returns to your main validate function
-- **.values(** req **)** - get all the current values for a submitted form
-- **.value(** req, input/string/path **)** - get the current submitted value for a specific input. 
-- **.value(** req, input/string/path, value **)** - set the current submitted value for a specific input
-- **.error(** req, error **)** - add an error to the form
-- **.error(** req, input/string/path, error **)** - add an error to something that is named. This does not need to be the name of an input, if no match is found, the error will be added to the form and will retain the name you specified.
+- **.values(** storage **)** - get all the current values for a submitted form
+- **.value(** storage, input/string/path **)** - get the current submitted value for a specific input. 
+- **.value(** storage, input/string/path, value **)** - set the current submitted value for a specific input
+- **.error(** storage, error **)** - add an error to the form
+- **.error(** storage, input/string/path, error **)** - add an error to something that is named. This does not need to be the name of an input, if no match is found, the error will be added to the form and will retain the name you specified.
 - **.inputs()** - returns an array of all the input names
 - **.template(** **)** - builds all template vars for the form
-- **.errors(** req, *[name]* **)** - gets all errors in the form. If a name is provided, then only errors with that matching name are returned. Name can be an input name, or name defined in input.pipe().
+- **.errors(** storage, *[name]* **)** - gets all errors in the form. If a name is provided, then only errors with that matching name are returned. Name can be an input name, or name defined in input.pipe().
