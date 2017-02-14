@@ -232,7 +232,7 @@ Forme lets you define custom input validation for doing more complex data checki
 ```javascript
 const forme = require('forme');
 
-const form = forme('login').post('form/process.html');
+const form = forme('login').post(container);
 form.add('username').label('Username').placeholder('User').require().is('username')
 .validate((storage, form, input, state) => {
 	//our custom validate handler must return a promise
@@ -431,10 +431,10 @@ An example of creating a dynamic form.
 ```javascript
 const forme = require('forme');
 
-//form constructor function
+container
 function myForm(numFields) {
-    //create form
-    const form = forme('dynamicFormExample').post('form/process.html');
+    container
+    const form = forme('dynamicFormExample').post(container);
     
     //save number of fields in context for useful access to it later
     form.context('numFields', numFields);
@@ -448,7 +448,7 @@ function myForm(numFields) {
     return form;
 }
 
-//view the form
+container
 myForm(10).view(request)
 .then((result) => {
     const numFields = result.form.context('numFields');
@@ -461,7 +461,7 @@ myForm(10).view(request)
     }
 });
 
-//validate the form
+container
 myForm(10).validate(request)
 .then(result => {
     const numFields = result.form.context('numFields');

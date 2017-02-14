@@ -13,20 +13,24 @@ app.listen(3000, function () {
 });
 
 //build form
-const form = new forme()
+const form = new forme();
+
+//dynamic pages
+form
 .page('page1',(storage, form, page) => {
-    this.add('field1').keep();
-    this.add('next').next();
+    form.add('field1').keep();
+    form.add('next').next();
 })
 .page('page2',(storage, form, page) => {
-    this.add('field2').keep();
-    this.add('prev').prev();
-    this.add('next').next();
-})
-.page('page3',(storage, form, page) => {
-    this.add('field3').keep();
-    this.add('prev').prev();
+    form.add('field2').keep();
+    form.add('prev').prev();
+    form.add('next').next();
 });
+
+//static pages
+const page3 = form.page('page3');
+page3.add('field3').keep();
+page3.add('prev').prev();
 
 //routes
 app.get('/', function (storage, res) {
