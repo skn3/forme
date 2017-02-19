@@ -12,7 +12,7 @@ app.listen(3000, function () {
 
 
 //page 1
-const form1 = new forme();
+const form1 = forme();
 form1.add('field1').keep();
 form1.add('next').action('next', '/page2');
 
@@ -40,7 +40,7 @@ app.post('/page1', function (storage, res) {
 
 
 //page 2
-const form2 = new forme();
+const form2 = forme();
 
 form2.action('poop',(storage, form, action, context) => {
     console.log('poop was triggered');
@@ -77,7 +77,7 @@ app.post('/page2', function (storage, res) {
 
 
 //page 3
-const form3 = new forme();
+const form3 = forme();
 form3.add('field3').keep();
 form3.add('prev').prev('/page2');
 

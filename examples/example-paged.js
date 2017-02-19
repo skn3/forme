@@ -13,7 +13,7 @@ app.listen(3000, function () {
 });
 
 //build form
-const form = new forme();
+const form = forme();
 
 //dynamic pages
 form
