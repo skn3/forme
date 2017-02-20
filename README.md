@@ -696,9 +696,9 @@ function route(storage, res, next) {
 
 ## <a name="customDriversIntegration"></a> Custom Drivers / Integration
 
-As has been stated many times, Forme has been designed to go anywhere. Do Anything! We have abstracted out all of the functionality required to speak to your 3rd party modules/sdks/runtimes. This functionality can be found in the `FormeDriver` class (see *lib/driver.js*).
+As has been stated many times, Forme has been designed to go anywhere. Do Anything! We have abstracted out all of the functionality required to speak to your 3rd party module/sdk/project. This functionality can be found in the `FormeDriver` class (see *lib/driver.js*).
 
-Forme is being developed using *express*, but eventually we plan to write additional drivers. If you would like to integrate into your own codebase, then just extend `FormeDriver` and apply it to your form using `form.driver(FormeDriver)`. The `FormeDriver` you pass to `form.drive()` **must** be a pointer to (**not** and instance of) an es6 class. When Forme comes to build your active form, it will create a disposable instance of this class. 
+Forme is being developed using *express*, but eventually we plan to write additional drivers. If you would like to integrate into your own codebase, then just extend `FormeDriver` and apply it to your form using `form.driver(FormeDriver)`. The `FormeDriver` you pass to `form.drive()` **must** be a pointer to (**not** instance of) an es6 class. When Forme comes to build your active form, it will create a disposable instance of this class. 
 
 ```javascript
 const forme = require('forme');
@@ -716,7 +716,7 @@ const forme = require('forme');
 class CustomDriver extends forme.FormeDriver {   
 }
 
-forme.Driver(CustomDriver);
+forme.driver(CustomDriver);
 ```
 
 **Local wrapper utility**
@@ -840,7 +840,7 @@ const form = forme('myForm');
 
 When you import forme with `const forme = require('forme)` you then use `forme(name)` to construct your forms. You also get a few extra utilities: 
 
-- **forme.Driver(** FormeDriver **)** - change the global driver that forme uses.
+- **forme.driver(** FormeDriver **)** - change the global driver that forme uses.
 - **forme.FormeDriver** - the Forme driver class, for extending.
 - **forme.FormeError** - the Forme form error class, for comparison (`instanceof`).
 - **forme.FormeInputError** - the Forme input error class, for comparison (`instanceof`).
