@@ -42,6 +42,7 @@ If you have been using version 1.x then please review the entire readme. We have
 - [Actions](#actions)
 - [Custom Errors](#customErrors)
 - [Order of Validation](#orderOfExecution)
+- [Template](#template)
 - [Form Require Validation (and/or)](#requireValidation)
 - [Validation in final .then()](#validationInFinalThen)
 - [Custom Drivers / Integration](#customDriversIntegration)
@@ -316,22 +317,22 @@ const field1 = form.value('items.item0.field1');
 const field2 = form.value(['items','item0','field2']);
 ```
 
-We can pass a group path as a string separated with `.`, or an array of group segments. The final segment/part of the group should be the alias or name of the input you are referencing.
+We can pass a group path as a string separated with `.`, or an array of group segments. The final segment of the array/path should be the alias or name of the input you are referencing.
 
 
 ## <a name="inputType"></a> Input Type
 
-Forme will intelligently try to guess the input 'type' you have defined. It does this by looking at the API's you have called on the input. You can override the type by calling **.type('email')**. The type is only used when returning the template vars with **forme.template()**, it does not alter how forme handles the input.
+Forme will intelligently try to guess the input 'type' you have defined. It does this by looking at the API's you have called on the input. You can override the type by calling `input.type('foo')`. The type is only used when returning the template vars with `forme.template()`, it does not alter how forme handles the input.
 
-When Forme is guessing the input type, it lets the most recently called API take precedence. So for example if we call **.is('email')** and then **.secure()**, the guessed type will be *'password'* and not *'email'*. 
+When Forme is guessing the input type, it lets the most recently called API take precedence. So for example if we call `input.is('email').secure()`, the guessed type will be `password` and not `email`. 
 
 There are internal rules that exist when determining the input type. The rules are checked in order, when one of these conditions is met, subsequent conditions are ignored.
 
-1. If you have called **.hidden()** on an input, then the type will always return *'hidden'* *(unless overridden with .type())*.
-2. If you have called **.prev()**, **.next()**, **.reset()** on an input, then the type will always return *'button'* *(unless overridden with .type())*.
-3. If you have called **.submit()** on an input, then the type will always return *'submit'* *(unless overridden with .type())*.
-4. If you have called **.checked()** on an input, then the type will always return *'checkbox'* *(unless overridden with .type())*.
-5. If you have called **.secure()** on an input, then the type will always return *'password'* *(unless overridden with .type())*.
+1. If you have called `input.hidden()` on an input, then the type will always return `hidden` *(unless overridden with `input.type()`)*.
+2. If you have called `input.prev()`, `input.next()`, `input.reset()` on an input, then the type will always return `button` *(unless overridden with `input.type()`)*.
+3. If you have called `input.submit()` on an input, then the type will always return `submit` *(unless overridden with `input.type()`)*.
+4. If you have called `input.checked()` on an input, then the type will always return `checkbox` *(unless overridden with `input.type()`)*.
+5. If you have called `input.secure()` on an input, then the type will always return `password` *(unless overridden with `input.type()`)*.
 
 **Examples**
 ```javascript
@@ -347,13 +348,36 @@ form.add('some_input').label('Some Input').is('email').secure().type('date') //t
 
 ## <a name="customValidation"></a> Custom Validation 
 
-Forme lets you define custom form validation for doing more complex data checking. Using:
+Forme lets you define custom form validation. Try using:
 
 - `form.validate((form, state) => {}, error)`
 - `page.validate((form, page, state) => {}, error])`
 - `input.validate((form, input, state) => {}, error)`
 
 *Form*
+
+```javascript
+const forme = require('forme');
+
+const form = forme('testForm');
+
+form.add('value1');
+form.add('value2');
+
+form.validate((form, state) => {
+	if (state.values.value1 == 'database' || state.values.value2 == 'database') {
+	    return Promise.reject(new Error('form contained a reserved word'));
+ 	}
+ }, 'Invalid values');
+```
+
+```javascript
+state: {
+    values: {} //all submitted values
+}
+```
+
+*Page*
 
 ```javascript
 const forme = require('forme');
@@ -373,29 +397,6 @@ page1.validate((form, page, state) => {
 ```javascript
 state: {
     values: {} //all submitted values
-}
-```
-
-*Page*
-
-```javascript
-const forme = require('forme');
-
-const form = forme('testForm');
-
-form.add('value1');
-form.add('value2');
-
-form.validate((form, state) => {
-	if (state.values.value1 == 'database' || state.values.value2 == 'database') {
-	    return Promise.reject(new Error('form contained a reserved word'));
- 	}
- }, 'Invalid values');
-```
-
-```javascript
-state: {
-    values: {} //all submitted values (including stored values from other pages)
 }
 ```
 
@@ -430,12 +431,12 @@ If you want to alter the submitted values, simply modify `state.values` or `stat
 
 ## <a name="customSubmitHandling"></a> Custom Submit Handling 
 
-Just like most other steps of a form, with Forme you can specify `.submit()` handlers. You do this with: 
+Just like most other aspects of Forme, you can specify `.submit()` handlers. You do this with: 
 - `form.submit(form => {})`
 - `page.submit((form, page) => {})`
 - `input.submit((form, input) => {})`
 
-These handlers are executed at the last moment just before Forme returns to your successful `form.submit(req).then(result => {})`.
+These handlers are executed at the very last moment before Forme returns to your successful `form.submit(req).then(result => {})`.
 
 **Form**
 
@@ -470,7 +471,7 @@ const form = forme('myForm').add('field1').submit((form, input) => {
 
 ## <a name="actions"></a> Actions 
 
-As you may have already read in this document, Forme lets you watch for special actions. There are built in actions to handle `input.prev()`, `input.next()`, `input.reset()` and `input.submit()` (*see [special actions]('#specialActions')*). You can also create custom actions for whatever your purposes may be.
+As you may have already read in this document, Forme lets you watch for special actions. There are built in actions to handle `input.prev()`, `input.next()`, `input.reset()` and `input.submit()` (*see [special actions](#specialActions)*). You can also create your own custom actions:
 
 **Form**
 
@@ -537,7 +538,7 @@ You can also use placeholder tokens with a small selection of form methods. For 
 - **{name}** the current name for this input. This is the machine-name for the input.
 
 
-## `form.require()` and `page.require()` Validation <a name="requireValidation"></a>
+## <a name="requireValidation"></a> `form.require()` and `page.require()` Validation
 
 When you specify **form.require(*conditions, op*)** or **page.require(*conditions, op*)**, you are telling Forme to apply input requirement tests upon validation. This lets you do and/or tests on specific sets of inputs. For each call to `.require()` the form **must** pass that particular test; so if you had multiple `.require()` then they would all have to pass.
  
@@ -591,10 +592,83 @@ Forme has a downright sensible order of execution. The order is as follows:
 11. execute `form.action(action, callback)` in order defined.
 12. return promise to `form.submit(storage).then(result => {})`.
 
-During the above execution order, forme might fail the process and skip to step 7. The result will contain various states but check for `result.reload = false` to see if the form needs reloading.
+During the above execution order, forme might fail the process and skip to the last step. The result will contain various states but check for `result.reload = false` to see if the form needs reloading.
 
 
-## Validation/form error in your final `validate.then()` <a name="validationInFinalThen"></a>
+## <a name="template"></a> Template 
+
+Forme does not dictate how your form should be rendered. We provide a mechanism for you to get a comprehensive overview of your form; you can then pass this to your template engine of choice.
+
+```javascript
+template = {
+    form: {
+        name: '',
+        method: '',
+        action: '', //not to be confused with Forme actions
+        context: {
+            any: 'data',
+            added: 'to',
+            the: 'form',
+            using: 'form.context()',
+        },
+        errors: [
+            {
+                name: '',
+                error: 'form error',
+            },
+            {
+                name: 'field1',
+                error: 'input error',
+            },
+        ],
+    },
+    input: {
+        field1: {
+            id: '',//default: 'forme_input__' + input._name
+            name: '',
+            alias: '',//default: to input._name 
+            className: 'cssClass1 cssClass2',
+            label: '',//default: input._name 
+            help: '',
+            type: '',
+            placeholder: '',
+            required: true/false,
+            readonly: true/false,
+            value: null,
+            checked: true/false,
+            errors: ['error1', 'error2', 'error3'],
+            options: [
+                {
+                    label: 'label1',
+                    value: 'value1',
+                },
+                {
+                    label: 'label2',
+                    value: 'value2',
+                },
+            ],
+            context: {
+                any: 'data',
+                added: 'to',
+                the: 'input',
+                using: 'input.context()',
+            },
+        },
+        group1: {
+            field2: {
+                //input details here
+            },
+            alias1: {
+                //input details here                
+            }
+        }
+    },
+}
+```
+
+
+
+## <a name="validationInFinalThen"></a> Validation/form error in your final `validate.then()`
 
 Forme provides more sensible ways to add custom validation code ([here](#customValidation)), but if you want to validate in the final step and produce an error, then you will have to manually `.save()` the form.
 
@@ -611,7 +685,7 @@ function route(storage, res, next) {
                 result.form.error(storage, err.message);
                 
                 //save and redirect
-                return result.form.save(result.storage)
+                return result.form.save()
                 .then(result => res.redirect('back'));
             });
         }
@@ -620,11 +694,11 @@ function route(storage, res, next) {
 ```
 
 
-## Custom Drivers / Integration <a name="customDriversIntegration"></a>
+## <a name="customDriversIntegration"></a> Custom Drivers / Integration
 
-As has been stated many times in this readme, Forme has been designed to go anywhere. To do this, we have abstracted out all the functionality required to speak to your 3rd party modules/sdks/runtimes. All functionality that Forme needs from the outside world, can be found in the `FormeDriver` class (in *lib/driver.js*).
+As has been stated many times, Forme has been designed to go anywhere. Do Anything! We have abstracted out all of the functionality required to speak to your 3rd party modules/sdks/runtimes. This functionality can be found in the `FormeDriver` class (see *lib/driver.js*).
 
-Forme is being developed using *express* to test with, but eventually we plan to write additional drivers. If you would like to integrate into your own codebase, then just extend the `FormeDriver` class and then apply it to your form using `form.driver(FormeDriver)`. The `FormeDriver` you pass in **must** be an es6 class. When Forme comes to build your active form, it will create a new instance of this class. 
+Forme is being developed using *express*, but eventually we plan to write additional drivers. If you would like to integrate into your own codebase, then just extend `FormeDriver` and apply it to your form using `form.driver(FormeDriver)`. The `FormeDriver` you pass to `form.drive()` **must** be a pointer to (**not** and instance of) an es6 class. When Forme comes to build your active form, it will create a disposable instance of this class. 
 
 ```javascript
 const forme = require('forme');
@@ -695,17 +769,17 @@ const form = forme('myForm');
 
 
 ## <a name="apiPage"></a> Page API 
-- **.name(** name **)** - change the form's name
-- **.label(** label **)** - sets the forms label used in error messages and template vars
+- **.name(** name **)** - change the page name
+- **.label(** label **)** - sets the page label potentially used in error messages and template vars
 - **.require(** array/object, operator, *[error]* **)** - and/or validation on single, multiple or groups of inputs
-- **.add(** name **)** - add a new input to the form with the given name
-- **.context(** name, value, *[template]* **)** - store a named context value in this form. *(accessible in `form.template()` and anywhere we have the form object)*
-- **.context(** name **)** - retrieve a named context value from this form. *(accessible in form.template() and anywhere we have the form object)*
-- **.build(** (form, page) => {} **)** - callback will be called in order, when the form is being built. Allows for dynamic inputs to be added.
-- **.validate(** (form, page, state) => {} **)**, *[error]* **)** - custom validation callback.
-- **.submit(** (form, page) => {} **)** - callback will be called when a form successfully validates. It will be called just before returning back to the `form.submit(storage).then()`
-- **.action(** action, (form, page, action) => {} **)** - callback will be called when the input action is triggered.
-- **.inputs()** - returns an array of input names (including the current page)
+- **.add(** name **)** - add a new input to the page with the given name
+- **.context(** name, value, *[template]* **)** - store a named context value in this page.
+- **.context(** name **)** - retrieve a named context value from this page.
+- **.build(** (form, page) => {} **)** - called when the page is building
+- **.validate(** (form, page, state) => {} **)**, *[error]* **)** - called when the page is validating
+- **.submit(** (form, page) => {} **)** - called when the page is submitting
+- **.action(** action, (form, page, action) => {} **)** - callback when an action is triggered.
+- **.inputs()** - returns an array of input names for this page
 
 
 ## <a name="apiInput"></a> Input API 
