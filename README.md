@@ -4,7 +4,7 @@ Forme has been designed to offer a sane way for handling forms in nodejs using *
 
 Your form object is created in such a way that it can be reused for multiple instances of that form. You simply provide a storage object and Forme will use it to store any live data when processing a particular instance of the form. You can create one static form or if you want, you can create a form per page request. With both modes, Forme provides a way for you to add inputs dynamically. 
 
-Forme has no hardcoded concept of rendering. It provides you with a simple way to build an object containing all the information about your form. This template object can then be passed to your templating engine of choice.
+Forme has no hardcoded concept of rendering. It provides you with a simple way to generate an object containing all the information about your form. This object can then be passed to your template engine of choice.
 
 - Create static or dynamic form objects to handle input in a generic fashion.
 - Easily apply built in input handlers to process and validate your data.
@@ -21,7 +21,7 @@ The project is still in development but feel free to have a play!
 If you have been using version 1.x then please review the entire readme. We have rewritten large portions of it. Below is a list of changes that may need some attention in your projects:
 
 - renamed the submit starting method from `form.validate(req)` to `form.submit(storage)`
-- no longer have to pass the `req`/`storage` object around
+- no longer have to pass the `req`/`storage` object around to **every** API method.
 - renamed `form.session()` to `form.driver()` and revamped the abilities of custom integration. (see [here](#customDriversIntegration))
 - callbacks no longer require a promise to be returned (a positive response will be assumed)
 - manual save has been renamed from `form.store(req)` to `form.save()`
@@ -57,7 +57,7 @@ If you have been using version 1.x then please review the entire readme. We have
 
 ## <a name="helloWorld"></a> Hello World 
 
-Forme is split into two main forms of operation. `.view()` and `.submit()`. These are self explanatory modes our form may be in. For simplicities sake, lets start with a basic pseudo example.
+Forme is split into two main modes of operation. `.view()` and `.submit()`. These are self explanatory modes our form may be in. For simplicities sake, lets start with a basic pseudo example.
 ```javascript
 const forme = require('forme');
 
@@ -87,7 +87,7 @@ function post(req, res) {
 
 For this to work we would have to hook the `get()` and `post()` up to our web server code.
 
-The only thing Forme assumes of your code, is a container to store/retrieve certain pieces of vital information. You can see here we are passing the `req` object into `.view()` and `.submit()`. Forme will make sure not to pollute your container object, and will store everything within one root property `container.forme`.
+The only thing Forme assumes of your code, is a `storage` container to store/retrieve certain pieces of vital information. You can see here we are passing the `req` object into `.view()` and `.submit()`. Forme will make sure not to pollute your storage object, and will store everything within one root property `storage.forme`.
 
 Forme has taken out all of the work and left us with the bare minimum of code to write. The only thing we really need to check for is if `result.reload` is indicating that the form needs reloading. Now while we could have designed Forme to handle page redirects, we chose to retain the agnostic approach!
 
@@ -750,7 +750,7 @@ const form = forme('myForm');
 - **.context(** name, value, *[template]* **)** - store a named context value in this form. *(accessible in `form.template()` and anywhere we have the form object)*
 - **.context(** name **)** - retrieve a named context value from this form. *(accessible in form.template() and anywhere we have the form object)*
 - **.view(** storage, *[values]* **)** - process viewing the form and then return a promise. An object of values can be provided as the second argument. This will replace all non permanent values when processing the form.
-- **.submit(** storage, *[values]* **)** - process validating the form and then return a promise. An object of values can be provided as the second argument. This will replace all non permanent values when processing the form.
+- **.submit(** storage, *[values]* **)** - submit the form. An object of values can be provided as the second argument. This will replace all non permanent values when processing the form.
 - **.build(** form => {} **)** - callback will be called in order, when the form is being built. Allows for dynamic inputs to be added.
 - **.validate(** (form, state) => {} **)**, *[error]* **)** - custom validation callback.
 - **.submit(** form => {} **)** - callback will be called when a form successfully validates. It will be called just before returning back to the `form.submit(storage).then()`
@@ -764,7 +764,7 @@ const form = forme('myForm');
 - **.inputs()** - returns an array of input names (including the current page)
 - **.template(** **)** - builds all template vars for the form
 - **.errors(** *[name]* **)** - gets all errors in the form. If a name is provided, then only errors with that matching name are returned. Name can be an input name/alias, or name defined in `input.pipe()`.
-- **.page(** name **)** - adds a page object/container to the form.
+- **.page(** name **)** - adds a chainable page object to the form.
 - **.page(** name/array, true **)** - adds a page location(s) to the form. This is when you want to handle a paged form across multiple separate forms.
 
 
@@ -795,9 +795,8 @@ const form = forme('myForm');
 - **.match(** string, *[error]* **)** - ensures the input value matches the target input value when validated.
 - **.options(** array/object, *[error]* **)** - ensures the input is one of the specified values when validating. Also provides values to the template vars
 - **.blacklist(** array, *[error]* **)** - value must not be one of the provided values
-- **.validate(** promise/handler, *[error]* **)** - allow for custom validation routines to be added to inputs
-- **.submit(** promise/handler **)** - allow for custom submit routines to be added to inputs. These are called in order just before a valid form returns to your main validate function
-- **.handler(** promise/handler **)** - allows custom handler callback to be executed upon validation. Please use `.validate()` instead
+- **.validate(** (form, input, state) => {}, *[error]* **)** - allow for custom validation routines to be added to inputs
+- **.submit(** (form, input) => {} **)** - allow for custom submit routines to be added to inputs. These are called in order just before a valid form returns to your main validate function
 - **.secure(** *[flag]* **)** - prevents storing of this value between page views/sessions
 - **.checked(** *[flag]* **)** - sets a checkbox defaults checked state
 - **.readonly(** *[flag]* **)** - set input template var *readonly* *(currently only used in `form.template()` vars. e.g. &lt;input readonly /&gt;)*
