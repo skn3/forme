@@ -820,6 +820,7 @@ const form = forme('myForm');
 - **.next(** **)** - special action to go forward a page. This will alter the input's type and default value.
 - **.reset(** **)** - special action to reset the form. This will alter the input's type and default value.
 - **.submit(** **)** - special action that is reserved for future usage. This will alter the input's type and default value.
+- **.ignore(** *[flag]* **)** - the input wont be included in the end result. The input will however, be included in any callbacks. 
 
 
 ## <a name="apiResult"></a> Result API 
