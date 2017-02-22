@@ -581,17 +581,19 @@ Forme has a downright sensible order of execution. The order is as follows:
 
 `form.submit(storage).then(result => {})`
 1. call `form.submit(storage)`
-2. execute `form.build(callback)` handlers.
-3. execute `page.build(callback)` handlers.
-4. execute `input.validate(callback)` in order defined.
-5. execute `page.validate(callback)` in order defined.
-6. execute `form.validate(callback)` in order defined.
-7. execute `input.submit(callback)` in order defined.
-8. execute `page.submit(callback)` in order defined.
-9. execute `form.submit(callback)` in order defined.
-10. execute `page.action(action, callback)` in order defined.
-11. execute `form.action(action, callback)` in order defined.
-12. return promise to `form.submit(storage).then(result => {})`.
+2. execute `form.load(callback)` in order defined.
+3. execute `page.load(callback)` in order defined.
+4. execute `form.build(callback)` in order defined.
+5. execute `page.build(callback)` in order defined.
+6. execute `input.validate(callback)` in order defined.
+7. execute `page.validate(callback)` in order defined.
+8. execute `form.validate(callback)` in order defined.
+9. execute `input.submit(callback)` in order defined.
+10. execute `page.submit(callback)` in order defined.
+11. execute `form.submit(callback)` in order defined.
+12. execute `page.action(action, callback)` in order defined.
+13. execute `form.action(action, callback)` in order defined.
+14. return promise to `form.submit(storage).then(result => {})`.
 
 During the above execution order, forme might fail the process and skip to the last step. The result will contain various states but check for `result.reload = false` to see if the form needs reloading.
 
@@ -804,6 +806,7 @@ const form = forme('myForm');
 - **.context(** name **)** - retrieve a named context value from this form. *(accessible in form.template() and anywhere we have the form object)*
 - **.view(** storage, *[values]* **)** - process viewing the form and then return a promise. An object of values can be provided as the second argument. This will replace all non permanent values when processing the form.
 - **.submit(** storage, *[values]* **)** - submit the form. An object of values can be provided as the second argument. This will replace all non permanent values when processing the form.
+- **.load(** form => {} **)** - callback will be called when the form has loaded. Allows for custom code before the form is built.
 - **.build(** form => {} **)** - callback will be called in order, when the form is being built. Allows for dynamic inputs to be added.
 - **.validate(** (form, state) => {} **)**, *[error]* **)** - custom validation callback.
 - **.submit(** form => {} **)** - callback will be called when a form successfully validates. It will be called just before returning back to the `form.submit(storage).then()`
@@ -823,7 +826,7 @@ const form = forme('myForm');
 - **.prev(** **)** - starts a promise and forces the form to goto the previous page. Returns false or a destination. If a destination is returned, user code should handle redirect. If called from a Forme validate/submit/action handler, you do not need to handle the redirect.
 - **.next(** **)** - starts a promise and forces the form to goto the next page. Returns false or a destination. If a destination is returned, user code should handle redirect. If called from a Forme validate/submit/action handler, you do not need to handle the redirect.
 - **.reset(** **)** - starts a promise and forces the form to reset. Returns false or a destination. If a destination is returned, user code should handle redirect. If called from a Forme validate/submit/action handler, you do not need to handle the redirect.
-- **.reload(** destination **)** - forces a form `result.reload` to be true. The destination you set is the destination that will be returned in `result.destination`. 
+- **.reload(** destination **)** - forces a form `result.reload` to be true. The destination you set is the destination that will be returned in `result.destination`.
 
 
 ## <a name="apiPage"></a> Page API 
@@ -833,6 +836,7 @@ const form = forme('myForm');
 - **.add(** name **)** - add a new input to the page with the given name
 - **.context(** name, value, *[template]* **)** - store a named context value in this page.
 - **.context(** name **)** - retrieve a named context value from this page.
+- **.load(** (form, page) => {} **)** - callback will be called when the form has loaded. Allows for custom code before the form is built.
 - **.build(** (form, page) => {} **)** - called when the page is building
 - **.validate(** (form, page, state) => {} **)**, *[error]* **)** - called when the page is validating
 - **.submit(** (form, page) => {} **)** - called when the page is submitting
