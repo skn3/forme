@@ -818,7 +818,8 @@ const form = forme('myForm');
 - **.template(** **)** - builds all template vars for the form
 - **.errors(** *[name]* **)** - gets all errors in the form. If a name is provided, then only errors with that matching name are returned. Name can be an input name/alias, or name defined in `input.pipe()`.
 - **.page(** name **)** - adds a chainable page object to the form.
-- **.page(** name/array, true **)** - adds a page location(s) to the form. This is when you want to handle a paged form across multiple separate forms.
+- **.page(** name, true **)** - adds a single page location to the form. This is when you want to handle a paged form across multiple separate forms.
+- **.page(** array **)** - adds multiple page locations to the form. This is when you want to handle a paged form across multiple separate forms.
 - **.prev(** **)** - starts a promise and forces the form to goto the previous page. Returns false or a destination. If a destination is returned, user code should handle redirect. If called from a Forme validate/submit/action handler, you do not need to handle the redirect.
 - **.next(** **)** - starts a promise and forces the form to goto the next page. Returns false or a destination. If a destination is returned, user code should handle redirect. If called from a Forme validate/submit/action handler, you do not need to handle the redirect.
 - **.reset(** **)** - starts a promise and forces the form to reset. Returns false or a destination. If a destination is returned, user code should handle redirect. If called from a Forme validate/submit/action handler, you do not need to handle the redirect.
