@@ -827,6 +827,8 @@ const form = forme('myForm');
 - **.next(** **)** - starts a promise and forces the form to goto the next page. Returns false or a destination. If a destination is returned, user code should handle redirect. If called from a Forme validate/submit/action handler, you do not need to handle the redirect.
 - **.reset(** **)** - starts a promise and forces the form to reset. Returns false or a destination. If a destination is returned, user code should handle redirect. If called from a Forme validate/submit/action handler, you do not need to handle the redirect.
 - **.reload(** destination **)** - forces a form `result.reload` to be true. The destination you set is the destination that will be returned in `result.destination`.
+- **.url(** **)** - returns the url for the current page.
+- **.url(** page **)** - returns the url for a particular page.
 
 
 ## <a name="apiPage"></a> Page API 
