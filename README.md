@@ -812,7 +812,7 @@ const form = forme('myForm');
 - **.submit(** form => {} **)** - callback will be called when a form successfully validates. It will be called just before returning back to the `form.submit(storage).then()`
 - **.action(** action, (form, action) => {} **)** - callback will be called when the input action is triggered.
 - **.save(** **)** - process storing the form session and then return a promise
-- **.values(** *[pages]* **)** - get all the current values for a submitted form, optional flag `pages` to indicate if you would like to retrieve values from all pages.
+- **.values(** **)** - get all the current values for the form
 - **.value(** input/string/path **)** - get the current submitted value for a specific input. 
 - **.value(** input/string/path, value **)** - set the current submitted value for a specific input
 - **.error(** error **)** - add an error to the form
