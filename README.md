@@ -802,8 +802,9 @@ const form = forme('myForm');
 - **.driver(** driverClass **)** - change the driver this form uses. 
 - **.require(** array/object, operator, *[error]* **)** - and/or validation on single, multiple or groups of inputs
 - **.add(** name **)** - add a new input to the form with the given name
-- **.context(** name, value, *[template]* **)** - store a named context value in this form. *(accessible in `form.template()` and anywhere we have the form object)*
+- **.context(** name, value **)** - store a named context value in this form. *(accessible in `form.template()` and anywhere we have the form object)*
 - **.context(** name **)** - retrieve a named context value from this form. *(accessible in form.template() and anywhere we have the form object)*
+- **.context(** name, undefined **)** - delete a context entry.
 - **.view(** storage, *[values]* **)** - process viewing the form and then return a promise. An object of values can be provided as the second argument. This will replace all non permanent values when processing the form.
 - **.submit(** storage, *[values]* **)** - submit the form. An object of values can be provided as the second argument. This will replace all non permanent values when processing the form.
 - **.load(** form => {} **)** - callback will be called when the form has loaded. Allows for custom code before the form is built.
@@ -836,8 +837,9 @@ const form = forme('myForm');
 - **.label(** label **)** - sets the page label potentially used in error messages and template vars
 - **.require(** array/object, operator, *[error]* **)** - and/or validation on single, multiple or groups of inputs
 - **.add(** name **)** - add a new input to the page with the given name
-- **.context(** name, value, *[template]* **)** - store a named context value in this page.
+- **.context(** name, value **)** - store a named context value in this page.
 - **.context(** name **)** - retrieve a named context value from this page.
+- **.context(** name, undefined **)** - delete a context entry.
 - **.load(** (form, page) => {} **)** - callback will be called when the form has loaded. Allows for custom code before the form is built.
 - **.build(** (form, page) => {} **)** - called when the page is building
 - **.validate(** (form, page, state) => {} **)**, *[error]* **)** - called when the page is validating
@@ -875,6 +877,7 @@ const form = forme('myForm');
 - **.permanent(** value **)** - forces the input to always have this value
 - **.context(** string, value **)** - store a named context value in this input. *(Accessible in `form.template()` and `input.validate()`)*
 - **.context(** string **)** - retrieve a named context value from this input. *(Accessible in `form.template()` and `input.validate()`)*
+- **.context(** name, undefined **)** - delete a context entry.
 - **.value(** value **)** - set the default value. This will only when the form is inactive. (**not** currently in `form.view()` or `form.submit()`)
 - **.value(** **)** - gets current value for an active form (a form currently in `form.view()` or `form.submit()`)
 - **.value(** value **)** - change the current value for the in an active form (a form currently in `form.view()` or `form.submit()`)
