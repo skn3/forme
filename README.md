@@ -23,7 +23,7 @@ If you have been using version 1.x then please review the entire readme. We have
 - renamed the submit starting method from `form.validate(req)` to `form.submit(storage)`
 - no longer have to pass the `req`/`storage` object around to **every** API method.
 - renamed `form.session()` to `form.driver()` and revamped the abilities of custom integration. (see [here](#customDriversIntegration))
-- callbacks no longer require a promise to be returned (a positive response will be assumed)
+- callbacks no longer require a promise to be returned (a positive response will be assumed. Returning an error will cause a reject)
 - manual save has been renamed from `form.store(req)` to `form.save()`
 - the result object produced by `form.submit(storage).then(result => {})` and `form.view(storage).then(result => {})`, are now an *instanceof* FormeResult. (see [here](#apiResult))
 
@@ -423,7 +423,7 @@ state: {
 
 <a name="customInputValidationDetails"></a>
  
-Notice in the examples above we are using Promise.reject to indicate an error. This allows you to perform async operations and signal to Forme if there is an error. If you dont return a promise, Forme will assume the result was positive.
+Notice in the examples above we are using Promise.reject to indicate an error. This allows you to perform async operations and signal to Forme if there is an error. If you dont return a promise, Forme will assume the result was positive (unless an error object is returned).
 
 If you would like to provide a custom error message from within the callback, simply `Promise.reject(new Error())`. Forme lets you use the same placeholder tokens as described in the [Custom Errors](#customErrors) section.
 
