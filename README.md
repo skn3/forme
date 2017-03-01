@@ -608,6 +608,7 @@ template = {
         name: '',
         method: '',
         action: '', //not to be confused with Forme actions
+        first: true/false, //is this the first time the form is being viewed
         context: {
             any: 'data',
             added: 'to',
