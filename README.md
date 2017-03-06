@@ -581,6 +581,8 @@ Forme has a downright sensible order of execution. The order is as follows:
 
 `form.submit(storage).then(result => {})`
 1. call `form.submit(storage)`
+
+
 2. execute `form.load(callback)` in order defined.
 3. execute `page.load(callback)` in order defined.
 4. execute `form.build(callback)` in order defined.
@@ -588,14 +590,26 @@ Forme has a downright sensible order of execution. The order is as follows:
 6. execute `input.validate(callback)` in order defined.
 7. execute `page.validate(callback)` in order defined.
 8. execute `form.validate(callback)` in order defined.
-9. execute `input.submit(callback)` in order defined.
-10. execute `page.submit(callback)` in order defined.
-11. execute `form.submit(callback)` in order defined.
-12. execute `page.action(action, callback)` in order defined.
-13. execute `form.action(action, callback)` in order defined.
-14. return promise to `form.submit(storage).then(result => {})`.
+9. execute `form.success(callback)` in order defined.
 
-During the above execution order, forme might fail the process and skip to the last step. The result will contain various states but check for `result.reload = false` to see if the form needs reloading.
+
+10. **(success)** execute `page.success(callback)` in order defined.
+11. **(success)** execute `input.success(callback)` in order defined.
+12. **(success)** execute `input.submit(callback)` in order defined.
+13. **(success)** execute `page.submit(callback)` in order defined.
+14. **(success)** execute `form.submit(callback)` in order defined.
+15. **(success)** execute `page.action(action, callback)` in order defined.
+16. **(success)** execute `form.action(action, callback)` in order defined.
+
+
+17. **(fail)** execute `form.fail(callback)` in order defined.
+18. **(fail)** execute `page.fail(callback)` in order defined.
+19. **(fail)** execute `input.fail(callback)` in order defined.
+
+
+20. return promise to `form.submit(storage).then(result => {})`.
+
+During the above execution order, forme might fail the process and skip to the fail steps. The result will contain various states but check for `result.reload = false` to see if the form needs reloading.
 
 
 ## <a name="template"></a> Template 
@@ -811,6 +825,8 @@ const form = forme('myForm');
 - **.load(** form => {} **)** - callback will be called when the form has loaded. Allows for custom code before the form is built.
 - **.build(** form => {} **)** - callback will be called in order, when the form is being built. Allows for dynamic inputs to be added.
 - **.validate(** (form, state) => {} **)**, *[error]* **)** - custom validation callback.
+- **.success(** form => {} **)** - callback will be called in order, when a form has validated successfully (before any.submit() handlers are called).
+- **.fail(** form => {} **)** - callback will be called in order, when a form has failed validation.
 - **.submit(** form => {} **)** - callback will be called when a form successfully validates. It will be called just before returning back to the `form.submit(storage).then()`
 - **.action(** action, (form, action) => {} **)** - callback will be called when the input action is triggered.
 - **.save(** **)** - process storing the form session and then return a promise
@@ -844,6 +860,8 @@ const form = forme('myForm');
 - **.load(** (form, page) => {} **)** - callback will be called when the form has loaded. Allows for custom code before the form is built.
 - **.build(** (form, page) => {} **)** - called when the page is building
 - **.validate(** (form, page, state) => {} **)**, *[error]* **)** - called when the page is validating
+- **.success(** (form, page) => {} **)** - callback will be called in order, when a form has validated successfully (before any.submit() handlers are called).
+- **.fail(** (form, page) => {} **)** - callback will be called in order, when a form has failed validation.
 - **.submit(** (form, page) => {} **)** - called when the page is submitting
 - **.action(** action, (form, page, action) => {} **)** - callback when an action is triggered.
 - **.inputs()** - returns an array of input names for this page
@@ -863,6 +881,8 @@ const form = forme('myForm');
 - **.options(** array/object, *[error]* **)** - ensures the input is one of the specified values when validating. Also provides values to the template vars
 - **.blacklist(** array, *[error]* **)** - value must not be one of the provided values
 - **.validate(** (form, input, state) => {}, *[error]* **)** - allow for custom validation routines to be added to inputs
+- **.success(** (form, input) => {} **)** - callback will be called in order, when a form has validated successfully (before any.submit() handlers are called).
+- **.fail(** (form, input) => {} **)** - callback will be called in order, when a form has failed validation.
 - **.submit(** (form, input) => {} **)** - allow for custom submit routines to be added to inputs. These are called in order just before a valid form returns to your main validate function
 - **.secure(** *[flag]* **)** - prevents storing of this value between page views/sessions
 - **.checked(** *[flag]* **)** - sets a checkbox defaults checked state
