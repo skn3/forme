@@ -829,6 +829,7 @@ const form = forme('myForm');
 - **.fail(** form => {} **)** - callback will be called in order, when a form has failed validation.
 - **.submit(** form => {} **)** - callback will be called when a form successfully validates. It will be called just before returning back to the `form.submit(storage).then()`
 - **.action(** action, (form, action) => {} **)** - callback will be called when the input action is triggered.
+- **.done(** form => {} **)** - callback will be called in order, when a form has fully validated & submitted.
 - **.save(** **)** - process storing the form session and then return a promise
 - **.values(** **)** - get all the current values for the form
 - **.value(** input/string/path **)** - get the current submitted value for a specific input. 
@@ -864,6 +865,7 @@ const form = forme('myForm');
 - **.fail(** (form, page) => {} **)** - callback will be called in order, when a form has failed validation.
 - **.submit(** (form, page) => {} **)** - called when the page is submitting
 - **.action(** action, (form, page, action) => {} **)** - callback when an action is triggered.
+- **.done(** (form, page) => {} **)** - callback will be called in order, when a form has fully validated & submitted.
 - **.inputs()** - returns an array of input names for this page
 
 
@@ -884,6 +886,7 @@ const form = forme('myForm');
 - **.success(** (form, input) => {} **)** - callback will be called in order, when a form has validated successfully (before any.submit() handlers are called).
 - **.fail(** (form, input) => {} **)** - callback will be called in order, when a form has failed validation.
 - **.submit(** (form, input) => {} **)** - allow for custom submit routines to be added to inputs. These are called in order just before a valid form returns to your main validate function
+- **.done(** (form, input) => {} **)** - callback will be called in order, when a form has fully validated & submitted.
 - **.secure(** *[flag]* **)** - prevents storing of this value between page views/sessions
 - **.checked(** *[flag]* **)** - sets a checkbox defaults checked state
 - **.readonly(** *[flag]* **)** - set input template var *readonly* *(currently only used in `form.template()` vars. e.g. &lt;input readonly /&gt;)*
