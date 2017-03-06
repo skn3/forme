@@ -16,6 +16,9 @@ Forme has no hardcoded concept of rendering. It provides you with a simple way t
 The project is still in development but feel free to have a play!
 
 
+## New in version 2.1
+- Added .load(), .success(), .fail() and .done() handlers. These let you add callbacks to various stages of execution. [read here](#loadSuccessFailAndDone)
+
 ## Upgrading From Version 1.x
 
 If you have been using version 1.x then please review the entire readme. We have rewritten large portions of it. Below is a list of changes that may need some attention in your projects:
@@ -41,7 +44,8 @@ If you have been using version 1.x then please review the entire readme. We have
 - [Custom Submit Handling](#customSubmitHandling)
 - [Actions](#actions)
 - [Custom Errors](#customErrors)
-- [Order of Validation](#orderOfExecution)
+- [Order of Execution](#orderOfExecution)
+- [.load(), .success(), .fail() and .done()?](#loadSuccessFailAndDone)
 - [Template](#template)
 - [Form Require Validation (and / or)](#requireValidation)
 - [Validation in final .then()](#validationInFinalThen)
@@ -609,7 +613,24 @@ Forme has a downright sensible order of execution. The order is as follows:
 
 20. return promise to `form.submit(storage).then(result => {})`.
 
-During the above execution order, forme might fail the process and skip to the fail steps. The result will contain various states but check for `result.reload = false` to see if the form needs reloading.
+During the above execution order, Forme might fail the process and skip to the fail steps. The result will contain various states but check for `result.reload = false` to see if the form needs reloading.
+
+
+## <a name="loadSuccessFailAndDone"></a> .load(), .success(), .fail() and .done()? 
+
+With version *2.1* forme introduced various additional callback steps to form execution. These are important as you may want to really modularise your forms. The extra scope of these callbacks, allows you to organise the stages of your form sanely! Or in other words, Forme is now less restrictive!?
+
+- **.load()**  
+This allows you to perform your custom actions right at the start before any processing occurs. This is called for both `form.validate()` and `form.submit()`. At this point, no `.build()` handlers will have been called yet.
+
+- **.success()**  
+When you call `form.submit()` and all validation is successful, Forme will fire the `.success()` handlers. These callbacks will be fired just before the `.submit()` handlers are fired. This can be useful for preparing your form for a successful submit.
+
+- **.fail()**  
+When you call `form.submit()` and **any** validation handlers *fail*, Forme will fire the `.fail()` handlers. These callbacks will be fired just before the `.done()` handlers are fired. This can be useful if you need to add custom code just before an invalid form returns to your `form.submit(storage).then(form => {})`.
+
+- **.done()**  
+When you call `form.submit()` and all validation is successful, Forme will fire the `.done()` handlers right at the end, just before Forme returns to your `form.submit(storage).then(form => {})`. This could be useful for modularising something like a success message.
 
 
 ## <a name="template"></a> Template 
