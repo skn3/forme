@@ -610,8 +610,11 @@ Forme has a downright sensible order of execution. The order is as follows:
 18. **(fail)** execute `page.fail(callback)` in order defined.
 19. **(fail)** execute `input.fail(callback)` in order defined.
 
+20. **(success)** execute `input.done(callback)` in order defined.
+21. **(success)** execute `page.done(callback)` in order defined.
+22. **(success)** execute `form.done(callback)` in order defined.
 
-20. return promise to `form.submit(storage).then(result => {})`.
+23. return promise to `form.submit(storage).then(result => {})`.
 
 During the above execution order, Forme might fail the process and skip to the fail steps. The result will contain various states but check for `result.reload = false` to see if the form needs reloading.
 
