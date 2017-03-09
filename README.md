@@ -621,13 +621,13 @@ During the above execution order, Forme might fail the process and skip to the f
 With version *2.1* forme introduced various additional callback steps to form execution. These are important as you may want to really modularise your forms. The extra scope of these callbacks, allows you to organise the stages of your form sanely! Or in other words, Forme is now less restrictive!?
 
 - **.load()**  
-This allows you to perform your custom actions right at the start before any processing occurs. This is called for both `form.validate()` and `form.submit()`. At this point, no `.build()` handlers will have been called yet.
+This allows you to perform your custom actions right at the start before any processing occurs. This is called for both `form.view()` and `form.submit()`. At this point, no `.build()` handlers will have been called yet.
 
 - **.success()**  
 When you call `form.submit()` and all validation is successful, Forme will fire the `.success()` handlers. These callbacks will be fired just before the `.submit()` handlers are fired. This can be useful for preparing your form for a successful submit.
 
 - **.fail()**  
-When you call `form.submit()` and **any** validation handlers *fail*, Forme will fire the `.fail()` handlers. These callbacks will be fired just before the `.done()` handlers are fired. This can be useful if you need to add custom code just before an invalid form returns to your `form.submit(storage).then(form => {})`.
+When you call `form.submit()` and **any** validation handlers *fail*, Forme will fire the `.fail()` handlers. These callbacks will be fired just before  handlers are fired. This can be useful if you need to add custom code just before an invalid form returns to your `form.submit(storage).then(form => {})`.
 
 - **.done()**  
 When you call `form.submit()` and all validation is successful, Forme will fire the `.done()` handlers right at the end, just before Forme returns to your `form.submit(storage).then(form => {})`. This could be useful for modularising something like a success message.
