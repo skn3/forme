@@ -584,8 +584,7 @@ if ((input1.Length || input2.Length) && (input1.Length || input3.Length)) {
 Forme has a downright sensible order of execution. The order is as follows:
 
 `form.submit(storage).then(result => {})`
-1. call `form.submit(storage)`
-
+1. call `form.submit(storage)`  
 
 2. execute `form.load(callback)` in order defined.
 3. execute `page.load(callback)` in order defined.
@@ -593,26 +592,24 @@ Forme has a downright sensible order of execution. The order is as follows:
 5. execute `page.build(callback)` in order defined.
 6. execute `input.validate(callback)` in order defined.
 7. execute `page.validate(callback)` in order defined.
-8. execute `form.validate(callback)` in order defined.
-9. execute `form.success(callback)` in order defined.
+8. execute `form.validate(callback)` in order defined.  
 
-
+9. **(success)** execute `form.success(callback)` in order defined.
 10. **(success)** execute `page.success(callback)` in order defined.
 11. **(success)** execute `input.success(callback)` in order defined.
 12. **(success)** execute `input.submit(callback)` in order defined.
 13. **(success)** execute `page.submit(callback)` in order defined.
 14. **(success)** execute `form.submit(callback)` in order defined.
 15. **(success)** execute `page.action(action, callback)` in order defined.
-16. **(success)** execute `form.action(action, callback)` in order defined.
-
+16. **(success)** execute `form.action(action, callback)` in order defined.  
 
 17. **(fail)** execute `form.fail(callback)` in order defined.
 18. **(fail)** execute `page.fail(callback)` in order defined.
-19. **(fail)** execute `input.fail(callback)` in order defined.
+19. **(fail)** execute `input.fail(callback)` in order defined.  
 
 20. **(success)** execute `input.done(callback)` in order defined.
 21. **(success)** execute `page.done(callback)` in order defined.
-22. **(success)** execute `form.done(callback)` in order defined.
+22. **(success)** execute `form.done(callback)` in order defined.  
 
 23. return promise to `form.submit(storage).then(result => {})`.
 
@@ -872,6 +869,7 @@ const form = forme('myForm');
 - **.reload(** destination **)** - forces a form `result.reload` to be true. The destination you set is the destination that will be returned in `result.destination`.
 - **.url(** **)** - returns the url for the current page.
 - **.url(** page **)** - returns the url for a particular page.
+- **.storage** - the original storage object passed to `form.view` or `form.submit()`
 
 
 ## <a name="apiPage"></a> Page API 
