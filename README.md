@@ -869,7 +869,7 @@ const form = forme('myForm');
 - **.reload(** destination **)** - forces a form `result.reload` to be true. The destination you set is the destination that will be returned in `result.destination`.
 - **.url(** **)** - returns the url for the current page.
 - **.url(** page **)** - returns the url for a particular page.
-- **.storage** - the original storage object passed to `form.view` or `form.submit()`
+- **.storage(** **)** - the original storage object passed to `form.view` or `form.submit()`
 
 
 ## <a name="apiPage"></a> Page API 
