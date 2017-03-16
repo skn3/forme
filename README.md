@@ -843,14 +843,14 @@ const form = forme('myForm');
 - **.context(** name, undefined **)** - delete a context entry.
 - **.view(** storage, *[values]* **)** - process viewing the form and then return a promise. An object of values can be provided as the second argument. This will replace all non permanent values when processing the form.
 - **.submit(** storage, *[values]* **)** - submit the form. An object of values can be provided as the second argument. This will replace all non permanent values when processing the form.
-- **.load(** form => {} **)** - callback will be called when the form has loaded. Allows for custom code before the form is built.
-- **.build(** form => {} **)** - callback will be called in order, when the form is being built. Allows for dynamic inputs to be added.
-- **.validate(** (form, state) => {} **)**, *[error]* **)** - custom validation callback.
-- **.success(** form => {} **)** - callback will be called in order, when a form has validated successfully (before any.submit() handlers are called).
-- **.fail(** form => {} **)** - callback will be called in order, when a form has failed validation.
-- **.submit(** form => {} **)** - callback will be called when a form successfully validates. It will be called just before returning back to the `form.submit(storage).then()`
-- **.action(** action, (form, action) => {} **)** - callback will be called when the input action is triggered.
-- **.done(** form => {} **)** - callback will be called in order, when a form has fully validated & submitted.
+- **.load(** form => {} **)** - callback will be called when the form has loaded. Allows for custom code before the form is built. Also accepts array of functions.
+- **.build(** form => {} **)** - callback will be called in order, when the form is being built. Allows for dynamic inputs to be added. Also accepts array of functions.
+- **.validate(** (form, state) => {} **)**, *[error]* **)** - custom validation callback. Also accepts array of functions.
+- **.success(** form => {} **)** - callback will be called in order, when a form has validated successfully (before any.submit() handlers are called). Also accepts array of functions.
+- **.fail(** form => {} **)** - callback will be called in order, when a form has failed validation. Also accepts array of functions.
+- **.submit(** form => {} **)** - callback will be called when a form successfully validates. It will be called just before returning back to the `form.submit(storage).then()`. Also accepts array of functions.
+- **.action(** action, (form, action) => {} **)** - callback will be called when the input action is triggered. Also accepts array of functions.
+- **.done(** form => {} **)** - callback will be called in order, when a form has fully validated & submitted. Also accepts array of functions.
 - **.save(** **)** - process storing the form session and then return a promise
 - **.values(** **)** - get all the current values for the form
 - **.value(** input/string/path **)** - get the current submitted value for a specific input. 
@@ -880,14 +880,14 @@ const form = forme('myForm');
 - **.context(** name, value **)** - store a named context value in this page.
 - **.context(** name **)** - retrieve a named context value from this page.
 - **.context(** name, undefined **)** - delete a context entry.
-- **.load(** (form, page) => {} **)** - callback will be called when the form has loaded. Allows for custom code before the form is built.
-- **.build(** (form, page) => {} **)** - called when the page is building
-- **.validate(** (form, page, state) => {} **)**, *[error]* **)** - called when the page is validating
-- **.success(** (form, page) => {} **)** - callback will be called in order, when a form has validated successfully (before any.submit() handlers are called).
-- **.fail(** (form, page) => {} **)** - callback will be called in order, when a form has failed validation.
-- **.submit(** (form, page) => {} **)** - called when the page is submitting
-- **.action(** action, (form, page, action) => {} **)** - callback when an action is triggered.
-- **.done(** (form, page) => {} **)** - callback will be called in order, when a form has fully validated & submitted.
+- **.load(** (form, page) => {} **)** - callback will be called when the form has loaded. Allows for custom code before the form is built. Also accepts array of functions.
+- **.build(** (form, page) => {} **)** - called when the page is building. Also accepts array of functions.
+- **.validate(** (form, page, state) => {} **)**, *[error]* **)** - called when the page is validating. Also accepts array of functions.
+- **.success(** (form, page) => {} **)** - callback will be called in order, when a form has validated successfully (before any.submit() handlers are called). Also accepts array of functions.
+- **.fail(** (form, page) => {} **)** - callback will be called in order, when a form has failed validation. Also accepts array of functions.
+- **.submit(** (form, page) => {} **)** - called when the page is submitting. Also accepts array of functions.
+- **.action(** action, (form, page, action) => {} **)** - callback when an action is triggered. Also accepts array of functions.
+- **.done(** (form, page) => {} **)** - callback will be called in order, when a form has fully validated & submitted. Also accepts array of functions.
 - **.inputs()** - returns an array of input names for this page
 
 
@@ -904,13 +904,13 @@ const form = forme('myForm');
 - **.match(** string, *[error]* **)** - ensures the input value matches the target input value when validated.
 - **.options(** array/object, *[error]* **)** - ensures the input is one of the specified values when validating. Also provides values to the template vars
 - **.blacklist(** array, *[error]* **)** - value must not be one of the provided values
-- **.validate(** (form, input, state) => {}, *[error]* **)** - allow for custom validation routines to be added to inputs
-- **.success(** (form, input) => {} **)** - callback will be called in order, when a form has validated successfully (before any.submit() handlers are called).
-- **.fail(** (form, input) => {} **)** - callback will be called in order, when a form has failed validation.
-- **.submit(** (form, input) => {} **)** - allow for custom submit routines to be added to inputs. These are called in order just before a valid form returns to your main validate function
-- **.done(** (form, input) => {} **)** - callback will be called in order, when a form has fully validated & submitted.
-- **.secure(** *[flag]* **)** - prevents storing of this value between page views/sessions
-- **.checked(** *[flag]* **)** - sets a checkbox defaults checked state
+- **.validate(** (form, input, state) => {}, *[error]* **)** - allow for custom validation routines to be added to inputs. Also accepts array of functions.
+- **.success(** (form, input) => {} **)** - callback will be called in order, when a form has validated successfully (before any.submit() handlers are called). Also accepts array of functions.
+- **.fail(** (form, input) => {} **)** - callback will be called in order, when a form has failed validation. Also accepts array of functions.
+- **.submit(** (form, input) => {} **)** - allow for custom submit routines to be added to inputs. These are called in order just before a valid form returns to your main validate function. Also accepts array of functions.
+- **.done(** (form, input) => {} **)** - callback will be called in order, when a form has fully validated & submitted. Also accepts array of functions.
+- **.secure(** *[flag]* **)** - prevents storing of this value between page views/sessions.
+- **.checked(** *[flag]* **)** - sets a checkbox defaults checked state.
 - **.readonly(** *[flag]* **)** - set input template var *readonly* *(currently only used in `form.template()` vars. e.g. &lt;input readonly /&gt;)*
 - **.hidden(** *[flag]* **)** - set input template var *type* to *'hidden'* *(currently only used in form.template() vars. e.g. &lt;input readonly /&gt;)*
 - **.type(** string **)** - override input template var *type*. By default forme will guess a type based on the input properties that you have defined. 
