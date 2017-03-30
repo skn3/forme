@@ -893,7 +893,8 @@ const form = forme('myForm');
 
 ## <a name="apiInput"></a> Input API 
 - **.id(** string **)** - override the id that is generated for template vars. If no id id set the default id will be *'forme_input__[input.name]'* (minus square brackets)
-- **.className(** string/array **)** - adds a className(s) to the input *(only used in form.template())* 
+- **.className(** string/array **)** - adds a className(s) to the input *(only used in form.template())*
+- **.data(** name,value/object **)** - adds html5 `data-name="value"` tags to the template values. Can pass in name/value, or object containing key/value pairs. *(only used in form.template())* 
 - **.label(** string **)** - sets the inputs label used in error messages and template vars
 - **.help(string)** - sets the inputs help text *(only used in `form.template()`)*  
 - **.require(** value, *[error]* **)** - makes sure the input value exists when validated
