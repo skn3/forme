@@ -667,6 +667,7 @@ template = {
             name: '',
             alias: '',//default: to input._name 
             className: 'cssClass1 cssClass2',
+            data: {'data-foo':'bar', 'data-hello':'world'},
             label: '',//default: input._name 
             help: '',
             type: '',
