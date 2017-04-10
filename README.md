@@ -15,6 +15,8 @@ Forme has no hardcoded concept of rendering. It provides you with a simple way t
 
 The project is still in development but feel free to have a play!
 
+## Breaking changes in version 2.2
+- `input.bool()`, `input.int()`, `input.float()` and `input.string()` now default to forcing the value to exist. If you want to allow null value as well, call `input.bool(true)`.  
 
 ## New in version 2.1
 - Added .load(), .success(), .fail() and .done() handlers. These let you add callbacks to various stages of execution. [read here](#loadSuccessFailAndDone)
@@ -916,10 +918,10 @@ const form = forme('myForm');
 - **.readonly(** *[flag]* **)** - set input template var *readonly* *(currently only used in `form.template()` vars. e.g. &lt;input readonly /&gt;)*
 - **.hidden(** *[flag]* **)** - set input template var *type* to *'hidden'* *(currently only used in form.template() vars. e.g. &lt;input readonly /&gt;)*
 - **.type(** string **)** - override input template var *type*. By default forme will guess a type based on the input properties that you have defined. 
-- **.bool()** - converts the value to a bool
-- **.int()** - converts the value to an int
-- **.string()** - converts the value to a string
-- **.float()** - converts the value to a float
+- **.bool(** bool **)** - converts the value to a bool. If `.bool(true)` then null value will be allowed. 
+- **.int(** bool **)** - converts the value to an int. If `.int(true)` then null value will be allowed.
+- **.float(** bool **)** - converts the value to a float. If `.float(true)` then null value will be allowed.
+- **.string(** bool **)** - converts the value to a string. If `.string(true)` then null value will be allowed.
 - **.group(** string/array **)** - specifies a group for values and template vars. Forme will automatically group value/template information when you specify a group, even if there is only 1 item in the group. You can chain multiple calls to .group() or provide an array of group names. This allows you to create groups at any depth.
 - **.alias(** string **)** - lets you override the *name* of the input when built in template vars or form.values(). Forme still uses the inputs real name internally.
 - **.permanent(** value **)** - forces the input to always have this value
