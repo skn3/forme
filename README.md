@@ -16,7 +16,8 @@ Forme has no hardcoded concept of rendering. It provides you with a simple way t
 The project is still in development but feel free to have a play!
 
 ## Breaking changes in version 2.2
-- `input.bool()`, `input.int()`, `input.float()` and `input.string()` now default to forcing the value to exist. If you want to allow null value as well, call `input.bool(true)`.  
+- `input.bool()`, `input.int()`, `input.float()` and `input.string()` now default to forcing the value to exist. If you want to allow null value as well, call `input.bool(true)`.
+- `input.is(type, options, error)` now supports all isFoo() methods provided by the validator module. `input.is()` function arguments changed from `input.is(type, error)` 
 
 ## New in version 2.1
 - Added .load(), .success(), .fail() and .done() handlers. These let you add callbacks to various stages of execution. [read here](#loadSuccessFailAndDone)
@@ -42,6 +43,7 @@ If you have been using version 1.x then please review the entire readme. We have
 - [Dynamic Forms](#dynamicForms)
 - [Grouping and Referencing Inputs](#groupingAndReferencingInputs)
 - [Input Type](#inputType)
+- [Input Is](#inputIs)
 - [Custom Validation](#customFormValidation)
 - [Custom Submit Handling](#customSubmitHandling)
 - [Actions](#actions)
@@ -351,6 +353,31 @@ form.add('some_input').label('Some Input').is('email') //type="email";
 form.add('some_input').label('Some Input').is('email').secure() //type="password";
 form.add('some_input').label('Some Input').is('email').secure().type('date') //type="date";
 ```
+
+
+## <a name="inputIs"></a> Input Is
+
+You can define your inputs with `input.is(foo)`. This will allow you to specify built in validation methods for various types of value. Forme has built in `.is(foo)` methods, but if no match is found then it will fallback to methods in the <a href='https://www.npmjs.com/package/validator' target='_blank'>validator</a> module. If you call `input.is('Monkey', options)` then Forme will attempt to call the validator method `validator.isMonkey(value, options)`.
+
+The second parameter for `input.is(foo, options)`, is currently used to define optional details as described on the <a href='https://www.npmjs.com/package/validator' target='_blank'>validator</a> documentation.
+  
+**Recognised validation methods:**
+- uk-postcode
+- alphanumeric
+- email
+- username
+- subdomain
+- isodate
+- text
+- boolean
+- bool
+- int
+- float
+- decimal
+- number
+- color
+- telephone
+- tel
 
 
 ## <a name="customValidation"></a> Custom Validation 
@@ -904,7 +931,7 @@ const form = forme('myForm');
 - **.size(** size, *[error]* **)** - the input value has to be exactly this size when validated
 - **.min(** size, *[error]* **)** - the input value has to be at least exactly this size when validated
 - **.max(** size, *[error]* **)** - the input value has to be at no greater than this size when validated
-- **.is(** string, *[error]* **)** - ensures the input value is of a particular *type* when validated. Uses [validator](https://github.com/chriso/validator.js)
+- **.is(** string, options, *[error]* **)** - ensures the input value is of a particular *type* when validated. Uses [validator](https://github.com/chriso/validator.js). Read the [Input Is](#inputIs) section for more information.
 - **.match(** string, *[error]* **)** - ensures the input value matches the target input value when validated.
 - **.options(** array/object, *[error]* **)** - ensures the input is one of the specified values when validating. Also provides values to the template vars
 - **.blacklist(** array, *[error]* **)** - value must not be one of the provided values
