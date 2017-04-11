@@ -16,6 +16,7 @@ Forme has no hardcoded concept of rendering. It provides you with a simple way t
 The project is still in development but feel free to have a play!
 
 ## Breaking changes in version 2.2
+- introduced result.failed flag into form results object. This should now be checked when `form.view()` and expecting to produce errors in custom handlers.
 - `input.bool()`, `input.int()`, `input.float()` and `input.string()` now default to forcing the value to exist. If you want to allow null value as well, call `input.bool(true)`.
 - `input.is(type, options, error)` now supports all isFoo() methods provided by the validator module. `input.is()` function arguments changed from `input.is(type, error)` 
 
@@ -78,7 +79,11 @@ function get(req, res) {
         if (result.reload) {
             res.redirect(result.destination);
         } else {
-            //render the form
+            if (result.failed) {
+                //failed preparing to view the form
+            } else {
+                //render the form                
+            }
         }
     });
 }
@@ -98,7 +103,9 @@ For this to work we would have to hook the `get()` and `post()` up to our web se
 
 The only thing Forme assumes of your code, is a `storage` container to store/retrieve certain pieces of vital information. You can see here we are passing the `req` object into `.view()` and `.submit()`. Forme will make sure not to pollute your storage object, and will store everything within one root property `storage.forme`.
 
-Forme has taken out all of the work and left us with the bare minimum of code to write. The only thing we really need to check for is if `result.reload` is indicating that the form needs reloading. Now while we could have designed Forme to handle page redirects, we chose to retain the agnostic approach!
+Forme has taken out all of the work and left us with the bare minimum of code to write. The only thing we really need to check for are the `result.reload` and `result.failed` flags. These result states indicate that the form needs reloading or there was an error building the form. Now while we could have designed Forme to handle page redirects and error output, we chose to retain the agnostic approach!
+
+It is only important to check for `result.failed` when you are *viewing* the form and have custom handlers that might produce a fail, before teh form has been built. The flag does not need to be checked when the form is submitting.
 
 ## <a name="workingForm"></a> Working Form 
 
@@ -126,23 +133,28 @@ app.get('/myForm', (req, res) => {
         if (result.reload) {
             res.redirect(result.destination);
         } else {
-            //display form
-            const form = result.template.form;
-            const field1 = result.template.input.field1;
-            const errors = ''.concat(...field1.errors.map(error => `<li>${error}</li>`));
-
-            res.send(`
-                <form name="${form.name}" method="${form.method}">
-                    <div>
-                        <label for="${field1.id}">${field1.label}</label>
-                        <input id="${field1.id}" name="${field1.name}" type="${field1.type}" value="${field1.value || ''}" />
-                        <ul>${errors}</ul>
-                    </div>
-                    <div>
-                        <input type="submit" value="Submit" />
-                    </div>
-                </form>
-            `);
+            if (result.failed) {
+                //todo: make a nice error page to output the errors in dev mode
+                res.status(500).send('internal form error');
+            } else {
+                //display form
+                const form = result.template.form;
+                const field1 = result.template.input.field1;
+                const errors = ''.concat(...field1.errors.map(error => `<li>${error}</li>`));
+    
+                res.send(`
+                    <form name="${form.name}" method="${form.method}">
+                        <div>
+                            <label for="${field1.id}">${field1.label}</label>
+                            <input id="${field1.id}" name="${field1.name}" type="${field1.type}" value="${field1.value || ''}" />
+                            <ul>${errors}</ul>
+                        </div>
+                        <div>
+                            <input type="submit" value="Submit" />
+                        </div>
+                    </form>
+                `);
+            }
         }
     });
 });
