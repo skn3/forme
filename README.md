@@ -15,7 +15,7 @@ Forme has no hardcoded concept of rendering. It provides you with a simple way t
 
 The project is still in development but feel free to have a play!
 
-## Breaking changes in version 2.2.6
+## Breaking changes in version 2.3
 - added 'strict' flag to `input.match()`, `input.options()` and `input.blacklist()`. If `true`, values will be compared for exact match using `===`. If `false` then the following would match `123 == "123"`. Defaults to `false`. 
 
 ## Breaking changes in version 2.2
