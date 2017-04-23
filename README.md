@@ -15,6 +15,9 @@ Forme has no hardcoded concept of rendering. It provides you with a simple way t
 
 The project is still in development but feel free to have a play!
 
+## Breaking changes in version 2.2.6
+- added 'strict' flag to `input.match()`, `input.options()` and `input.blacklist()`. If `true`, values will be compared for exact match using `===`. If `false` then the following would match `123 == "123"`. Defaults to `false`. 
+
 ## Breaking changes in version 2.2
 - introduced result.failed flag into form results object. This should now be checked when `form.view()` and expecting to produce errors in custom handlers.
 - `input.bool()`, `input.int()`, `input.float()` and `input.string()` now default to forcing the value to exist. If you want to allow null value as well, call `input.bool(true)`.
@@ -944,9 +947,9 @@ const form = forme('myForm');
 - **.min(** size, *[error]* **)** - the input value has to be at least exactly this size when validated
 - **.max(** size, *[error]* **)** - the input value has to be at no greater than this size when validated
 - **.is(** string, options, *[error]* **)** - ensures the input value is of a particular *type* when validated. Uses [validator](https://github.com/chriso/validator.js). Read the [Input Is](#inputIs) section for more information.
-- **.match(** string, *[error]* **)** - ensures the input value matches the target input value when validated.
-- **.options(** array/object, *[error]* **)** - ensures the input is one of the specified values when validating. Also provides values to the template vars
-- **.blacklist(** array, *[error]* **)** - value must not be one of the provided values
+- **.match(** string, strict, *[error]* **)** - ensures the input value matches the target input value when validated.
+- **.options(** array/object, strict, *[error]* **)** - ensures the input is one of the specified values when validating. Also provides values to the template vars
+- **.blacklist(** array, strict, *[error]* **)** - value must not be one of the provided values
 - **.validate(** (form, input, state) => {}, *[error]* **)** - allow for custom validation routines to be added to inputs. Also accepts array of functions.
 - **.success(** (form, input) => {} **)** - callback will be called in order, when a form has validated successfully (before any.submit() handlers are called). Also accepts array of functions.
 - **.fail(** (form, input) => {} **)** - callback will be called in order, when a form has failed validation. Also accepts array of functions.
