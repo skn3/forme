@@ -15,6 +15,9 @@ Forme has no hardcoded concept of rendering. It provides you with a simple way t
 
 The project is still in development but feel free to have a play!
 
+## New in version 2.3.5
+- Added global `forme.sessions(timeout, prune)` session management. This allows us to configure how forme should deal with sessions that are considered old or spam. [read here](#sessionManagement)
+
 ## Breaking changes in version 2.3
 - added 'strict' flag to `input.match()`, `input.options()` and `input.blacklist()`. If `true`, values will be compared for exact match using `===`. If `false` then the following would match `123 == "123"`. Defaults to `false`. 
 
@@ -59,6 +62,7 @@ If you have been using version 1.x then please review the entire readme. We have
 - [Validation in final .then()](#validationInFinalThen)
 - [Manually calling form.next() / form.prev() / form.reset()](#manuallyCallingSpecialActions)
 - [Custom Drivers / Integration](#customDriversIntegration)
+- [Session Management](#sessionManagement)
 
 **API / Reference**
 - [Form](#apiForm)
@@ -830,6 +834,7 @@ function post(req, res) {
 
 In the second example we can see that we have to do a lot more. Forme might not always be able to perform a special action, so when calling in the final `.then()` make sure to handle when `destination === false`.
 
+
 ## <a name="customDriversIntegration"></a> Custom Drivers / Integration
 
 As has been stated many times, Forme has been designed to go anywhere. Do Anything! We have abstracted out all of the functionality required to speak to your 3rd party module/sdk/project. This functionality can be found in the `FormeDriver` class (see *lib/driver.js*).
@@ -875,6 +880,24 @@ const form = forme('myForm');
 ```
 
 
+## <a name="sessionManagement"></a> Session Management
+
+Forme is clever, it stores your form session using you supplied `FormeDriver`. This means that with zero code, your form can withstand page refresh, the apocalypse and generally remain alive in a hostile web environment. Now the nature of forms is usually quite loose, we could up creating waste sessions that stay saved in your `FormeDriver` storage... *forever*. Forme combats that by running session management code each time a form is processed.
+ 
+By default Forme will expire form sessions that are **12 hours old**. To prevent people spamming, potentially filling up your database, by default Forme will allow a maximum of **50 sessions** to be stored. These are fairly high estimates so you may want to configure this!
+ 
+**Session managment is done on a per user basis, so by default Forme allows a user to have 50 active form sessions at once**
+ 
+If you would like to modify the session management properties, you can do the following:
+
+```javascript
+const forme = require('forme');
+forme.sessions(1000*60*5,1);
+```
+
+The above example would set session management for *all future forms* to max **5 minutes old**, and only **1 session** allowed at a time (even if you had multiple tabs open).
+
+
 ## <a name="apiForm"></a> Form API 
 - **.name(** name **)** - change the form's name
 - **.label(** label **)** - sets the forms label used in error messages and template vars
@@ -914,7 +937,7 @@ const form = forme('myForm');
 - **.reload(** destination **)** - forces a form `result.reload` to be true. The destination you set is the destination that will be returned in `result.destination`.
 - **.url(** **)** - returns the url for the current page.
 - **.url(** page **)** - returns the url for a particular page.
-- **.storage(** **)** - the original storage object passed to `form.view` or `form.submit()`
+- **.storage(** **)** - the original storage object passed to `form.view` or `form.submit()` 
 
 
 ## <a name="apiPage"></a> Page API 
@@ -1000,6 +1023,7 @@ const form = forme('myForm');
 When you import forme with `const forme = require('forme)` you then use `forme(name)` to construct your forms. You also get a few extra utilities: 
 
 - **forme.driver(** FormeDriver **)** - change the global driver that forme uses.
+- **forme.sessions(** timeout, prune **)** - allow configuration of session management. Timeout: how long a forme session will remain alive in ms *(`1000*60*60 = 1 hour`)*, defaults to 12 hours. Prune: maximum number of forme sessions that can exist, defaults to 50.
 - **forme.FormeDriver** - the Forme driver class, for extending.
 - **forme.FormeError** - the Forme form error class, for comparison (`instanceof`).
 - **forme.FormeInputError** - the Forme input error class, for comparison (`instanceof`).
