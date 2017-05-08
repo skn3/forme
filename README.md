@@ -15,6 +15,9 @@ Forme has no hardcoded concept of rendering. It provides you with a simple way t
 
 The project is still in development but feel free to have a play!
 
+## New in version 2.3.9
+- Added `input.empty(value)` for specifying what happens when an *empty* value is submitted. 
+
 ## New in version 2.3.5
 - Added global `forme.sessions(timeout, prune)` session management. This allows us to configure how forme should deal with sessions that are considered old or spam. [read here](#sessionManagement)
 
@@ -1002,7 +1005,8 @@ The above example would set session management for *all future forms* to max **5
 - **.next(** **)** - special action to go forward a page. This will alter the input's type and default value.
 - **.reset(** **)** - special action to reset the form. This will alter the input's type and default value.
 - **.submit(** **)** - special action that is reserved for future usage. This will alter the input's type and default value.
-- **.ignore(** *[flag]* **)** - the input wont be included in the end result. The input will however, be included in any callbacks. 
+- **.ignore(** *[flag]* **)** - the input wont be included in the end result. The input will however, be included in any callbacks.
+- **.empty(** value **)** - if the value of the input is `false`, `null`, `undefined`, `0` or `''` then it will be replaced with the `.empty(value)` you provide. This could be useful for having empty inputs return as null. 
 
 
 ## <a name="apiResult"></a> Result API 
