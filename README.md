@@ -15,6 +15,9 @@ Forme has no hardcoded concept of rendering. It provides you with a simple way t
 
 The project is still in development but feel free to have a play!
 
+## New in version 2.3.10
+- Added form.unrequire() that allows us to override all required inputs. Useful for debugging
+
 ## New in version 2.3.9
 - Added `input.empty(value)` for specifying what happens when an *empty* value is submitted. 
 
@@ -940,7 +943,8 @@ The above example would set session management for *all future forms* to max **5
 - **.reload(** destination **)** - forces a form `result.reload` to be true. The destination you set is the destination that will be returned in `result.destination`.
 - **.url(** **)** - returns the url for the current page.
 - **.url(** page **)** - returns the url for a particular page.
-- **.storage(** **)** - the original storage object passed to `form.view` or `form.submit()` 
+- **.storage(** **)** - the original storage object passed to `form.view` or `form.submit()`
+- **.unrequire(** **)** - override all inputs and set them all to not required. Useful for debugging!
 
 
 ## <a name="apiPage"></a> Page API 
