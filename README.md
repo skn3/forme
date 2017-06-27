@@ -15,6 +15,9 @@ Forme has no hardcoded concept of rendering. It provides you with a simple way t
 
 The project is still in development but feel free to have a play!
 
+## New in version 2.3.12
+- Added form.visited(page) that allows us to determin if a page has already been visited
+
 ## New in version 2.3.10
 - Added form.unrequire() that allows us to override all required inputs. Useful for debugging
 
