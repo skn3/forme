@@ -15,6 +15,9 @@ Forme has no hardcoded concept of rendering. It provides you with a simple way t
 
 The project is still in development but feel free to have a play!
 
+## New in version 2.4.1
+- Added `input.invalid(callback)` for adding a custom callback to be called when the input fails validation. This is different to `input.fail()` which always gets called when the form fails for any reason.
+
 ## New in version 2.4
 - Revamped the page handling so that we can safely navigate to pages prev/next/arbitrary and the form will invalidate pages where needed. 
 - Added `form.completedPage(page)` which returns true if a particular page has been successfully submitted
@@ -654,27 +657,28 @@ Forme has a downright sensible order of execution. The order is as follows:
 4. execute `form.build(callback)` in order defined.
 5. execute `page.build(callback)` in order defined.
 6. execute `input.validate(callback)` in order defined.
-7. execute `page.validate(callback)` in order defined.
-8. execute `form.validate(callback)` in order defined.  
+6. **(validation failed)** execute `input.invalid(callback)` specifically for the failing input, in order defined.
+8. execute `page.validate(callback)` in order defined.
+9. execute `form.validate(callback)` in order defined.  
 
-9. **(success)** execute `form.success(callback)` in order defined.
-10. **(success)** execute `page.success(callback)` in order defined.
-11. **(success)** execute `input.success(callback)` in order defined.
-12. **(success)** execute `input.submit(callback)` in order defined.
-13. **(success)** execute `page.submit(callback)` in order defined.
-14. **(success)** execute `form.submit(callback)` in order defined.
-15. **(success)** execute `page.action(action, callback)` in order defined.
-16. **(success)** execute `form.action(action, callback)` in order defined.  
+10. **(success)** execute `form.success(callback)` in order defined.
+11. **(success)** execute `page.success(callback)` in order defined.
+12. **(success)** execute `input.success(callback)` in order defined.
+13. **(success)** execute `input.submit(callback)` in order defined.
+14. **(success)** execute `page.submit(callback)` in order defined.
+15. **(success)** execute `form.submit(callback)` in order defined.
+16. **(success)** execute `page.action(action, callback)` in order defined.
+17. **(success)** execute `form.action(action, callback)` in order defined.  
 
-17. **(fail)** execute `form.fail(callback)` in order defined.
-18. **(fail)** execute `page.fail(callback)` in order defined.
-19. **(fail)** execute `input.fail(callback)` in order defined.  
+18. **(any form fail)** execute `form.fail(callback)` in order defined.
+19. **(any form fail)** execute `page.fail(callback)` in order defined.
+20. **(any form fail)** execute `input.fail(callback)` in order defined.  
 
-20. **(success)** execute `input.done(callback)` in order defined.
-21. **(success)** execute `page.done(callback)` in order defined.
-22. **(success)** execute `form.done(callback)` in order defined.  
+21. **(success)** execute `input.done(callback)` in order defined.
+22. **(success)** execute `page.done(callback)` in order defined.
+23. **(success)** execute `form.done(callback)` in order defined.  
 
-23. return promise to `form.submit(storage).then(result => {})`.
+24. return promise to `form.submit(storage).then(result => {})`.
 
 During the above execution order, Forme might fail the process and skip to the fail steps. The result will contain various states but check for `result.reload = false` to see if the form needs reloading.
 
@@ -992,6 +996,7 @@ The above example would set session management for *all future forms* to max **5
 - **.options(** array/object, strict, *[error]* **)** - ensures the input is one of the specified values when validating. Also provides values to the template vars
 - **.blacklist(** array, strict, *[error]* **)** - value must not be one of the provided values
 - **.validate(** (form, input, state) => {}, *[error]* **)** - allow for custom validation routines to be added to inputs. Also accepts array of functions.
+- **.invalid(** (form, input) => {} **)** - callback will be called in order, when the input fails validation. Not to be confused with `input.fail()` which gets called for any form fail.
 - **.success(** (form, input) => {} **)** - callback will be called in order, when a form has validated successfully (before any.submit() handlers are called). Also accepts array of functions.
 - **.fail(** (form, input) => {} **)** - callback will be called in order, when a form has failed validation. Also accepts array of functions.
 - **.submit(** (form, input) => {} **)** - allow for custom submit routines to be added to inputs. These are called in order just before a valid form returns to your main validate function. Also accepts array of functions.
