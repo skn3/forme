@@ -15,11 +15,17 @@ Forme has no hardcoded concept of rendering. It provides you with a simple way t
 
 The project is still in development but feel free to have a play!
 
+## New in version 2.4
+- Revamped the page handling so that we can safely navigate to pages prev/next/arbitrary and the form will invalidate pages where needed. 
+- Added `form.completedPage(page)` which returns true if a particular page has been successfully submitted
+- Changed `form.visited(page)` to `form.visitedPage(page)`. This now returns true if a page has been visited at least once!
+- Cleaned up various bits
+
 ## New in version 2.3.12
-- Added form.visited(page) that allows us to determin if a page has already been visited
+- Added `form.visited(page)` that allows us to determin if a page has already been visited
 
 ## New in version 2.3.10
-- Added form.unrequire() that allows us to override all required inputs. Useful for debugging
+- Added `form.unrequire()` that allows us to override all required inputs. Useful for debugging
 
 ## New in version 2.3.9
 - Added `input.empty(value)` for specifying what happens when an *empty* value is submitted. 
@@ -948,6 +954,8 @@ The above example would set session management for *all future forms* to max **5
 - **.url(** page **)** - returns the url for a particular page.
 - **.storage(** **)** - the original storage object passed to `form.view` or `form.submit()`
 - **.unrequire(** **)** - override all inputs and set them all to not required. Useful for debugging!
+- **.pageVisited(** page **)** - tells us if a page has been visited and is safe to revisit.
+- **.pageCompleted(** page **)** - tells us if a page has validated and successfully submitted.
 
 
 ## <a name="apiPage"></a> Page API 
