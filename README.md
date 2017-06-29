@@ -15,6 +15,10 @@ Forme has no hardcoded concept of rendering. It provides you with a simple way t
 
 The project is still in development but feel free to have a play!
 
+## Breaking changes in version 2.4.4
+- renamed `form.value(name)` to `form.getValue(name, unsafe)` and added an unsafe flag for reading without enforcing teh input exists.
+- renamed `form.value(name, value)` to `form.setValue(name, value)`
+
 ## New in version 2.4.3
 - Added `input.valid(callback)` for adding a custom callback to be called when the input succeeds validation. This is different to `input.success()` which always gets called when a form succeeds.
 
@@ -362,8 +366,8 @@ This would produce the following output:
 The final piece of the puzzle is how do we now refer to these grouped/aliased inputs? Simple, we just use the group/alias in any function that lets us reference an input. For example:
  
 ```javascript
-const field1 = form.value('items.item0.field1');
-const field2 = form.value(['items','item0','field2']);
+const field1 = form.getValue('items.item0.field1');
+const field2 = form.getValue(['items','item0','field2']);
 ```
 
 We can pass a group path as a string separated with `.`, or an array of group segments. The final segment of the array/path should be the alias or name of the input you are referencing.
@@ -944,8 +948,8 @@ The above example would set session management for *all future forms* to max **5
 - **.done(** form => {} **)** - callback will be called in order, when a form has fully validated & submitted. Also accepts array of functions.
 - **.save(** **)** - process storing the form session and then return a promise
 - **.values(** **)** - get all the current values for the form
-- **.value(** input/string/path **)** - get the current submitted value for a specific input. 
-- **.value(** input/string/path, value **)** - set the current submitted value for a specific input
+- **.getValue(** input/string/path, unsafe **)** - get the current submitted value for a specific input. The unsafe flag allows us to skip to see if the input exists, useful for fetching the value in the build phase when the input hasn't actually been added yet.
+- **.setValue(** input/string/path, value **)** - set the current submitted value for a specific input
 - **.error(** error **)** - add an error to the form
 - **.error(** input/string/path, error **)** - add a named error. This does not need to be the name of an input, if no match is found, the error will be saved with the name you specified.
 - **.inputs()** - returns an array of input names (including the current page)
