@@ -15,7 +15,7 @@ Forme has no hardcoded concept of rendering. It provides you with a simple way t
 
 The project is still in development but feel free to have a play!
 
-## Breaking changes in version 2.4.4
+## Breaking changes in version 2.5.0
 - renamed `form.value(name)` to `form.getValue(name, unsafe)` and added an unsafe flag for reading without enforcing teh input exists.
 - renamed `form.value(name, value)` to `form.setValue(name, value)`
 
