@@ -15,6 +15,9 @@ Forme has no hardcoded concept of rendering. It provides you with a simple way t
 
 The project is still in development but feel free to have a play!
 
+## New in version 2.5.1
+- Added `input.override(value)` this sets the forms value upon submit. Differs from `in 
+
 ## Breaking changes in version 2.5.0
 - renamed `form.value(name)` to `form.getValue(name, unsafe)` and added an unsafe flag for reading without enforcing teh input exists.
 - renamed `form.value(name, value)` to `form.setValue(name, value)`
@@ -1022,6 +1025,7 @@ The above example would set session management for *all future forms* to max **5
 - **.group(** string/array **)** - specifies a group for values and template vars. Forme will automatically group value/template information when you specify a group, even if there is only 1 item in the group. You can chain multiple calls to .group() or provide an array of group names. This allows you to create groups at any depth.
 - **.alias(** string **)** - lets you override the *name* of the input when built in template vars or form.values(). Forme still uses the inputs real name internally.
 - **.permanent(** value **)** - forces the input to always have this value
+- **.override(** value **)** - overrides the inputs value upon submit. Useful for displaying a dummy value on a form that has a fixed value in your results!
 - **.context(** string, value **)** - store a named context value in this input. *(Accessible in `form.template()` and `input.validate()`)*
 - **.context(** string **)** - retrieve a named context value from this input. *(Accessible in `form.template()` and `input.validate()`)*
 - **.context(** name, undefined **)** - delete a context entry.
