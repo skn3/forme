@@ -15,6 +15,9 @@ Forme has no hardcoded concept of rendering. It provides you with a simple way t
 
 The project is still in development but feel free to have a play!
 
+## New in version 2.5.3
+- Added `input.group(groups, atEnd=true)` added atEnd flag that defaults to true. This allows to insert the groups at the start! 
+
 ## New in version 2.5.1
 - Added `input.override(value)` this sets the forms value upon submit. Differs from `in 
 
@@ -1022,7 +1025,7 @@ The above example would set session management for *all future forms* to max **5
 - **.int(** bool **)** - converts the value to an int. If `.int(true)` then null value will be allowed.
 - **.float(** bool **)** - converts the value to a float. If `.float(true)` then null value will be allowed.
 - **.string(** bool **)** - converts the value to a string. If `.string(true)` then null value will be allowed.
-- **.group(** string/array **)** - specifies a group for values and template vars. Forme will automatically group value/template information when you specify a group, even if there is only 1 item in the group. You can chain multiple calls to .group() or provide an array of group names. This allows you to create groups at any depth.
+- **.group(** string/array, atEnd=true **)** - specifies a group for values and template vars. Forme will automatically group value/template information when you specify a group, even if there is only 1 item in the group. You can chain multiple calls to .group() or provide an array of group names. This allows you to create groups at any depth. The atEnd flag (defaults to true) allows you to add groups at the start of the chain, if specified as false.
 - **.alias(** string **)** - lets you override the *name* of the input when built in template vars or form.values(). Forme still uses the inputs real name internally.
 - **.permanent(** value **)** - forces the input to always have this value
 - **.override(** value **)** - overrides the inputs value upon submit. Useful for displaying a dummy value on a form that has a fixed value in your results!
