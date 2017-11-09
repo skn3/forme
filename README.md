@@ -15,6 +15,13 @@ Forme has no hardcoded concept of rendering. It provides you with a simple way t
 
 The project is still in development but feel free to have a play!
 
+## New in version 2.5.4
+- Added `input.min()` to get lowest min handler.
+- Added `input.max()` to get highest max handler.
+- Added `form.remove(what)` to remove validation handlers by type.
+- Added `page.remove(what)` to remove validation handlers by type.
+- Added `input.remove(what)` to remove validation handlers by type.
+
 ## New in version 2.5.3
 - Added `input.group(groups, atEnd=true)` added atEnd flag that defaults to true. This allows to insert the groups at the start! 
 
@@ -974,6 +981,7 @@ The above example would set session management for *all future forms* to max **5
 - **.unrequire(** **)** - override all inputs and set them all to not required. Useful for debugging!
 - **.pageVisited(** page **)** - tells us if a page has been visited and is safe to revisit.
 - **.pageCompleted(** page **)** - tells us if a page has validated and successfully submitted.
+- **.remove(** what **)** - remove all validation handlers of the specified type. `What` is the method name used to apply that validation to the form. Eg to remove all `form.require()` validation handlers we would call `form.remove('require')`. Use `form.remove('validate')` to remove all custom validation handlers.
 
 
 ## <a name="apiPage"></a> Page API 
@@ -993,6 +1001,7 @@ The above example would set session management for *all future forms* to max **5
 - **.action(** action, (form, page, action) => {} **)** - callback when an action is triggered. Also accepts array of functions.
 - **.done(** (form, page) => {} **)** - callback will be called in order, when a form has fully validated & submitted. Also accepts array of functions.
 - **.inputs()** - returns an array of input names for this page
+- **.remove(** what **)** - remove all validation handlers of the specified type. `What` is the method name used to apply that validation to the page. Eg to remove all `page.require()` validation handlers we would call `page.remove('require')`. Use `page.remove('validate')` to remove all custom validation handlers.
 
 
 ## <a name="apiInput"></a> Input API 
@@ -1004,7 +1013,9 @@ The above example would set session management for *all future forms* to max **5
 - **.require(** value, *[error]* **)** - makes sure the input value exists when validated
 - **.size(** size, *[error]* **)** - the input value has to be exactly this size when validated
 - **.min(** size, *[error]* **)** - the input value has to be at least exactly this size when validated
+- **.min(** **)** - get the lowest `.min()` validation handler size or null if none.
 - **.max(** size, *[error]* **)** - the input value has to be at no greater than this size when validated
+- **.max(** **)** - get the highest `.max()` validation handler size or null if none.
 - **.is(** string, options, *[error]* **)** - ensures the input value is of a particular *type* when validated. Uses [validator](https://github.com/chriso/validator.js). Read the [Input Is](#inputIs) section for more information.
 - **.match(** string, strict, *[error]* **)** - ensures the input value matches the target input value when validated.
 - **.options(** array/object, strict, *[error]* **)** - ensures the input is one of the specified values when validating. Also provides values to the template vars
@@ -1042,7 +1053,9 @@ The above example would set session management for *all future forms* to max **5
 - **.reset(** **)** - special action to reset the form. This will alter the input's type and default value.
 - **.submit(** **)** - special action that is reserved for future usage. This will alter the input's type and default value.
 - **.ignore(** *[flag]* **)** - the input wont be included in the end result. The input will however, be included in any callbacks.
-- **.empty(** value **)** - if the value of the input is `false`, `null`, `undefined`, `0` or `''` then it will be replaced with the `.empty(value)` you provide. This could be useful for having empty inputs return as null. 
+- **.empty(** value **)** - if the value of the input is `false`, `null`, `undefined`, `0` or `''` then it will be replaced with the `.empty(value)` you provide. This could be useful for having empty inputs return as null.
+- **.remove(** what **)** - remove all validation handlers of the specified type. `What` is the method name used to apply that validation to the input. Eg to remove all `input.max()` validation handlers we would call `input.remove('max')`. Use `input.remove('validate')` to remove all custom validation handlers. 
+ 
 
 
 ## <a name="apiResult"></a> Result API 
