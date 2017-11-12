@@ -15,6 +15,10 @@ Forme has no hardcoded concept of rendering. It provides you with a simple way t
 
 The project is still in development but feel free to have a play!
 
+## New in version 2.5.5
+- Added `input.rerun()` to add a new "special" action. This action "rerun" allows the form to submit and then reload to the start.
+- Added `form.rerun()` for manually triggering a rerun (only if valid)
+
 ## New in version 2.5.4
 - Added `input.min()` to get lowest min handler.
 - Added `input.max()` to get highest max handler.
@@ -266,6 +270,7 @@ We mark the fields we want to retain between pages using `input.keep()`. This in
 - `input.next()` - allows the form to go forwards a page. This will alter the type/value of the input.
 - `input.reset()` - resets the form and goes to the first page. This will alter the type/value of the input.
 - `input.submit()` - doesn't currently perform any special action. This will alter the type/value of the input.
+- `input.rerun()` - fully submits the form and then restarts if valid.
 
 When creating a single form with multiple pages we use `form.page('pageName')`. This will return a page object in which we can chain further API calls. We can do most things with this page, including: inputs, build handlers, validation handlers, submit handlers and more. 
 
@@ -974,6 +979,7 @@ The above example would set session management for *all future forms* to max **5
 - **.prev(** **)** - starts a promise and forces the form to goto the previous page. Returns false or a destination. If a destination is returned, user code should handle redirect. If called from a Forme validate/submit/action handler, you do not need to handle the redirect.
 - **.next(** **)** - starts a promise and forces the form to goto the next page. Returns false or a destination. If a destination is returned, user code should handle redirect. If called from a Forme validate/submit/action handler, you do not need to handle the redirect.
 - **.reset(** **)** - starts a promise and forces the form to reset. Returns false or a destination. If a destination is returned, user code should handle redirect. If called from a Forme validate/submit/action handler, you do not need to handle the redirect.
+- **.rerun(** **)** - starts a promise and forces the form to rerun. Returns false or a destination. If a destination is returned, user code should handle redirect. If called from a Forme validate/submit/action handler, you do not need to handle the redirect.
 - **.reload(** destination **)** - forces a form `result.reload` to be true. The destination you set is the destination that will be returned in `result.destination`.
 - **.url(** **)** - returns the url for the current page.
 - **.url(** page **)** - returns the url for a particular page.
@@ -1051,6 +1057,7 @@ The above example would set session management for *all future forms* to max **5
 - **.prev(** **)** - special action to go back a page. This will alter the input's type and default value.
 - **.next(** **)** - special action to go forward a page. This will alter the input's type and default value.
 - **.reset(** **)** - special action to reset the form. This will alter the input's type and default value.
+- **.rerun(** **)** - special action to rerun the form. This will alter the input's type and default value.
 - **.submit(** **)** - special action that is reserved for future usage. This will alter the input's type and default value.
 - **.ignore(** *[flag]* **)** - the input wont be included in the end result. The input will however, be included in any callbacks.
 - **.empty(** value **)** - if the value of the input is `false`, `null`, `undefined`, `0` or `''` then it will be replaced with the `.empty(value)` you provide. This could be useful for having empty inputs return as null.
