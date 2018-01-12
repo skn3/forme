@@ -15,6 +15,9 @@ Forme has no hardcoded concept of rendering. It provides you with a simple way t
 
 The project is still in development but feel free to have a play!
 
+## New in version 2.5.6
+- Added `form.method(method, action)` as an alternative to `form.get()` and `form.post()`. 
+
 ## New in version 2.5.5
 - Added `input.rerun()` to add a new "special" action. This action "rerun" allows the form to submit and then reload to the start.
 - Added `form.rerun()` for manually triggering a rerun (only if valid)
@@ -946,6 +949,7 @@ The above example would set session management for *all future forms* to max **5
 ## <a name="apiForm"></a> Form API 
 - **.name(** name **)** - change the form's name
 - **.label(** label **)** - sets the forms label used in error messages and template vars
+- **.method(** method, address **)** - set the form method and specify the action address
 - **.get(** address **)** - set the form to get and specify the action address
 - **.post(** address **)** - set the form to post and specify the action address *(a form will default the method to POST)*
 - **.driver(** driverClass **)** - change the driver this form uses. 
