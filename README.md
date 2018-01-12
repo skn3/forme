@@ -15,7 +15,10 @@ Forme has no hardcoded concept of rendering. It provides you with a simple way t
 
 The project is still in development but feel free to have a play!
 
-## New in version 2.5.6
+## New in version 2.5.8
+- Added `input.path()` gets the current path to access the input.
+
+## New in version 2.5.7
 - Added `form.method(method, action)` as an alternative to `form.get()` and `form.post()`. 
 
 ## New in version 2.5.5
@@ -1065,7 +1068,8 @@ The above example would set session management for *all future forms* to max **5
 - **.submit(** **)** - special action that is reserved for future usage. This will alter the input's type and default value.
 - **.ignore(** *[flag]* **)** - the input wont be included in the end result. The input will however, be included in any callbacks.
 - **.empty(** value **)** - if the value of the input is `false`, `null`, `undefined`, `0` or `''` then it will be replaced with the `.empty(value)` you provide. This could be useful for having empty inputs return as null.
-- **.remove(** what **)** - remove all validation handlers of the specified type. `What` is the method name used to apply that validation to the input. Eg to remove all `input.max()` validation handlers we would call `input.remove('max')`. Use `input.remove('validate')` to remove all custom validation handlers. 
+- **.remove(** what **)** - remove all validation handlers of the specified type. `What` is the method name used to apply that validation to the input. Eg to remove all `input.max()` validation handlers we would call `input.remove('max')`. Use `input.remove('validate')` to remove all custom validation handlers.
+- **.path(** **)** - get the currently defined path for this input. Path is in the format of `group1.group2.alias`. If no alias has been set then a path will be `group1.group2.name`. If no groups have been set then the path will be just the alias or name. 
  
 
 
