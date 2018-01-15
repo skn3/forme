@@ -1085,6 +1085,7 @@ Here we have a complete reference to all methods available for all form objects.
 ## <a name="apiForm"></a> Form API
 
 ### Configuration
+- **.configure(** object **)** - allows complete configuration of the form using 1 info object.
 - **.name(** name **)** - change the form's name
 - **.label(** label **)** - sets the forms label used in error messages and template vars
 - **.method(** method, action **)** - set the form method and specify the action
@@ -1112,7 +1113,6 @@ Here we have a complete reference to all methods available for all form objects.
 - **.done(** callback **)** - `form => {}` callback will be called in order, when a form has fully validated & submitted. Also accepts array of functions.
 
 ### Commands
-- **.configure(** object **)** - allows complete configuration of the form using 1 info object.
 - **.view(** storage, *[values]* **)** - process viewing the form and then return a promise. An object of values can be provided as the second argument. This will replace all non permanent values when processing the form.
 - **.submit(** storage, *[values]* **)** - submit the form. An object of values can be provided as the second argument. This will replace all non permanent values when processing the form.
 - **.save(** **)** - process storing the form session and then return a promise
@@ -1143,6 +1143,7 @@ Here we have a complete reference to all methods available for all form objects.
 ## <a name="apiPage"></a> Page API 
 
 ### Configuration
+- **.configure(** object **)** - allows complete configuration of the page using 1 info object.
 - **.name(** name **)** - change the page name
 - **.label(** label **)** - sets the page label potentially used in error messages and template vars
 - **.require(** conditions, op, *[error]* **)** - and/or validation on single, multiple or groups of inputs
@@ -1160,7 +1161,6 @@ Here we have a complete reference to all methods available for all form objects.
 - **.done(** callback **)** - `(form, page) => {}` callback will be called in order, when a form has fully validated & submitted. Also accepts array of functions.
 
 ### Commands
-- **.configure(** object **)** - allows complete configuration of the page using 1 info object.
 - **.add(** name/configuration **)** - add a new input to the page with the given name.
 - **.remove(** what **)** - remove all validation handlers of the specified type. `What` is the method name used to apply that validation to the page. Eg to remove all `page.require()` validation handlers we would call `page.remove('require')`. Use `page.remove('validate')` to remove all custom validation handlers.
 
@@ -1172,6 +1172,7 @@ Here we have a complete reference to all methods available for all form objects.
 ## <a name="apiInput"></a> Input API
 
 ### Configuration
+- **.configure(** object **)** - allows complete configuration of the input using 1 info object.
 - **.label(** label **)** - sets the inputs label used in error messages and template vars.
 - **.group(** group, *[append]* **)** - specifies a group for values and template vars. Forme will automatically group value/template information when you specify a group, even if there is only 1 item in the group. You can chain multiple calls to .group() or provide an array of group names. This allows you to create groups at any depth. The `append` flag (defaults to true) allows you to add groups at the start of the chain, if specified as false.
 - **.alias(** alias **)** - lets you override the *name* of the input when built in template vars or form.values(). Forme still uses the inputs real name internally.
@@ -1222,7 +1223,7 @@ Here we have a complete reference to all methods available for all form objects.
 - **.done(** callback **)** - `(form, input) => {}` callback will be called in order, when a form has fully validated & submitted. Also accepts array of functions.
 
 ### Actions *(configuration)*
-- **.action(** action, *[value]*, *[context]* **)** - add an action to the input.
+- **.action(** action, *[value]*, *[context]* **)** - add an action to the input. When the input has the specified value, then the specified actions will trigger.
 - **.prev(** **)** - special action to go back a page. This will alter the input's type and default value.
 - **.next(** **)** - special action to go forward a page. This will alter the input's type and default value.
 - **.reset(** **)** - special action to reset the form. This will alter the input's type and default value.
