@@ -15,6 +15,23 @@ Forme has no hardcoded concept of rendering. It provides you with a simple way t
 
 The project is still in development but feel free to have a play!
 
+## Breaking changes in version 2.6.0
+- Updated all API reference docs to detail configuration key names.
+- Changed `input.require(error)` to `input.require(flag, error)` this allows us to specify require with a yes/no flag.
+- Changed `forme()` constructor, now accepts info object to configure the new form.
+- Changed `form.add()` now accepts info object to add and configure an input.
+- Changed `form.add()` now accepts array of info objects to create multiple inputs.
+- Changed `form.add()` now accepts array of names to create and configure multiple inputs.
+- Changed `form.page()` now accepts info object to create and configure a page.
+- Changed `form.page()` now accepts array of info object to create and configure multiple pages.
+- Changed `page.add()` now accepts info object to create and configure an input.
+- Changed `page.add()` now accepts array of info objects to create and configure multiple inputs.
+- Changed `page.add()` now accepts array of names to create multiple inputs.
+- Added `form.configure(object)` that allows configuring with single info object.
+- Added `page.configure(object)` that allows configuring with single info object.
+- Added `input.configure(object)` that allows configuring with single info object.
+- Added documentation for `.configure()`.
+
 ## New in version 2.5.8
 - Added `input.path()` gets the current path to access the input.
 
@@ -95,6 +112,7 @@ If you have been using version 1.x then please review the entire readme. We have
 - [Hello World](#helloWorld)
 - [Working Form (+express)](#workingForm)
 - [Pages](#pages)
+- [Configuring Form Objects With a Single Call](#configuringFormObjectsWithASingleCall)
 - [Dynamic Forms](#dynamicForms)
 - [Grouping and Referencing Inputs](#groupingAndReferencingInputs)
 - [Input Type](#inputType)
@@ -279,6 +297,113 @@ We mark the fields we want to retain between pages using `input.keep()`. This in
 - `input.rerun()` - fully submits the form and then restarts if valid.
 
 When creating a single form with multiple pages we use `form.page('pageName')`. This will return a page object in which we can chain further API calls. We can do most things with this page, including: inputs, build handlers, validation handlers, submit handlers and more. 
+
+
+## <a name="configuringFormObjectsWithASingleCall"></a> Configuring Form Objects With a Single Call
+
+**New in version 2.6.0** we can now configure forms, pages and inputs with a single call to `form.configure()`, `page.configure()` or `input.configure()`. This allows us to change any and all of the features supported by the object. We can also now pass in a configuration info object to `form.add()`, `form.page()` and `page.add()`.
+
+An example of using `input.configure()` could be to set the label of an existing input using:
+
+```javascript
+input.label('Input Label Here');
+```
+
+```javascript
+input.configure({ label: 'Input Label Here' });
+```
+
+The beauty of this is that we can specify a large number of configuration options in one call. You could use this in your application code to build a configuration object, alter it over time, and then finally send it to Forme for processing. For example:
+```javascript
+const info = {
+    label: 'Input Label Here',
+    validate: (form, input, state) => {},
+};
+
+if (option === 'do something') {
+    info.require = true;
+}
+
+input.configure(info);
+```
+
+To understand what configuration methods you can call on an object, the answer is ALL of them! The *key* to use in your info object should match the name of the method you would be calling. So if you would call `input.secure(true)` then your info object would look like `{secure: true}`.
+
+Configuration methods that can take a single argument should be defined like so `{method:argument}`. If you need to provide multiple arguments then you should specify this as a nested object. For example:
+
+```javascript
+input.data('htmlDataAttribute1', 'my value here');
+input.require(true, 'this input is required');
+```
+
+```javascript
+input.configure({
+    data: {
+        name: 'htmlDataAttribute1',
+        value: 'my value here',
+    },
+    require: {
+        require: true,
+        error: 'this input is required',
+    },
+});
+```
+
+Please use the [Api Reference](#apiReference) to see what your attribute keys should be named as.
+
+When we call a method that would add something to the form, such as `form.add()` we can now specify a configuration object:
+
+```javascript
+form.add('input1').label('Input One');
+```
+
+```javascript
+form.add({
+    name: 'input1',
+    label: 'Input One',
+});
+```
+
+We can now also add multiple objects at the same time using:
+
+```javascript
+form.add([
+    {
+        name: 'input1',
+        label: 'Input One',
+    },
+    {
+        name: 'input2',
+        label: 'Input Two',
+    },
+]);
+```
+
+There is only 1 more thing to consider, what if we want to create and configure an entire form with 1 call. Yes we can!
+
+```javascript
+const form = new forme({
+    name: 'myForm',
+    pages: [
+        {
+            name: 'page1',
+            validate: (form, page) => { /*custom page validation*/ }, 
+            inputs: [
+                {
+                    name: 'input1',
+                    label: 'Input One',
+                },
+                {
+                    name: 'input2',
+                    label: 'Input Two',
+                },
+            ],
+        },
+    ],
+})
+```
+
+You can see in the example above we have two special configuration keys `pages:` and `inputs:`. These are shortcuts to the `.page()` and `.add()` methods. They do the same thing but have just been renamed so everything is logical within your *configuration* object!
 
 
 ## <a name="dynamicForms"></a> Dynamic Forms 
@@ -949,27 +1074,33 @@ forme.sessions(1000*60*5,1);
 The above example would set session management for *all future forms* to max **5 minutes old**, and only **1 session** allowed at a time (even if you had multiple tabs open).
 
 
+## <a name="apiReference"></a> API Reference
+
+Here we have a complete reference to all methods available for all form objects.
+
+
+
 ## <a name="apiForm"></a> Form API 
 - **.name(** name **)** - change the form's name
 - **.label(** label **)** - sets the forms label used in error messages and template vars
-- **.method(** method, address **)** - set the form method and specify the action address
-- **.get(** address **)** - set the form to get and specify the action address
-- **.post(** address **)** - set the form to post and specify the action address *(a form will default the method to POST)*
-- **.driver(** driverClass **)** - change the driver this form uses. 
-- **.require(** array/object, operator, *[error]* **)** - and/or validation on single, multiple or groups of inputs
-- **.add(** name **)** - add a new input to the form with the given name
+- **.method(** method, action **)** - set the form method and specify the action
+- **.get(** action **)** - set the form to get and specify the action
+- **.post(** action **)** - set the form to post and specify the action *(a form will default the method to POST)*
+- **.driver(** driver **)** - change the driver this form uses. 
+- **.require(** conditions, operator, *[error]* **)** - and/or validation on single, multiple or groups of inputs
+- **.add(** name/configuration **)** - add a new input to the form with the given name
 - **.context(** name, value **)** - store a named context value in this form. *(accessible in `form.template()` and anywhere we have the form object)*
 - **.context(** name **)** - retrieve a named context value from this form. *(accessible in form.template() and anywhere we have the form object)*
 - **.context(** name, undefined **)** - delete a context entry.
 - **.view(** storage, *[values]* **)** - process viewing the form and then return a promise. An object of values can be provided as the second argument. This will replace all non permanent values when processing the form.
 - **.submit(** storage, *[values]* **)** - submit the form. An object of values can be provided as the second argument. This will replace all non permanent values when processing the form.
-- **.load(** form => {} **)** - callback will be called when the form has loaded. Allows for custom code before the form is built. Also accepts array of functions.
-- **.build(** form => {} **)** - callback will be called in order, when the form is being built. Allows for dynamic inputs to be added. Also accepts array of functions.
-- **.validate(** (form, state) => {} **)**, *[error]* **)** - custom validation callback. Also accepts array of functions.
-- **.success(** form => {} **)** - callback will be called in order, when a form has validated successfully (before any.submit() handlers are called). Also accepts array of functions.
-- **.fail(** form => {} **)** - callback will be called in order, when a form has failed validation. Also accepts array of functions.
-- **.submit(** form => {} **)** - callback will be called when a form successfully validates. It will be called just before returning back to the `form.submit(storage).then()`. Also accepts array of functions.
-- **.action(** action, (form, action) => {} **)** - callback will be called when the input action is triggered. Also accepts array of functions.
+- **.load(** callback **)** - `form => {}` callback will be called when the form has loaded. Allows for custom code before the form is built. Also accepts array of functions.
+- **.build(** callback **)** - `form => {}` callback will be called in order, when the form is being built. Allows for dynamic inputs to be added. Also accepts array of functions.
+- **.validate(** callback **)**, *[error]* **)** - `(form, state) => {}` custom validation callback. Also accepts array of functions.
+- **.success(** callback **)** - `form => {}` callback will be called in order, when a form has validated successfully (before any.submit() handlers are called). Also accepts array of functions.
+- **.fail(** callback **)** - `form => {}` callback will be called in order, when a form has failed validation. Also accepts array of functions.
+- **.submit(** callback **)** - `form => {}` callback will be called when a form successfully validates. It will be called just before returning back to the `form.submit(storage).then()`. Also accepts array of functions.
+- **.action(** action, callback **)** - `(form, action) => {}` callback will be called when the input action string is triggered. Also accepts array of functions and array of action strings.
 - **.done(** form => {} **)** - callback will be called in order, when a form has fully validated & submitted. Also accepts array of functions.
 - **.save(** **)** - process storing the form session and then return a promise
 - **.values(** **)** - get all the current values for the form
@@ -980,9 +1111,10 @@ The above example would set session management for *all future forms* to max **5
 - **.inputs()** - returns an array of input names (including the current page)
 - **.template(** **)** - builds all template vars for the form
 - **.errors(** *[name]* **)** - gets all errors in the form. If a name is provided, then only errors with that matching name are returned. Name can be an input name/alias, or name defined in `input.pipe()`.
-- **.page(** name **)** - adds a chainable page object to the form.
+- **.page(** name/configuration **)** - adds a chainable page object to the form.
 - **.page(** name, true **)** - adds a single page location to the form. This is when you want to handle a paged form across multiple separate forms.
-- **.page(** array **)** - adds multiple page locations to the form. This is when you want to handle a paged form across multiple separate forms.
+- **.page(** array of strings **)** - adds multiple page locations to the form. This is when you want to handle a paged form across multiple separate forms.
+- **.page(** array of configurations **)** - adds multiple page objects to the form.
 - **.prev(** **)** - starts a promise and forces the form to goto the previous page. Returns false or a destination. If a destination is returned, user code should handle redirect. If called from a Forme validate/submit/action handler, you do not need to handle the redirect.
 - **.next(** **)** - starts a promise and forces the form to goto the next page. Returns false or a destination. If a destination is returned, user code should handle redirect. If called from a Forme validate/submit/action handler, you do not need to handle the redirect.
 - **.reset(** **)** - starts a promise and forces the form to reset. Returns false or a destination. If a destination is returned, user code should handle redirect. If called from a Forme validate/submit/action handler, you do not need to handle the redirect.
@@ -995,83 +1127,84 @@ The above example would set session management for *all future forms* to max **5
 - **.pageVisited(** page **)** - tells us if a page has been visited and is safe to revisit.
 - **.pageCompleted(** page **)** - tells us if a page has validated and successfully submitted.
 - **.remove(** what **)** - remove all validation handlers of the specified type. `What` is the method name used to apply that validation to the form. Eg to remove all `form.require()` validation handlers we would call `form.remove('require')`. Use `form.remove('validate')` to remove all custom validation handlers.
+- **.configure(** object **)** - allows complete configuration of the form using 1 info object. 
 
 
 ## <a name="apiPage"></a> Page API 
 - **.name(** name **)** - change the page name
 - **.label(** label **)** - sets the page label potentially used in error messages and template vars
-- **.require(** array/object, operator, *[error]* **)** - and/or validation on single, multiple or groups of inputs
-- **.add(** name **)** - add a new input to the page with the given name
+- **.require(** conditions, op, *[error]* **)** - and/or validation on single, multiple or groups of inputs
+- **.add(** name/configuration **)** - add a new input to the page with the given name
 - **.context(** name, value **)** - store a named context value in this page.
 - **.context(** name **)** - retrieve a named context value from this page.
 - **.context(** name, undefined **)** - delete a context entry.
-- **.load(** (form, page) => {} **)** - callback will be called when the form has loaded. Allows for custom code before the form is built. Also accepts array of functions.
-- **.build(** (form, page) => {} **)** - called when the page is building. Also accepts array of functions.
-- **.validate(** (form, page, state) => {} **)**, *[error]* **)** - called when the page is validating. Also accepts array of functions.
-- **.success(** (form, page) => {} **)** - callback will be called in order, when a form has validated successfully (before any.submit() handlers are called). Also accepts array of functions.
-- **.fail(** (form, page) => {} **)** - callback will be called in order, when a form has failed validation. Also accepts array of functions.
-- **.submit(** (form, page) => {} **)** - called when the page is submitting. Also accepts array of functions.
-- **.action(** action, (form, page, action) => {} **)** - callback when an action is triggered. Also accepts array of functions.
-- **.done(** (form, page) => {} **)** - callback will be called in order, when a form has fully validated & submitted. Also accepts array of functions.
+- **.load(** callback **)** - `(form, page) => {}` callback will be called when the form has loaded. Allows for custom code before the form is built. Also accepts array of functions.
+- **.build(** callback **)** - `(form, page) => {}` callback called when the page is building. Also accepts array of functions.
+- **.validate(** callback **)**, *[error]* **)** - `(form, page, state) => {}` callback called when the page is validating. Also accepts array of functions.
+- **.success(** callback **)** - `(form, page) => {}` callback will be called in order, when a form has validated successfully (before any.submit() handlers are called). Also accepts array of functions.
+- **.fail(** callback **)** - `(form, page) => {}` callback will be called in order, when a form has failed validation. Also accepts array of functions.
+- **.submit(** callback **)** - `(form, page) => {}` called when the page is submitting. Also accepts array of functions.
+- **.action(** action, callback **)** - `(form, page, action) => {}` callback when an action string is triggered. Also accepts array of functions and array of action strings.
+- **.done(** callback **)** - `(form, page) => {}` callback will be called in order, when a form has fully validated & submitted. Also accepts array of functions.
 - **.inputs()** - returns an array of input names for this page
 - **.remove(** what **)** - remove all validation handlers of the specified type. `What` is the method name used to apply that validation to the page. Eg to remove all `page.require()` validation handlers we would call `page.remove('require')`. Use `page.remove('validate')` to remove all custom validation handlers.
 
 
 ## <a name="apiInput"></a> Input API 
-- **.id(** string **)** - override the id that is generated for template vars. If no id id set the default id will be *'forme_input__[input.name]'* (minus square brackets)
-- **.className(** string/array **)** - adds a className(s) to the input *(only used in form.template())*
-- **.data(** name,value/object **)** - adds html5 `data-name="value"` tags to the template values. Can pass in name/value, or object containing key/value pairs. *(only used in form.template())* 
-- **.label(** string **)** - sets the inputs label used in error messages and template vars
-- **.help(string)** - sets the inputs help text *(only used in `form.template()`)*  
-- **.require(** value, *[error]* **)** - makes sure the input value exists when validated
+- **.id(** id **)** - override the id that is generated for template vars. If no id id set the default id will be *'forme_input__[input.name]'* (minus square brackets)
+- **.className(** className **)** - adds a className(s) to the input. Also accepts array of strings. *(only used in form.template())*
+- **.data(** name, value **)** - adds html5 `data-name="value"` tags to the template values. *(only used in form.template())*
+- **.data(** data **)** - adds multiple html5 `data-name="value"` tags defined in an object containing key/value. *(only used in form.template())* 
+- **.label(** label **)** - sets the inputs label used in error messages and template vars
+- **.help(** help **)** - sets the inputs help text *(only used in `form.template()`)*  
+- **.require(** *[require]*, *[error]* **)** - makes sure the input value exists when validated. Defaults to require `true` unless flag is specified false.
 - **.size(** size, *[error]* **)** - the input value has to be exactly this size when validated
-- **.min(** size, *[error]* **)** - the input value has to be at least exactly this size when validated
+- **.min(** min, *[error]* **)** - the input value has to be at least exactly this size when validated
 - **.min(** **)** - get the lowest `.min()` validation handler size or null if none.
-- **.max(** size, *[error]* **)** - the input value has to be at no greater than this size when validated
+- **.max(** max, *[error]* **)** - the input value has to be at no greater than this size when validated
 - **.max(** **)** - get the highest `.max()` validation handler size or null if none.
-- **.is(** string, options, *[error]* **)** - ensures the input value is of a particular *type* when validated. Uses [validator](https://github.com/chriso/validator.js). Read the [Input Is](#inputIs) section for more information.
-- **.match(** string, strict, *[error]* **)** - ensures the input value matches the target input value when validated.
-- **.options(** array/object, strict, *[error]* **)** - ensures the input is one of the specified values when validating. Also provides values to the template vars
-- **.blacklist(** array, strict, *[error]* **)** - value must not be one of the provided values
-- **.validate(** (form, input, state) => {}, *[error]* **)** - allow for custom validation routines to be added to inputs. Also accepts array of functions.
-- **.invalid(** (form, input) => {} **)** - callback will be called in order, when the input fails validation. Not to be confused with `input.fail()` which gets called for any form fail.
-- **.valid(** (form, input) => {} **)** - callback will be called in order, when the input succeeds validation. Not to be confused with `input.success()` which gets called for any form success.
-- **.success(** (form, input) => {} **)** - callback will be called in order, when a form has validated successfully (before any.submit() handlers are called). Also accepts array of functions.
-- **.fail(** (form, input) => {} **)** - callback will be called in order, when a form has failed validation. Also accepts array of functions.
-- **.submit(** (form, input) => {} **)** - allow for custom submit routines to be added to inputs. These are called in order just before a valid form returns to your main validate function. Also accepts array of functions.
-- **.done(** (form, input) => {} **)** - callback will be called in order, when a form has fully validated & submitted. Also accepts array of functions.
-- **.secure(** *[flag]* **)** - prevents storing of this value between page views/sessions.
-- **.checked(** *[flag]* **)** - sets a checkbox defaults checked state.
-- **.readonly(** *[flag]* **)** - set input template var *readonly* *(currently only used in `form.template()` vars. e.g. &lt;input readonly /&gt;)*
-- **.hidden(** *[flag]* **)** - set input template var *type* to *'hidden'* *(currently only used in form.template() vars. e.g. &lt;input readonly /&gt;)*
-- **.type(** string **)** - override input template var *type*. By default forme will guess a type based on the input properties that you have defined. 
-- **.bool(** bool **)** - converts the value to a bool. If `.bool(true)` then null value will be allowed. 
-- **.int(** bool **)** - converts the value to an int. If `.int(true)` then null value will be allowed.
-- **.float(** bool **)** - converts the value to a float. If `.float(true)` then null value will be allowed.
-- **.string(** bool **)** - converts the value to a string. If `.string(true)` then null value will be allowed.
-- **.group(** string/array, atEnd=true **)** - specifies a group for values and template vars. Forme will automatically group value/template information when you specify a group, even if there is only 1 item in the group. You can chain multiple calls to .group() or provide an array of group names. This allows you to create groups at any depth. The atEnd flag (defaults to true) allows you to add groups at the start of the chain, if specified as false.
-- **.alias(** string **)** - lets you override the *name* of the input when built in template vars or form.values(). Forme still uses the inputs real name internally.
+- **.is(** type, options, *[error]* **)** - ensures the input value is of a particular *type* when validated. Uses [validator](https://github.com/chriso/validator.js). Read the [Input Is](#inputIs) section for more information.
+- **.match(** target, *[strict]*, *[error]* **)** - ensures the input value matches the target input value when validated. The target can be an input name or path.
+- **.options(** options, *[strict]*, *[error]* **)** - ensures the input is one of the specified values when validating. Also provides values to the template vars
+- **.blacklist(** blacklist, *[strict]*, *[error]* **)** - value must not be one of the provided values
+- **.validate(** callback, *[error]* **)** - `(form, input, state) => {}` callback allows for custom validation routines to be added to inputs. Also accepts array of functions.
+- **.invalid(** callback **)** - `(form, input) => {}` callback will be called in order, when the input fails validation. Not to be confused with `input.fail()` which gets called for any form fail.
+- **.valid(** callback **)** - `(form, input) => {}` callback will be called in order, when the input succeeds validation. Not to be confused with `input.success()` which gets called for any form success.
+- **.success(** callback **)** - `(form, input) => {}` callback will be called in order, when a form has validated successfully (before any.submit() handlers are called). Also accepts array of functions.
+- **.fail(** callback **)** - `(form, input) => {}` callback will be called in order, when a form has failed validation. Also accepts array of functions.
+- **.submit(** callback **)** - `(form, input) => {}` allow for custom submit routines to be added to inputs. These are called in order just before a valid form returns to your main validate function. Also accepts array of functions.
+- **.done(** callback **)** - `(form, input) => {}` callback will be called in order, when a form has fully validated & submitted. Also accepts array of functions.
+- **.secure(** *[secure]* **)** - prevents storing of this value between page views/sessions.
+- **.checked(** *[checked]* **)** - sets a checkbox defaults checked state.
+- **.readonly(** *[readonly]* **)** - set input template var *readonly* *(currently only used in `form.template()` vars. e.g. &lt;input readonly /&gt;)*
+- **.hidden(** *[hidden]* **)** - set input template var *type* to *'hidden'* *(currently only used in form.template() vars. e.g. &lt;input readonly /&gt;)*
+- **.type(** type **)** - override input template var *type*. By default forme will guess a type based on the input properties that you have defined. 
+- **.bool(** null **)** - converts the value to a bool. If `.bool(true)` then null value will be allowed. 
+- **.int(** null **)** - converts the value to an int. If `.int(true)` then null value will be allowed.
+- **.float(** null **)** - converts the value to a float. If `.float(true)` then null value will be allowed.
+- **.string(** null **)** - converts the value to a string. If `.string(true)` then null value will be allowed.
+- **.group(** group, *[append]* **)** - specifies a group for values and template vars. Forme will automatically group value/template information when you specify a group, even if there is only 1 item in the group. You can chain multiple calls to .group() or provide an array of group names. This allows you to create groups at any depth. The `append` flag (defaults to true) allows you to add groups at the start of the chain, if specified as false.
+- **.alias(** alias **)** - lets you override the *name* of the input when built in template vars or form.values(). Forme still uses the inputs real name internally.
 - **.permanent(** value **)** - forces the input to always have this value
 - **.override(** value **)** - overrides the inputs value upon submit. Useful for displaying a dummy value on a form that has a fixed value in your results!
-- **.context(** string, value **)** - store a named context value in this input. *(Accessible in `form.template()` and `input.validate()`)*
+- **.context(** name, value **)** - store a named context value in this input. *(Accessible in `form.template()` and `input.validate()`)*
 - **.context(** string **)** - retrieve a named context value from this input. *(Accessible in `form.template()` and `input.validate()`)*
 - **.context(** name, undefined **)** - delete a context entry.
 - **.value(** value **)** - set the default value. This will only when the form is inactive. (**not** currently in `form.view()` or `form.submit()`)
 - **.value(** **)** - gets current value for an active form (a form currently in `form.view()` or `form.submit()`)
 - **.value(** value **)** - change the current value for the in an active form (a form currently in `form.view()` or `form.submit()`)
-- **.pipe(** false/true/string **)** - pipe errors generated for this input to a specified target. (false: to self, true: to form, string: to input with matching name. The string can also be any string, these errors can be retrieved with `form.errors('name')`)
-- **.action(** action/array, null/value, context **)** - add an action to the input.
+- **.pipe(** pipe **)** - pipe errors generated for this input to a specified target. Pipe can be `false`: to self, `true`: to form, `string`: to input with matching name. The string can also be any string, these errors can be retrieved with `form.errors('name')`)
+- **.action(** action, *[value]*, *[context]* **)** - add an action to the input.
 - **.prev(** **)** - special action to go back a page. This will alter the input's type and default value.
 - **.next(** **)** - special action to go forward a page. This will alter the input's type and default value.
 - **.reset(** **)** - special action to reset the form. This will alter the input's type and default value.
 - **.rerun(** **)** - special action to rerun the form. This will alter the input's type and default value.
 - **.submit(** **)** - special action that is reserved for future usage. This will alter the input's type and default value.
-- **.ignore(** *[flag]* **)** - the input wont be included in the end result. The input will however, be included in any callbacks.
+- **.ignore(** *[ignore]* **)** - the input wont be included in the end result. The input will however, be included in any callbacks.
 - **.empty(** value **)** - if the value of the input is `false`, `null`, `undefined`, `0` or `''` then it will be replaced with the `.empty(value)` you provide. This could be useful for having empty inputs return as null.
 - **.remove(** what **)** - remove all validation handlers of the specified type. `What` is the method name used to apply that validation to the input. Eg to remove all `input.max()` validation handlers we would call `input.remove('max')`. Use `input.remove('validate')` to remove all custom validation handlers.
 - **.path(** **)** - get the currently defined path for this input. Path is in the format of `group1.group2.alias`. If no alias has been set then a path will be `group1.group2.name`. If no groups have been set then the path will be just the alias or name. 
  
-
 
 ## <a name="apiResult"></a> Result API 
 
