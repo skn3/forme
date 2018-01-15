@@ -1229,14 +1229,14 @@ Here we have a complete reference to all methods available for all form objects.
 - **.rerun(** **)** - special action to rerun the form. This will alter the input's type and default value.
 - **.submit(** **)** - special action that is reserved for future usage. This will alter the input's type and default value.
  
- ### Commands
- - **.value(** value **)** - (when active) change the current value for the in an active form (a form currently in `form.view()` or `form.submit()`)
- - **.remove(** what **)** - remove all validation handlers of the specified type. `What` is the method name used to apply that validation to the input. Eg to remove all `input.max()` validation handlers we would call `input.remove('max')`. Use `input.remove('validate')` to remove all custom validation handlers.
+### Commands
+- **.value(** value **)** - (when active) change the current value for the in an active form (a form currently in `form.view()` or `form.submit()`)
+- **.remove(** what **)** - remove all validation handlers of the specified type. `What` is the method name used to apply that validation to the input. Eg to remove all `input.max()` validation handlers we would call `input.remove('max')`. Use `input.remove('validate')` to remove all custom validation handlers.
  
- ### State
- - **.context(** string **)** - retrieve a named context value from this input. *(Accessible in `form.template()` and `input.validate()`)*
- - **.path(** **)** - get the currently defined path for this input. Path is in the format of `group1.group2.alias`. If no alias has been set then a path will be `group1.group2.name`. If no groups have been set then the path will be just the alias or name.
- - **.value(** **)** - gets current value for an active form (a form currently in `form.view()` or `form.submit()`)
+### State
+- **.context(** string **)** - retrieve a named context value from this input. *(Accessible in `form.template()` and `input.validate()`)*
+- **.path(** **)** - get the currently defined path for this input. Path is in the format of `group1.group2.alias`. If no alias has been set then a path will be `group1.group2.name`. If no groups have been set then the path will be just the alias or name.
+- **.value(** **)** - gets current value for an active form (a form currently in `form.view()` or `form.submit()`)
  
 
 ## <a name="apiResult"></a> Result API 
