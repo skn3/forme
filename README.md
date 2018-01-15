@@ -15,6 +15,9 @@ Forme has no hardcoded concept of rendering. It provides you with a simple way t
 
 The project is still in development but feel free to have a play!
 
+## New in version 2.6.6
+- Added `FormeDriver.saveRequestReference()` method that deals with saving a reference to the forme request in your storage object. By default it is `storage.forme[form.name]`.
+
 ## New in version 2.6.5
 - Changed `form.context()`, `page.context()` and `input.context()` now accepts a keyed object for setting multiple values.
 
