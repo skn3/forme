@@ -15,6 +15,9 @@ Forme has no hardcoded concept of rendering. It provides you with a simple way t
 
 The project is still in development but feel free to have a play!
 
+## New in version 2.6.5
+- Changed `form.context()`, `page.context()` and `input.context()` now accepts a keyed object for setting multiple values.
+
 ## Breaking changes in version 2.6.1
 - Changed `input.unrequire()` to `input.unrequire(flag)` this allows us to specify unrequire with a yes/no flag.
 - Updated organisation of API reference docs
@@ -1096,6 +1099,7 @@ Here we have a complete reference to all methods available for all form objects.
 - **.unrequire(** *[unrequire]* **)** - override all inputs and set them all to not required. Useful for debugging!
 - **.context(** name, value **)** - store a named context value in this form. *(accessible in `form.template()` and anywhere we have the form object)*
 - **.context(** name, undefined **)** - delete a context entry.
+- **.context(** context **)** - set multiple context values by passing in a keyed object. *(accessible in `form.template()` and anywhere we have the form object)*
 - **.page(** name/configuration **)** - adds a chainable page object to the form.
 - **.page(** name, true **)** - adds a single page location to the form. This is when you want to handle a paged form across multiple separate forms.
 - **.page(** array of strings **)** - adds multiple page locations to the form. This is when you want to handle a paged form across multiple separate forms.
@@ -1149,6 +1153,7 @@ Here we have a complete reference to all methods available for all form objects.
 - **.require(** conditions, op, *[error]* **)** - and/or validation on single, multiple or groups of inputs
 - **.context(** name, value **)** - store a named context value in this page.
 - **.context(** name, undefined **)** - delete a context entry.
+- **.context(** context **)** - set multiple context values by passing in a keyed object. *(accessible in `form.template()` and anywhere we have the page object)*
 
 ### Callbacks *(configuration)*
 - **.load(** callback **)** - `(form, page) => {}` callback will be called when the form has loaded. Allows for custom code before the form is built. Also accepts array of functions.
@@ -1189,7 +1194,8 @@ Here we have a complete reference to all methods available for all form objects.
 - **.readonly(** *[readonly]* **)** - set input template var *readonly* *(currently only used in `form.template()` vars. e.g. &lt;input readonly /&gt;)*
 - **.ignore(** *[ignore]* **)** - the input wont be included in the end result. The input will however, be included in any callbacks.
 - **.context(** name, value **)** - store a named context value in this input. *(Accessible in `form.template()` and `input.validate()`)*
-- **.context(** name, undefined **)** - delete a context entry.  
+- **.context(** name, undefined **)** - delete a context entry.
+- **.context(** context **)** - set multiple context values by passing in a keyed object. *(accessible in `form.template()` and anywhere we have the input object)*
 - **.pipe(** pipe **)** - pipe errors generated for this input to a specified target. Pipe can be `false`: to self, `true`: to form, `string`: to input with matching name. The string can also be any string, these errors can be retrieved with `form.errors('name')`)
 - **.empty(** value **)** - if the value of the input is `false`, `null`, `undefined`, `0` or `''` then it will be replaced with the `.empty(value)` you provide. This could be useful for having empty inputs return as null. 
 
