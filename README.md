@@ -15,6 +15,10 @@ Forme has no hardcoded concept of rendering. It provides you with a simple way t
 
 The project is still in development but feel free to have a play!
 
+## New in version 2.6.7
+- Added `result.inputTypes()` to FormeRequest object. This returns a list of unique input types used in the form.
+- Fixed `form.inputs()` and `page.inputs()` using an invalid property.
+
 ## New in version 2.6.6
 - Added `FormeDriver.saveRequestReference()` method that deals with saving a reference to the forme request in your storage object. By default it is `storage.forme[form.name]`.
 
@@ -1260,6 +1264,7 @@ Here we have a complete reference to all methods available for all form objects.
 - **result.values** - the current values of the form (including values from all submitted pages).
 - **result.errors** - any errors produced.
 - **result.actions** - any actions that were triggered.
+- **result.inputTypes()** - a list of all unique input types in the form.
 
 
 ## <a name="apiModule"></a> Module API 
