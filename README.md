@@ -15,6 +15,9 @@ Forme has no hardcoded concept of rendering. It provides you with a simple way t
 
 The project is still in development but feel free to have a play!
 
+## New in version 2.7.1
+- Fixed `input.require()` bug.
+
 ## Breaking changes in version 2.7
 - Changed `form.template()` if input has no errors the `input.errors` template var will now be `null` instead of empty array.
 - Renamed `FormePageContainer` to `FormePage`.
