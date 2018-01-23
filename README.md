@@ -15,6 +15,10 @@ Forme has no hardcoded concept of rendering. It provides you with a simple way t
 
 The project is still in development but feel free to have a play!
 
+## New in version 2.7.2
+- Added `result.inputs(type)` get the inputs for this request. Type is optional and can be a string or array of strings.
+- Fixed `result.inputTypes` bug.
+
 ## New in version 2.7.1
 - Fixed `input.require()` bug.
 
@@ -1289,6 +1293,7 @@ Here we have a complete reference to all methods available for all form objects.
 
 ## <a name="apiResult"></a> Result API 
 
+### Properties
 - **result.form** - the `Forme` instance.
 - **result.storage** - the storage object you originally passed into `form.submit(storage)` or `form.view(storage)`.
 - **result.valid** - was the form valid.
@@ -1298,7 +1303,10 @@ Here we have a complete reference to all methods available for all form objects.
 - **result.values** - the current values of the form (including values from all submitted pages).
 - **result.errors** - any errors produced.
 - **result.actions** - any actions that were triggered.
-- **result.inputTypes()** - a list of all unique input types in the form.
+- **result.inputTypes** - a list of all unique input types in the form.
+
+### Methods
+- **result.inputs(** *[type]* **)** - get the inputs for this request. Type is optional and can be a string or array of strings. If type is specified, only inputs of that type are returned. 
 
 
 ## <a name="apiModule"></a> Module API 
