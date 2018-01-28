@@ -15,6 +15,17 @@ Forme has no hardcoded concept of rendering. It provides you with a simple way t
 
 The project is still in development but feel free to have a play!
 
+## Breaking changes in version 2.8.0
+- Added `form.component()`, `page.component()`, `form.compose()`, `page.compose()` and `FormeDriver.compose()`. See [Components](#components) for more details
+- Changed `form.page()` so it can only be called from inactive form. previously you could add pages to a form that had already started. It might have worked, but it more then likely would have fallen over!
+- Added `form.externalPage()` which replaces calling `form.page(name, true)` to add a page *location*.
+- Added `form.pages()` and `form.externalPages()` method aliases.
+- Added `input.actions()` and `input.required()` method aliases.
+- Changed `form.page()` to only create pages physically attached to the form. *Page locations* are now added via `form.externalPage()`.
+- Replaced `input.submit()` (without params) to `input.submitter()`. The `input.submit()` still exists for adding submit handlers to the input.
+- Added more detailed FormeError types for errors produced at various stages.
+- Fixed spelling mistakes, code typos, general javascript errors.
+
 ## New in version 2.7.2
 - Added `result.inputs(type)` get the inputs for this request. Type is optional and can be a string or array of strings.
 - Fixed `result.inputTypes` bug.
@@ -22,7 +33,7 @@ The project is still in development but feel free to have a play!
 ## New in version 2.7.1
 - Fixed `input.require()` bug.
 
-## Breaking changes in version 2.7
+## Breaking changes in version 2.7.0
 - Changed `form.template()` if input has no errors the `input.errors` template var will now be `null` instead of empty array.
 - Renamed `FormePageContainer` to `FormePage`.
 - Added public exports for `FormePage`, `FormeInput`, `FormeConfigurableMethod`, `FormeConfigurableOverride`, `FormeConfigurableParam`, `FormeConfigurableBool`, `FormeConfigurableInt`, `FormeConfigurableFloat`, `FormeConfigurableString`, `FormeConfigurableObject`, `FormeConfigurableArray`, `FormeConfigurableCallbacks` and `FormeConfigurableStrings`. 
@@ -110,7 +121,7 @@ The project is still in development but feel free to have a play!
 - Cleaned up various bits
 
 ## New in version 2.3.12
-- Added `form.visited(page)` that allows us to determin if a page has already been visited
+- Added `form.visited(page)` that allows us to determine if a page has already been visited
 
 ## New in version 2.3.10
 - Added `form.unrequire()` that allows us to override all required inputs. Useful for debugging
@@ -167,11 +178,13 @@ If you have been using version 1.x then please review the entire readme. We have
 - [Manually calling form.next() / form.prev() / form.reset()](#manuallyCallingSpecialActions)
 - [Custom Drivers / Integration](#customDriversIntegration)
 - [Session Management](#sessionManagement)
+- [Components](#components)
 
 **API / Reference**
 - [Form](#apiForm)
 - [Page](#apiPage)
 - [Input](#apiInput)
+- [Component](#apiComponent)
 - [Result](#apiResult)
 - [Module](#apiModule)
 
@@ -1102,7 +1115,7 @@ Forme is clever, it stores your form session using you supplied `FormeDriver`. T
  
 By default Forme will expire form sessions that are **12 hours old**. To prevent people spamming, potentially filling up your database, by default Forme will allow a maximum of **50 sessions** to be stored. These are fairly high estimates so you may want to configure this!
  
-**Session managment is done on a per user basis, so by default Forme allows a user to have 50 active form sessions at once**
+**Session management is done on a per user basis, so by default Forme allows a user to have 50 active form sessions at once**
  
 If you would like to modify the session management properties, you can do the following:
 
@@ -1112,6 +1125,110 @@ forme.sessions(1000*60*5,1);
 ```
 
 The above example would set session management for *all future forms* to max **5 minutes old**, and only **1 session** allowed at a time (even if you had multiple tabs open).
+
+
+## <a name="components"></a> Components
+
+**Warning: currently under development**
+
+Since version 2.8 forme has added the ability to build complex input types via *components*. A component in forme does not actually have a physical object but instead you can hook into a `.compose()` operation and then build out your inputs as a result. This is best explained in a code snippet:
+
+```javascript
+//create form
+const form = forme('myForm');
+
+//add compose handler
+form.compose((form, page, container, component, details) => {
+    switch(details.component) {
+        case 'mySpecialComponent':
+            return container.add([
+                {
+                    name: 'theName',
+                    label: 'The Name',
+                    value: details.value.name || null,
+                },
+                {
+                    name: 'theValue',
+                    label: 'The Value',
+                    value: details.value.value || null,
+                },
+            ]);
+    }
+});
+
+//lets add two instances of this component (using the new 2.7+ configuration api)
+form.add([
+    {
+        name: 'field1',
+        component: 'mySpecialComponent',
+        value: {
+            theName: 'age',
+            theValue: 18,
+        },
+    },
+    {
+        name: 'field2',
+        component: 'mySpecialComponent',
+        value: {
+            theName: 'name',
+            theValue: 'John Smith',
+        },
+    },
+]);
+```
+
+You can see in this example we are adding a `.compose()` handler to our form. This handler could be added to the form, page or `FormeDriver.compose()`. The job of a `.compose()` handler is to add and then return a set of inputs. How the `.compose()` handler does this is upto you. In the example above we are checking the component name in the `details` object, and then responding to that. A more advanced example could be to dynamically `require()` a file based from the `details.component` name.
+
+Any input you return from the compose handler will have futher configurations applied to it.
+
+```javascript
+form.component({ component: 'myComponent1' }).label('A Label');
+```
+
+Here you can see we are calling `.label()` chained after the `.component()` call. This will modify **all** inputs that relate to this component. So in our previous example, it would change the label on both the `theName` and `theValue` inputs. For a single input component this is highly useful as we can use **all** input configuration methods to customise. If a component returns multiple inputs then we have to be careful as chaining `.foo()` calls will modify all inputs.
+
+All `input.foo()` methods can be applied to a component. There are only 2 exceptions and they are for `.name()` and `.value()`. These have been renamed and would be used as `component.inputName()` and `component.inputValue()`. This is because the component has its own `.name()` and `.value()` methods. 
+
+Components provide a mechanism for handling multiple inputs. We can use `component().param({ foo: bar})`. These params are stored in the `details` object that is passed to `.compose()` handlers. For example:
+
+```javascript
+form.compose((form, page, container, component, details) => {
+    switch(details.component) {
+        case 'mySpecialComponent':
+            return container.add([
+                {
+                    name: 'theName',
+                    label: details.params.nameLabel || 'The Name',
+                    value: details.value.name || null,
+                },
+                {
+                    name: 'theValue',
+                    label: details.params.valueLabel || 'The Value',
+                    value: details.value.value || null,
+                },
+            ]);
+    }
+});
+
+form.add([
+    {
+        name: 'field1',
+        type: 'mySpecialComponent',
+        value: {
+            theName: 'age',
+            theValue: 18,
+        },
+        params: {
+            nameLabel: 'Custom Name Label',
+            valueLabel: 'Custom Value Label',
+        },
+    },
+]);
+```
+
+You can see in this example we are now allowing the component to apply custom labels via the params object. As with every other part of forme, we are trying not to dictate how you should work. With this component approach you can customise your own plugin system!
+
+Components have one more thing to consider, *how do we set the value of a component?* This could be achieved by storing the value as a `component().param('value', 'myValue')` but instead we have provided a `component().value()` method. This value is provided to `.compose()` handlers in `details.value`. It is upto your own code how to process the value provided. Remember this is just the default `input.value()`, after a form submits the value will be different as you will have active form data.
 
 
 ## <a name="apiReference"></a> API Reference
@@ -1133,10 +1250,8 @@ Here we have a complete reference to all methods available for all form objects.
 - **.context(** name, value **)** - store a named context value in this form. *(accessible in `form.template()` and anywhere we have the form object)*
 - **.context(** name, undefined **)** - delete a context entry.
 - **.context(** context **)** - set multiple context values by passing in a keyed object. *(accessible in `form.template()` and anywhere we have the form object)*
-- **.page(** name/configuration **)** - adds a chainable page object to the form.
-- **.page(** name, true **)** - adds a single page location to the form. This is when you want to handle a paged form across multiple separate forms.
-- **.page(** array of strings **)** - adds multiple page locations to the form. This is when you want to handle a paged form across multiple separate forms.
-- **.page(** array of configurations **)** - adds multiple page objects to the form.
+- **.page(** name/configuration **)** - adds a chainable page object to the form. The *argument* can be a page name, array of page names, page configuration object or array of page configuration objects.
+- **.externalPage(** location **)** - adds a single external page to the form. This is when you want to handle a paged form across multiple separate forms.
 - **.driver(** driver **)** - change the driver this form uses. 
 
 ### Templating *(Configuration)*
@@ -1290,6 +1405,22 @@ Here we have a complete reference to all methods available for all form objects.
 - **.path(** **)** - get the currently defined path for this input. Path is in the format of `group1.group2.alias`. If no alias has been set then a path will be `group1.group2.name`. If no groups have been set then the path will be just the alias or name.
 - **.value(** **)** - gets current value for an active form (a form currently in `form.view()` or `form.submit()`)
  
+
+## <a name="apiComponent"></a> Component API 
+
+A component can call **any** [Input API](#apiInput) configuration methods by using the same naming convention. There are a few exceptions that have been prefixed with *"input"*:
+
+- **.inputName()**
+- **.inputValue()**
+ 
+
+### Component Configuration
+- **.component(** component **)** - the machine name for a component. Used to identify your component during `.compose()` handlers.
+- **.name(** name **)** - this is the group name that all inputs within a component get added to. This is equivilant to calling `input.group('name')`.
+- **.value(** value **)** - a value passed to `.compose()` handlers in `details.value`. Should be used to initilise your `input.value()` configuration.
+- **.param(** name, value **)** - params passed to `.compose()` handlers in `details.params`.
+- **.param(** params **)** - multiple params stored in an object, passed to `.compose()` handlers in `details.params`.
+
 
 ## <a name="apiResult"></a> Result API 
 
