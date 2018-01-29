@@ -15,6 +15,13 @@ Forme has no hardcoded concept of rendering. It provides you with a simple way t
 
 The project is still in development but feel free to have a play!
 
+## Breaking changes in version 2.8.1
+- Changed `FormeInput` class to have page argument in constructor. Can be ignored unless you are extendeding the FormeInput class via `FormeDriver`.
+- Changed the `.compose()` handler pattern as introduced in 2.8.0 (yes I know :P). See [Components](#components) for more details.
+- Changed all `component().foo()` input configuration methods to `component().inputFoo()`. Previously it was only overlapping methods! See [Components](#components) for more details.
+- Changed `FormeComponent` now extends from `FormeContainer` so we treat a component to be a container of inputs.
+- Added `FormeBase.container` and `FormeBase.parent` properties for retrieving relation info for forme objects.
+
 ## Breaking changes in version 2.8.0
 - Added `form.component()`, `page.component()`, `form.compose()`, `page.compose()` and `FormeDriver.compose()`. See [Components](#components) for more details
 - Changed `form.page()` so it can only be called from inactive form. previously you could add pages to a form that had already started. It might have worked, but it more then likely would have fallen over!
@@ -1131,17 +1138,17 @@ The above example would set session management for *all future forms* to max **5
 
 **Warning: currently under development**
 
-Since version 2.8 forme has added the ability to build complex input types via *components*. A component in forme does not actually have a physical object but instead you can hook into a `.compose()` operation and then build out your inputs as a result. This is best explained in a code snippet:
+Since version 2.8 forme has added the ability to build complex input types via *components*. A component in forme is built by hooking into a `.compose()` operation and then build out your inputs in response to the components type. This is best explained in a code snippet:
 
 ```javascript
 //create form
 const form = forme('myForm');
 
 //add compose handler
-form.compose((form, page, container, component, details) => {
-    switch(details.component) {
+form.compose((form, component, details) => {
+    switch(details.type) {
         case 'mySpecialComponent':
-            return container.add([
+            container.add([
                 {
                     name: 'theName',
                     label: 'The Name',
@@ -1157,18 +1164,18 @@ form.compose((form, page, container, component, details) => {
 });
 
 //lets add two instances of this component (using the new 2.7+ configuration api)
-form.add([
+form.component([
     {
+		type: 'mySpecialComponent',
         name: 'field1',
-        component: 'mySpecialComponent',
         value: {
             theName: 'age',
             theValue: 18,
         },
     },
     {
+		type: 'mySpecialComponent',
         name: 'field2',
-        component: 'mySpecialComponent',
         value: {
             theName: 'name',
             theValue: 'John Smith',
@@ -1177,23 +1184,23 @@ form.add([
 ]);
 ```
 
-You can see in this example we are adding a `.compose()` handler to our form. This handler could be added to the form, page or `FormeDriver.compose()`. The job of a `.compose()` handler is to add and then return a set of inputs. How the `.compose()` handler does this is upto you. In the example above we are checking the component name in the `details` object, and then responding to that. A more advanced example could be to dynamically `require()` a file based from the `details.component` name.
+You can see in this example we have added a `.compose()` handler to our form. The job of a `.compose()` handler is to make changes to the `component` object passed to it. How the `.compose()` handler does this is upto you. In the example above we are checking`details.type`, and then responding by calling `component.add()`. A more advanced example could be to dynamically `require()` a file based from the `details.type`.
 
-Any input you return from the compose handler will have futher configurations applied to it.
+After all `.compose()` handlers have been executed, forme will then further process any inputs that were added via `component.add()`. With this extra processing we can perform some magic:
 
 ```javascript
-form.component({ component: 'myComponent1' }).label('A Label');
+form.component({ type: 'myComponent1' }).inputLabel('A Label');
 ```
 
-Here you can see we are calling `.label()` chained after the `.component()` call. This will modify **all** inputs that relate to this component. So in our previous example, it would change the label on both the `theName` and `theValue` inputs. For a single input component this is highly useful as we can use **all** input configuration methods to customise. If a component returns multiple inputs then we have to be careful as chaining `.foo()` calls will modify all inputs.
+In this example, when we add our `.component()` to the form, we are chaining `.inputLabel()`. This will modify the label of **all** inputs that get created for this component by `.compose()` handlers. In our previous example, it would change the label on both the `theName` and `theValue` inputs. For a single input component this is highly useful as we can use **all** input configuration methods to customise. We simply prefix any input configuration method with *input*. e.g. `component().inputRequire()`.
 
-All `input.foo()` methods can be applied to a component. There are only 2 exceptions and they are for `.name()` and `.value()`. These have been renamed and would be used as `component.inputName()` and `component.inputValue()`. This is because the component has its own `.name()` and `.value()` methods. 
+If a component returns multiple inputs then we have to be careful as chaining `.inputFoo()` calls will modify all inputs. In the future we may improve this.
 
-Components provide a mechanism for handling multiple inputs. We can use `component().param({ foo: bar})`. These params are stored in the `details` object that is passed to `.compose()` handlers. For example:
+Components provide a mechanism for us to configure our inputs at the point of calling `form.component()`. We can use `component().param({ foo: bar })` to attach parameters to the component. These params are then stored in the `details.params` that is passed to `.compose()` handlers.
 
 ```javascript
-form.compose((form, page, container, component, details) => {
-    switch(details.component) {
+form.compose((form, component, details) => {
+    switch(details.type) {
         case 'mySpecialComponent':
             return container.add([
                 {
@@ -1210,7 +1217,7 @@ form.compose((form, page, container, component, details) => {
     }
 });
 
-form.add([
+form.component([
     {
         name: 'field1',
         type: 'mySpecialComponent',
@@ -1228,7 +1235,7 @@ form.add([
 
 You can see in this example we are now allowing the component to apply custom labels via the params object. As with every other part of forme, we are trying not to dictate how you should work. With this component approach you can customise your own plugin system!
 
-Components have one more thing to consider, *how do we set the value of a component?* This could be achieved by storing the value as a `component().param('value', 'myValue')` but instead we have provided a `component().value()` method. This value is provided to `.compose()` handlers in `details.value`. It is upto your own code how to process the value provided. Remember this is just the default `input.value()`, after a form submits the value will be different as you will have active form data.
+Components have one more thing to consider, *how do we set the value of a component?* This could be achieved by storing the value as a `component().param('value', 'myValue')` but instead we have provided `component().value()`. This value is passed to `.compose()` handlers in `details.value`. Remember this is just the default `input.value()`, after a form submits the value will be different as you will have active form data.
 
 
 ## <a name="apiReference"></a> API Reference
@@ -1408,15 +1415,18 @@ Here we have a complete reference to all methods available for all form objects.
 
 ## <a name="apiComponent"></a> Component API 
 
-A component can call **any** [Input API](#apiInput) configuration methods by using the same naming convention. There are a few exceptions that have been prefixed with *"input"*:
+A component can call **any** configuration methods by using the same naming convention. Simply prefix with *"input"*:
 
+E.g.:
 - **.inputName()**
 - **.inputValue()**
+
+See [Input API](#apiInput) for a complete list of all available configuration methods.
  
 
 ### Component Configuration
-- **.component(** component **)** - the machine name for a component. Used to identify your component during `.compose()` handlers.
-- **.name(** name **)** - this is the group name that all inputs within a component get added to. This is equivilant to calling `input.group('name')`.
+- **.type(** type **)** - the type of the component. Used to identify your component during `.compose()` handlers.
+- **.name(** name **)** - this is a unique name for this instance of the component. It is also the group that all of the component's inputs will be added to. This is equivilant to calling `input.group('name')`.
 - **.value(** value **)** - a value passed to `.compose()` handlers in `details.value`. Should be used to initilise your `input.value()` configuration.
 - **.param(** name, value **)** - params passed to `.compose()` handlers in `details.params`.
 - **.param(** params **)** - multiple params stored in an object, passed to `.compose()` handlers in `details.params`.
