@@ -15,6 +15,44 @@ Forme has no hardcoded concept of rendering. It provides you with a simple way t
 
 The project is still in development but feel free to have a play!
 
+
+## Index
+
+**Topics**
+- [Change Log](#changeLog)
+- [Hello World](#helloWorld)
+- [Working Form (+express)](#workingForm)
+- [Pages](#pages)
+- [Configuring Form Objects With a Single Call](#configuringFormObjectsWithASingleCall)
+- [Dynamic Forms](#dynamicForms)
+- [Grouping and Referencing Inputs](#groupingAndReferencingInputs)
+- [Input Type](#inputType)
+- [Input Is](#inputIs)
+- [Custom Validation](#customFormValidation)
+- [Custom Submit Handling](#customSubmitHandling)
+- [Actions](#actions)
+- [Custom Errors](#customErrors)
+- [Order of Execution](#orderOfExecution)
+- [.load(), .success(), .fail() and .done()?](#loadSuccessFailAndDone)
+- [Template](#template)
+- [Form Require Validation (and / or)](#requireValidation)
+- [Validation in final .then()](#validationInFinalThen)
+- [Manually calling form.next() / form.prev() / form.reset()](#manuallyCallingSpecialActions)
+- [Custom Drivers / Integration](#customDriversIntegration)
+- [Session Management](#sessionManagement)
+- [Components](#components)
+
+**API / Reference**
+- [Form](#apiForm)
+- [Page](#apiPage)
+- [Input](#apiInput)
+- [Component](#apiComponent)
+- [Result](#apiResult)
+- [Module](#apiModule)
+
+
+## <a name="changeLog"></a> Change Log
+
 ## Breaking changes in version 2.8.1
 - Changed `FormeInput` class to have page argument in constructor. Can be ignored unless you are extendeding the FormeInput class via `FormeDriver`.
 - Changed the `.compose()` handler pattern as introduced in 2.8.0 (yes I know :P). See [Components](#components) for more details.
@@ -160,40 +198,6 @@ If you have been using version 1.x then please review the entire readme. We have
 - callbacks no longer require a promise to be returned (a positive response will be assumed. Returning an error will cause a reject)
 - manual save has been renamed from `form.store(req)` to `form.save()`
 - the result object produced by `form.submit(storage).then(result => {})` and `form.view(storage).then(result => {})`, are now an *instanceof* FormeResult. (see [here](#apiResult))
-
-
-## Index
-
-**Topics**
-- [Hello World](#helloWorld)
-- [Working Form (+express)](#workingForm)
-- [Pages](#pages)
-- [Configuring Form Objects With a Single Call](#configuringFormObjectsWithASingleCall)
-- [Dynamic Forms](#dynamicForms)
-- [Grouping and Referencing Inputs](#groupingAndReferencingInputs)
-- [Input Type](#inputType)
-- [Input Is](#inputIs)
-- [Custom Validation](#customFormValidation)
-- [Custom Submit Handling](#customSubmitHandling)
-- [Actions](#actions)
-- [Custom Errors](#customErrors)
-- [Order of Execution](#orderOfExecution)
-- [.load(), .success(), .fail() and .done()?](#loadSuccessFailAndDone)
-- [Template](#template)
-- [Form Require Validation (and / or)](#requireValidation)
-- [Validation in final .then()](#validationInFinalThen)
-- [Manually calling form.next() / form.prev() / form.reset()](#manuallyCallingSpecialActions)
-- [Custom Drivers / Integration](#customDriversIntegration)
-- [Session Management](#sessionManagement)
-- [Components](#components)
-
-**API / Reference**
-- [Form](#apiForm)
-- [Page](#apiPage)
-- [Input](#apiInput)
-- [Component](#apiComponent)
-- [Result](#apiResult)
-- [Module](#apiModule)
 
 
 ## <a name="helloWorld"></a> Hello World 
@@ -1415,7 +1419,7 @@ Here we have a complete reference to all methods available for all form objects.
 
 ## <a name="apiComponent"></a> Component API 
 
-A component can call **any** configuration methods by using the same naming convention. Simply prefix with *"input"*:
+A component can call **any** input configuration methods by using the same naming convention. Simply prefix with *"input"*:
 
 E.g.:
 - **.inputName()**
