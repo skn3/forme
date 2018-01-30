@@ -53,6 +53,14 @@ The project is still in development but feel free to have a play!
 
 ## <a name="changeLog"></a> Change Log
 
+## New in version 2.8.3
+- Added all input handler functionality to components. E.g. `component().validate(callback)`
+- Refactored internal organisation of code to remove duplicate functionality.
+- Abstracted the validation handler.
+- General bug fixes
+- Reverted the `component.inputFoo()` from version 2.8.2, now only `component.inputType()` required the prefix.
+- Added `component.group()` for prefixing all component inputs with group. 
+
 ## Breaking changes in version 2.8.1
 - Changed `FormeInput` class to have page argument in constructor. Can be ignored unless you are extendeding the FormeInput class via `FormeDriver`.
 - Changed the `.compose()` handler pattern as introduced in 2.8.0 (yes I know :P). See [Components](#components) for more details.
@@ -869,35 +877,51 @@ Forme has a downright sensible order of execution. The order is as follows:
 
 `form.submit(storage).then(result => {})`
 1. call `form.submit(storage)`  
-
 2. execute `form.load(callback)` in order defined.
 3. execute `page.load(callback)` in order defined.
 4. execute `form.build(callback)` in order defined.
 5. execute `page.build(callback)` in order defined.
-6. execute `input.validate(callback)` in order defined.
-7. **(validation failed)** execute `input.invalid(callback)` specifically for the failing input, in order defined.
-8. **(validation success)** execute `input.valid(callback)` specifically for the successful input, in order defined.
-9 execute `page.validate(callback)` in order defined.
-10. execute `form.validate(callback)` in order defined.  
 
-11. **(form success)** execute `form.success(callback)` in order defined.
-12. **(form success)** execute `page.success(callback)` in order defined.
-13. **(form success)** execute `input.success(callback)` in order defined.
-14. **(form success)** execute `input.submit(callback)` in order defined.
-15. **(form success)** execute `page.submit(callback)` in order defined.
-16. **(form success)** execute `form.submit(callback)` in order defined.
-17. **(form success)** execute `page.action(action, callback)` in order defined.
-18. **(form success)** execute `form.action(action, callback)` in order defined.  
+6. execute `form.compose(callback)` in order defined.
+7. execute `page.compose(callback)` in order defined.
+8. execute `FormeDriver.compose(callback)` in order defined.
 
-19. **(form fail)** execute `form.fail(callback)` in order defined.
-20. **(form fail)** execute `page.fail(callback)` in order defined.
-21. **(form fail)** execute `input.fail(callback)` in order defined.  
+9. execute `input.validate(callback)` in order defined.
+10. execute `component.validate(callback)` in order defined.
 
-22. **(form success)** execute `input.done(callback)` in order defined.
-23. **(form success)** execute `page.done(callback)` in order defined.
-24. **(form success)** execute `form.done(callback)` in order defined.  
+11. **(validation failed)** execute `input.invalid(callback)` specifically for the failing input, in order defined.
+12. **(validation success)** execute `input.valid(callback)` specifically for the successful input, in order defined.
 
-25. return promise to `form.submit(storage).then(result => {})`.
+13. **(validation failed)** execute `component.invalid(callback)` specifically for the failing input, in order defined.
+14. **(validation success)** execute `component.valid(callback)` specifically for the successful input, in order defined.
+
+15. execute `page.validate(callback)` in order defined.
+16. execute `form.validate(callback)` in order defined.  
+
+17. **(form success)** execute `form.success(callback)` in order defined.
+18. **(form success)** execute `page.success(callback)` in order defined.
+19. **(form success)** execute `component.success(callback)` in order defined.
+20. **(form success)** execute `input.success(callback)` in order defined.
+
+21. **(form success)** execute `input.submit(callback)` in order defined.
+22. **(form success)** execute `component.submit(callback)` in order defined.
+23. **(form success)** execute `page.submit(callback)` in order defined.
+24. **(form success)** execute `form.submit(callback)` in order defined.
+
+25. **(form success)** execute `page.action(action, callback)` in order defined.
+26. **(form success)** execute `form.action(action, callback)` in order defined.  
+
+27. **(form fail)** execute `form.fail(callback)` in order defined.
+28. **(form fail)** execute `page.fail(callback)` in order defined.
+29. **(form fail)** execute `component.fail(callback)` in order defined.
+30. **(form fail)** execute `input.fail(callback)` in order defined.  
+
+31. **(form success)** execute `input.done(callback)` in order defined.
+32. **(form success)** execute `component.done(callback)` in order defined.
+33. **(form success)** execute `page.done(callback)` in order defined.
+34. **(form success)** execute `form.done(callback)` in order defined.  
+
+35. return promise to `form.submit(storage).then(result => {})`.
 
 During the above execution order, Forme might fail the process and skip to the fail steps. The result will contain various states but check for `result.reload = false` to see if the form needs reloading.
 
@@ -1152,7 +1176,7 @@ const form = forme('myForm');
 form.compose((form, component, details) => {
     switch(details.type) {
         case 'mySpecialComponent':
-            container.add([
+            component.add([
                 {
                     name: 'theName',
                     label: 'The Name',
@@ -1193,12 +1217,12 @@ You can see in this example we have added a `.compose()` handler to our form. Th
 After all `.compose()` handlers have been executed, forme will then further process any inputs that were added via `component.add()`. With this extra processing we can perform some magic:
 
 ```javascript
-form.component({ type: 'myComponent1' }).inputLabel('A Label');
+form.component({ type: 'myComponent1' }).label('A Label');
 ```
 
-In this example, when we add our `.component()` to the form, we are chaining `.inputLabel()`. This will modify the label of **all** inputs that get created for this component by `.compose()` handlers. In our previous example, it would change the label on both the `theName` and `theValue` inputs. For a single input component this is highly useful as we can use **all** input configuration methods to customise. We simply prefix any input configuration method with *input*. e.g. `component().inputRequire()`.
+In this example, when we add our `.component()` to the form, we are chaining `.label()`. This will modify the label of **all** inputs that get created for this component by `.compose()` handlers. In our previous example, it would change the label on both the `theName` and `theValue` inputs. For a single input component this is highly useful as we can use **all** input configuration methods to customise. 
 
-If a component returns multiple inputs then we have to be careful as chaining `.inputFoo()` calls will modify all inputs. In the future we may improve this.
+If a component returns multiple inputs then we have to be careful as chaining `.foo()` calls will modify all inputs. In the future we may improve this.
 
 Components provide a mechanism for us to configure our inputs at the point of calling `form.component()`. We can use `component().param({ foo: bar })` to attach parameters to the component. These params are then stored in the `details.params` that is passed to `.compose()` handlers.
 
@@ -1206,7 +1230,7 @@ Components provide a mechanism for us to configure our inputs at the point of ca
 form.compose((form, component, details) => {
     switch(details.type) {
         case 'mySpecialComponent':
-            return container.add([
+            component.add([
                 {
                     name: 'theName',
                     label: details.params.nameLabel || 'The Name',
@@ -1239,7 +1263,54 @@ form.component([
 
 You can see in this example we are now allowing the component to apply custom labels via the params object. As with every other part of forme, we are trying not to dictate how you should work. With this component approach you can customise your own plugin system!
 
-Components have one more thing to consider, *how do we set the value of a component?* This could be achieved by storing the value as a `component().param('value', 'myValue')` but instead we have provided `component().value()`. This value is passed to `.compose()` handlers in `details.value`. Remember this is just the default `input.value()`, after a form submits the value will be different as you will have active form data.
+Components have an issue to consider: *how do we set the value of a component?* This could be achieved by storing the value as a `component().param('value', 'myValue')` but instead we have provided `component().value()`. This value is passed to `.compose()` handlers in `details.value`. Remember this is just the default `input.value()`, after a form submits the value will be different as you will have active form data.
+
+With a component we can also attach all of the callback handlers that are available to an input. For example:
+
+```javascript
+form.compose((form, component, details) => {
+    switch(details.type) {
+        case 'mySpecialComponent':
+            //add inputs
+            component.add([
+                {
+                    name: 'theName',
+                    label: details.params.nameLabel || 'The Name',
+                    value: details.value.name || null,
+                },
+                {
+                    name: 'theValue',
+                    label: details.params.valueLabel || 'The Value',
+                    value: details.value.value || null,
+                },
+            ]);
+            
+            //add custom validation
+            component.validate((form, component, state) => {
+                if (state.values.value === state.values.key) {
+                    throw new Error(`value and key cant be the same!`);
+                }
+            });
+    }
+});
+
+form.component([
+    {
+        name: 'field1',
+        type: 'mySpecialComponent',
+        value: {
+            theName: 'age',
+            theValue: 18,
+        },
+        params: {
+            nameLabel: 'Custom Name Label',
+            valueLabel: 'Custom Value Label',
+        },
+    },
+]);
+```
+
+You can see above, we are attaching a `component.validate()` handler during the `.compose()`. This allows us to validate the component as a whole. The state object passed to it contains values for all teh inputs you added in `.compose()`. Just like any other `.validate()` handler, we can modify these state values and forme will handle updating the values after the callback returns.
 
 
 ## <a name="apiReference"></a> API Reference
@@ -1255,7 +1326,12 @@ Here we have a complete reference to all methods available for all form objects.
 - **.method(** method, action **)** - set the form method and specify the action
 - **.get(** action **)** - set the form to get and specify the action
 - **.post(** action **)** - set the form to post and specify the action *(a form will default the method to POST)*
-- **.add(** name/configuration **)** - add a new input to the form with the given name
+- **.add(** name/configuration **)** - add a new input to the form.
+- **.add(** configuration **)** - add a new input to the form.
+- **.add(** inputs **)** - add multiple new input to the form.
+- **.component(** name, type **)** - add a new component to the form.
+- **.component(** configuration **)** - add a new component to the form.
+- **.component(** components **)** - add multiple components to the form.
 - **.require(** conditions, operator, *[error]* **)** - and/or validation on single, multiple or groups of inputs
 - **.unrequire(** *[unrequire]* **)** - override all inputs and set them all to not required. Useful for debugging!
 - **.context(** name, value **)** - store a named context value in this form. *(accessible in `form.template()` and anywhere we have the form object)*
@@ -1279,6 +1355,7 @@ Here we have a complete reference to all methods available for all form objects.
 ### Callbacks *(configuration)*
 - **.load(** callback **)** - `form => {}` callback will be called when the form has loaded. Allows for custom code before the form is built. Also accepts array of functions.
 - **.build(** callback **)** - `form => {}` callback will be called in order, when the form is being built. Allows for dynamic inputs to be added. Also accepts array of functions.
+- **.compose(** callback **)** - `(form, component, details) => {}` callback will be called in order, when a form is attempting to build a component. The callback can return `true` to halt further `.compose()` handlers firing.
 - **.validate(** callback **)**, *[error]* **)** - `(form, state) => {}` custom validation callback. Also accepts array of functions.
 - **.success(** callback **)** - `form => {}` callback will be called in order, when a form has validated successfully (before any.submit() handlers are called). Also accepts array of functions.
 - **.fail(** callback **)** - `form => {}` callback will be called in order, when a form has failed validation. Also accepts array of functions.
@@ -1319,6 +1396,12 @@ Here we have a complete reference to all methods available for all form objects.
 - **.configure(** object **)** - allows complete configuration of the page using 1 info object.
 - **.name(** name **)** - change the page name
 - **.label(** label **)** - sets the page label potentially used in error messages and template vars
+- **.add(** name/configuration **)** - add a new input to the page.
+- **.add(** configuration **)** - add a new input to the page.
+- **.add(** inputs **)** - add multiple new input to the page.
+- **.component(** name, type **)** - add a new component to the page.
+- **.component(** configuration **)** - add a new component to the page.
+- **.component(** components **)** - add multiple components to the page.
 - **.require(** conditions, op, *[error]* **)** - and/or validation on single, multiple or groups of inputs
 - **.context(** name, value **)** - store a named context value in this page.
 - **.context(** name, undefined **)** - delete a context entry.
@@ -1327,6 +1410,7 @@ Here we have a complete reference to all methods available for all form objects.
 ### Callbacks *(configuration)*
 - **.load(** callback **)** - `(form, page) => {}` callback will be called when the form has loaded. Allows for custom code before the form is built. Also accepts array of functions.
 - **.build(** callback **)** - `(form, page) => {}` callback called when the page is building. Also accepts array of functions.
+- **.compose(** callback **)** - `(form, page, component, details) => {}` callback will be called in order, when a form is attempting to build a component. The callback can return `true` to halt further `.compose()` handlers firing.
 - **.validate(** callback, *[error]* **)** - `(form, page, state) => {}` callback called when the page is validating. Also accepts array of functions.
 - **.success(** callback **)** - `(form, page) => {}` callback will be called in order, when a form has validated successfully (before any.submit() handlers are called). Also accepts array of functions.
 - **.fail(** callback **)** - `(form, page) => {}` callback will be called in order, when a form has failed validation. Also accepts array of functions.
@@ -1335,7 +1419,6 @@ Here we have a complete reference to all methods available for all form objects.
 - **.done(** callback **)** - `(form, page) => {}` callback will be called in order, when a form has fully validated & submitted. Also accepts array of functions.
 
 ### Commands
-- **.add(** name/configuration **)** - add a new input to the page with the given name.
 - **.remove(** what **)** - remove all validation handlers of the specified type. `What` is the method name used to apply that validation to the page. Eg to remove all `page.require()` validation handlers we would call `page.remove('require')`. Use `page.remove('validate')` to remove all custom validation handlers.
 
 ### State
@@ -1419,21 +1502,29 @@ Here we have a complete reference to all methods available for all form objects.
 
 ## <a name="apiComponent"></a> Component API 
 
-A component can call **any** input configuration methods by using the same naming convention. Simply prefix with *"input"*:
+A component can call **any** input configuration methods by using the same naming convention as if you were configuring an input. There are some exceptions:
 
-E.g.:
-- **.inputName()**
-- **.inputValue()**
+### Renamed Input Methods
+- **.inputType()** is equal to calling `input.type()`
 
 See [Input API](#apiInput) for a complete list of all available configuration methods.
  
-
 ### Component Configuration
 - **.type(** type **)** - the type of the component. Used to identify your component during `.compose()` handlers.
 - **.name(** name **)** - this is a unique name for this instance of the component. It is also the group that all of the component's inputs will be added to. This is equivilant to calling `input.group('name')`.
+- **.group(** group, *[append]* **)** - specifies a group for values and template vars. Forme will automatically group value/template information when you specify a group, even if there is only 1 item in the group. You can chain multiple calls to .group() or provide an array of group names. This allows you to create groups at any depth. The `append` flag (defaults to true) allows you to add groups at the start of the chain, if specified as false.
 - **.value(** value **)** - a value passed to `.compose()` handlers in `details.value`. Should be used to initilise your `input.value()` configuration.
 - **.param(** name, value **)** - params passed to `.compose()` handlers in `details.params`.
 - **.param(** params **)** - multiple params stored in an object, passed to `.compose()` handlers in `details.params`.
+
+### Callbacks *(configuration)*
+- **.validate(** callback, *[error]* **)** - `(form, component, state) => {}` callback allows for custom validation routines to be added to components. Also accepts array of functions.
+- **.invalid(** callback **)** - `(form, component) => {}` callback will be called in order, when the component fails validation. Not to be confused with `component.fail()` which gets called for any form fail.
+- **.valid(** callback **)** - `(form, component) => {}` callback will be called in order, when the component succeeds validation. Not to be confused with `component.success()` which gets called for any form success.
+- **.success(** callback **)** - `(form, component) => {}` callback will be called in order, when a form has validated successfully (before any `.submit()` handlers are called). Also accepts array of functions.
+- **.fail(** callback **)** - `(form, component) => {}` callback will be called in order, when a form has failed validation. Also accepts array of functions.
+- **.submit(** callback **)** - `(form, component) => {}` allow for custom submit routines to be added to components. These are called in order just before a valid form returns to your main validate function. Also accepts array of functions.
+- **.done(** callback **)** - `(form, component) => {}` callback will be called in order, when a form has fully validated & submitted. Also accepts array of functions.
 
 
 ## <a name="apiResult"></a> Result API 

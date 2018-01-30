@@ -23,8 +23,9 @@
   },
   "homepage": "https://github.com/skn3/forme#readme",
   "dependencies": {
+    "clone": "^2.1.1",
     "extend": "^3.0.1",
     "string-template": "^1.0.0",
-    "validator": "^6.3.0"
+    "validator": "^9.3.0"
   }
 }
