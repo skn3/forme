@@ -53,6 +53,9 @@ The project is still in development but feel free to have a play!
 
 ## <a name="changeLog"></a> Change Log
 
+## New in version 2.8.6
+- Fixed bug in `component.param` and `input.data` `.configure()` definition.
+
 ## New in version 2.8.3
 - Added all input handler functionality to components. E.g. `component().validate(callback)`
 - Refactored internal organisation of code to remove duplicate functionality.
