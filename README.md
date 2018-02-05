@@ -53,11 +53,14 @@ The project is still in development but feel free to have a play!
 
 ## <a name="changeLog"></a> Change Log
 
+## Added changes in version 2.9.1
+- Added `input.template(template, client=false)` client flag
+
 ## Breaking changes in version 2.9.0
 - Changed `form.template()` to `form.templateVars()`.
 - Changed `input.template()` to `input.templateVars()`.
 - Changed `form.templateVars()`, `input.templateVars()` now returns a promise.
-- Added `input.template(template)` this lets us set a *template* for this input. Any input with a *template* will pass to the `FormeDriver.renderInputTemplate()` function. The driver is responsible for returning rendered template contents which gets put into the inputs templateVars under `{renderdered: 'template contents'}`.
+- Added `input.template(template, client=false)` this lets us set a *template* for this input. Any input with a *template* (that has been set with `client=false`) will pass to the `FormeDriver.renderInputTemplate()` function. The driver is responsible for returning rendered template contents which gets put into the inputs templateVars under `{renderdered: 'template contents'}`.
 - Added `FormeDriver.renderInputTemplate()` to allow the driver to perform rendering tasks on inputs!  
 
 ## New in version 2.8.7
@@ -1478,7 +1481,7 @@ Here we have a complete reference to all methods available for all form objects.
 - **.blacklist(** blacklist, *[strict]*, *[error]* **)** - value must not be one of the provided values
 
 ### Templating *(Configuration)*
-- **.template(** template **)** - set a *template* for this input. The template can be any string (maybe use a file-path or template name from your engine). Any input with a *template* will pass to the `FormeDriver.renderInputTemplate()` function. The driver is responsible for returning rendered template contents. If rendered content is returned, forme gets put into the input templateVar `{renderdered: 'template contents'}`.
+- **.template(** template, client=false **)** - set a *template* for this input. The template can be any string (maybe use a file-path or template name from your engine). If `client=true` then the `template` you specified is passed as a templateVar; the client should respond by rendering that specified template. If `client=false` (default) the template will pass to the `FormeDriver.renderInputTemplate()` function. The driver is responsible for returning rendered template contents. If rendered content is returned, forme gets put into the input templateVar `{renderdered: 'template contents'}`.
 - **.id(** id **)** - override the id that is generated for template vars. If no id id set the default id will be *'forme_input__[input.name]'* (minus square brackets)
 - **.hidden(** *[hidden]* **)** - set input template var *type* to *'hidden'* *(currently only used in form.templateVars() vars. e.g. &lt;input readonly /&gt;)*
 - **.help(** help **)** - sets the inputs help text *(only used in `form.templateVars()`)*
