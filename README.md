@@ -53,7 +53,11 @@ The project is still in development but feel free to have a play!
 
 ## <a name="changeLog"></a> Change Log
 
-## Added changes in version 2.9.1
+## New in version 2.9.2
+- Fixed some "garbage" data retaining in `FormeConfigurableMethod`.
+- Fixed conversion of string `.configure()` params when `null` or `undefined`.
+
+## New in version 2.9.1
 - Added `input.template(template, client=false)` client flag
 
 ## Breaking changes in version 2.9.0
