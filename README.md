@@ -53,6 +53,13 @@ The project is still in development but feel free to have a play!
 
 ## <a name="changeLog"></a> Change Log
 
+## Breaking changes in version 2.9.0
+- Changed `form.template()` to `form.templateVars()`.
+- Changed `input.template()` to `input.templateVars()`.
+- Changed `form.templateVars()`, `input.templateVars()` now returns a promise.
+- Added `input.template(template)` this lets us set a *template* for this input. Any input with a *template* will pass to the `FormeDriver.renderInputTemplate()` function. The driver is responsible for returning rendered template contents which gets put into the inputs templateVars under `{renderdered: 'template contents'}`.
+- Added `FormeDriver.renderInputTemplate()` to allow the driver to perform rendering tasks on inputs!  
+
 ## New in version 2.8.7
 - Added `component.encase()` option to specify how the component should wrap input values.
 - Added `input.options()` now accepts array of arrays in the format of `[[label, value], [[label,value]]`.
@@ -94,16 +101,16 @@ The project is still in development but feel free to have a play!
 - Fixed `input.require()` bug.
 
 ## Breaking changes in version 2.7.0
-- Changed `form.template()` if input has no errors the `input.errors` template var will now be `null` instead of empty array.
+- Changed `form.templateVars()` if input has no errors the `input.errors` template var will now be `null` instead of empty array.
 - Renamed `FormePageContainer` to `FormePage`.
 - Added public exports for `FormePage`, `FormeInput`, `FormeConfigurableMethod`, `FormeConfigurableOverride`, `FormeConfigurableParam`, `FormeConfigurableBool`, `FormeConfigurableInt`, `FormeConfigurableFloat`, `FormeConfigurableString`, `FormeConfigurableObject`, `FormeConfigurableArray`, `FormeConfigurableCallbacks` and `FormeConfigurableStrings`. 
 - Added `static get FormeDriver.formClass` to define the class used to construct form objects. 
 - Added `static get FormeDriver.pageClass` to define the class used to construct page objects.
 - Added `static get FormeDriver.inputClass` to define the class used to construct input objects.
-- Added `input.template()` to generate template vars for a speciffic input.
+- Added `input.templateVars()` to generate template vars for a speciffic input.
 - Added `input.icon()` to set an icon template var for an input.
 - Added `input.callingConfigureMethod()` this is used if you are extending the FormeInput object, it allows you to validate when custom configure methods are being called.
-- Added form template var `input.stateClassName` to `form.template()` output. This has only the `form.errorClassName()` and `form.requiredClassName()` for the given input.
+- Added form template var `input.stateClassName` to `form.templateVars()` output. This has only the `form.errorClassName()` and `form.requiredClassName()` for the given input.
 - Added form template var `input.icon`.
 - Added `form.inputClassName()` adds a class name to all inputs (not including `button` and `submit` types). Defaults to `forme-button`.
 - Added `form.buttonClassName()` adds a class name to all buttons. Defaults to `forme-input`.
@@ -601,7 +608,7 @@ We can pass a group path as a string separated with `.`, or an array of group se
 
 ## <a name="inputType"></a> Input Type
 
-Forme will intelligently try to guess the input 'type' you have defined. It does this by looking at the API's you have called on the input. You can override the type by calling `input.type('foo')`. The type is only used when returning the template vars with `forme.template()`, it does not alter how forme handles the input.
+Forme will intelligently try to guess the input 'type' you have defined. It does this by looking at the API's you have called on the input. You can override the type by calling `input.type('foo')`. The type is only used when returning the template vars with `forme.templateVars()`, it does not alter how forme handles the input.
 
 When Forme is guessing the input type, it lets the most recently called API take precedence. So for example if we call `input.is('email').secure()`, the guessed type will be `password` and not `email`. 
 
@@ -1341,22 +1348,21 @@ Here we have a complete reference to all methods available for all form objects.
 - **.component(** components **)** - add multiple components to the form.
 - **.require(** conditions, operator, *[error]* **)** - and/or validation on single, multiple or groups of inputs
 - **.unrequire(** *[unrequire]* **)** - override all inputs and set them all to not required. Useful for debugging!
-- **.context(** name, value **)** - store a named context value in this form. *(accessible in `form.template()` and anywhere we have the form object)*
+- **.context(** name, value **)** - store a named context value in this form. *(accessible in `form.templateVars()` and anywhere we have the form object)*
 - **.context(** name, undefined **)** - delete a context entry.
-- **.context(** context **)** - set multiple context values by passing in a keyed object. *(accessible in `form.template()` and anywhere we have the form object)*
+- **.context(** context **)** - set multiple context values by passing in a keyed object. *(accessible in `form.templateVars()` and anywhere we have the form object)*
 - **.page(** name/configuration **)** - adds a chainable page object to the form. The *argument* can be a page name, array of page names, page configuration object or array of page configuration objects.
 - **.externalPage(** location **)** - adds a single external page to the form. This is when you want to handle a paged form across multiple separate forms.
 - **.driver(** driver **)** - change the driver this form uses. 
 
 ### Templating *(Configuration)*
-- **.template(** **)** - builds all template vars for the form.
-- **.inputClassName(** className **)** - add a className to all inputs generated from `form.template()`. Accepts array of strings and string of class names separated by space. Defaults to `forme-input`.
+- **.inputClassName(** className **)** - add a className to all inputs generated from `form.templateVars()`. Accepts array of strings and string of class names separated by space. Defaults to `forme-input`.
 - **.inputClassName(**  **)** - removes all previous and default input class names when called without an argument (undefined).
-- **.buttonClassName(** className **)** - add a className to all inputs that are of button or submit type. This is included in `form.template()`. Accepts array of strings and string of class names separated by space. Defaults to `forme-button`.
+- **.buttonClassName(** className **)** - add a className to all inputs that are of button or submit type. This is included in `form.templateVars()`. Accepts array of strings and string of class names separated by space. Defaults to `forme-button`.
 - **.buttonClassName(**  **)** - removes all previous and default input button class names when called without an argument (undefined).
-- **.errorClassName(** className **)** - add a className to all inputs that have an error. This is included in `form.template()`. Accepts array of strings and string of class names separated by space. Defaults to `forme-error`.
+- **.errorClassName(** className **)** - add a className to all inputs that have an error. This is included in `form.templateVars()`. Accepts array of strings and string of class names separated by space. Defaults to `forme-error`.
 - **.errorClassName(**  **)** - removes all previous and default input error class names when called without an argument (undefined).
-- **.requiredClassName(** className **)** - add a className to all inputs that have an required. This is included in `form.template()`. Accepts array of strings and string of class names separated by space. Defaults to `forme-required`.
+- **.requiredClassName(** className **)** - add a className to all inputs that have an required. This is included in `form.templateVars()`. Accepts array of strings and string of class names separated by space. Defaults to `forme-required`.
 - **.requiredClassName(**  **)** - removes all previous and default input required class names when called without an argument (undefined).
 
 ### Callbacks *(configuration)*
@@ -1385,8 +1391,9 @@ Here we have a complete reference to all methods available for all form objects.
 - **.setValue(** input/string/path, value **)** - set the current submitted value for a specific input
 
 ### State
+- **.templateVars(** **)** - returns a promise that builds all template vars for the form.
 - **.getValue(** input/string/path, unsafe **)** - get the current submitted value for a specific input. The unsafe flag allows us to skip to see if the input exists, useful for fetching the value in the build phase when the input hasn't actually been added yet.
-- **.context(** name **)** - retrieve a named context value from this form. *(accessible in form.template() and anywhere we have the form object)*
+- **.context(** name **)** - retrieve a named context value from this form. *(accessible in form.templateVars() and anywhere we have the form object)*
 - **.values(** **)** - get all the current values for the form
 - **.errors(** *[name]* **)** - gets all errors in the form. If a name is provided, then only errors with that matching name are returned. Name can be an input name/alias, or name defined in `input.pipe()`.
 - **.inputs()** - returns an array of input names (including the current page) 
@@ -1412,7 +1419,7 @@ Here we have a complete reference to all methods available for all form objects.
 - **.require(** conditions, op, *[error]* **)** - and/or validation on single, multiple or groups of inputs
 - **.context(** name, value **)** - store a named context value in this page.
 - **.context(** name, undefined **)** - delete a context entry.
-- **.context(** context **)** - set multiple context values by passing in a keyed object. *(accessible in `form.template()` and anywhere we have the page object)*
+- **.context(** context **)** - set multiple context values by passing in a keyed object. *(accessible in `form.templateVars()` and anywhere we have the page object)*
 
 ### Callbacks *(configuration)*
 - **.load(** callback **)** - `(form, page) => {}` callback will be called when the form has loaded. Allows for custom code before the form is built. Also accepts array of functions.
@@ -1450,11 +1457,11 @@ Here we have a complete reference to all methods available for all form objects.
 - **.string(** *[null]* **)** - converts the value to a string. If `.string(true)` then null value will be allowed.
 - **.secure(** *[secure]* **)** - prevents storing of this value between page views/sessions.
 - **.checked(** *[checked]* **)** - sets a checkbox defaults checked state.
-- **.readonly(** *[readonly]* **)** - set input template var *readonly* *(currently only used in `form.template()` vars. e.g. &lt;input readonly /&gt;)*
+- **.readonly(** *[readonly]* **)** - set input template var *readonly* *(currently only used in `form.templateVars()` vars. e.g. &lt;input readonly /&gt;)*
 - **.ignore(** *[ignore]* **)** - the input wont be included in the end result. The input will however, be included in any callbacks.
-- **.context(** name, value **)** - store a named context value in this input. *(Accessible in `form.template()` and `input.validate()`)*
+- **.context(** name, value **)** - store a named context value in this input. *(Accessible in `form.templateVars()` and `input.validate()`)*
 - **.context(** name, undefined **)** - delete a context entry.
-- **.context(** context **)** - set multiple context values by passing in a keyed object. *(accessible in `form.template()` and anywhere we have the input object)*
+- **.context(** context **)** - set multiple context values by passing in a keyed object. *(accessible in `form.templateVars()` and anywhere we have the input object)*
 - **.pipe(** pipe **)** - pipe errors generated for this input to a specified target. Pipe can be `false`: to self, `true`: to form, `string`: to input with matching name. The string can also be any string, these errors can be retrieved with `form.errors('name')`)
 - **.empty(** value **)** - if the value of the input is `false`, `null`, `undefined`, `0` or `''` then it will be replaced with the `.empty(value)` you provide. This could be useful for having empty inputs return as null. 
 
@@ -1471,14 +1478,14 @@ Here we have a complete reference to all methods available for all form objects.
 - **.blacklist(** blacklist, *[strict]*, *[error]* **)** - value must not be one of the provided values
 
 ### Templating *(Configuration)*
-- **.template(** **)** - builds template vars for this input.
+- **.template(** template **)** - set a *template* for this input. The template can be any string (maybe use a file-path or template name from your engine). Any input with a *template* will pass to the `FormeDriver.renderInputTemplate()` function. The driver is responsible for returning rendered template contents. If rendered content is returned, forme gets put into the input templateVar `{renderdered: 'template contents'}`.
 - **.id(** id **)** - override the id that is generated for template vars. If no id id set the default id will be *'forme_input__[input.name]'* (minus square brackets)
-- **.hidden(** *[hidden]* **)** - set input template var *type* to *'hidden'* *(currently only used in form.template() vars. e.g. &lt;input readonly /&gt;)*
-- **.help(** help **)** - sets the inputs help text *(only used in `form.template()`)*
-- **.className(** className **)** - adds a className(s) to the input. Also accepts array of strings. *(only used in form.template())*
-- **.icon(** icon **)** - adds an `input.icon` template var to the input *(only used in form.template())*
-- **.data(** name, value **)** - adds html5 `data-name="value"` tags to the template values. *(only used in form.template())*
-- **.data(** data **)** - adds multiple html5 `data-name="value"` tags defined in an object containing key/value. *(only used in form.template())*
+- **.hidden(** *[hidden]* **)** - set input template var *type* to *'hidden'* *(currently only used in form.templateVars() vars. e.g. &lt;input readonly /&gt;)*
+- **.help(** help **)** - sets the inputs help text *(only used in `form.templateVars()`)*
+- **.className(** className **)** - adds a className(s) to the input. Also accepts array of strings. *(only used in form.templateVars())*
+- **.icon(** icon **)** - adds an `input.icon` template var to the input *(only used in form.templateVars())*
+- **.data(** name, value **)** - adds html5 `data-name="value"` tags to the template values. *(only used in form.templateVars())*
+- **.data(** data **)** - adds multiple html5 `data-name="value"` tags defined in an object containing key/value. *(only used in form.templateVars())*
 
 ### Callbacks *(configuration)*
 - **.validate(** callback, *[error]* **)** - `(form, input, state) => {}` callback allows for custom validation routines to be added to inputs. Also accepts array of functions.
@@ -1502,7 +1509,8 @@ Here we have a complete reference to all methods available for all form objects.
 - **.remove(** what **)** - remove all validation handlers of the specified type. `What` is the method name used to apply that validation to the input. Eg to remove all `input.max()` validation handlers we would call `input.remove('max')`. Use `input.remove('validate')` to remove all custom validation handlers.
  
 ### State
-- **.context(** string **)** - retrieve a named context value from this input. *(Accessible in `form.template()` and `input.validate()`)*
+- **.templateVars(** **)** - returns a promise that builds the template vars for this input.
+- **.context(** string **)** - retrieve a named context value from this input. *(Accessible in `form.templateVars()` and `input.validate()`)*
 - **.path(** **)** - get the currently defined path for this input. Path is in the format of `group1.group2.alias`. If no alias has been set then a path will be `group1.group2.name`. If no groups have been set then the path will be just the alias or name.
 - **.value(** **)** - gets current value for an active form (a form currently in `form.view()` or `form.submit()`)
  
@@ -1542,7 +1550,7 @@ See [Input API](#apiInput) for a complete list of all available configuration me
 - **result.storage** - the storage object you originally passed into `form.submit(storage)` or `form.view(storage)`.
 - **result.valid** - was the form valid.
 - **result.reload** - does the form need reloading.
-- **result.template** - the template vars for the form (as if you called `form.template()`).
+- **result.templateVars** - the template vars for the form (as if you called `form.templateVars()`).
 - **result.destination** - the destination, if the form needs reloading.
 - **result.values** - the current values of the form (including values from all submitted pages).
 - **result.errors** - any errors produced.
