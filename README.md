@@ -53,10 +53,14 @@ The project is still in development but feel free to have a play!
 
 ## <a name="changeLog"></a> Change Log
 
+## New in version 2.9.5
+- Fixed bug in configuration when input param is a null object.
+- Fixed issue where certain handlers were not exported from `.configuration` (input process handlers).
+
 ## Breaking changes in version 2.9.4
 - Changed how `component.id()` works. This now sets the id for the component which is provided to `.compose()` handlers. 
 
-## Fixed in version 2.9.3
+## New in version 2.9.3
 - Refactored how the configuration system builds configure options for order sensitive methods. 
 
 ## New in version 2.9.2
