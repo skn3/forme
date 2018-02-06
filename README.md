@@ -53,6 +53,9 @@ The project is still in development but feel free to have a play!
 
 ## <a name="changeLog"></a> Change Log
 
+## Breaking changes in version 2.9.4
+- Changed how `component.id()` works. This now sets the id for the component which is provided to `.compose()` handlers. 
+
 ## Fixed in version 2.9.3
 - Refactored how the configuration system builds configure options for order sensitive methods. 
 
@@ -1530,12 +1533,16 @@ Here we have a complete reference to all methods available for all form objects.
 A component can call **any** input configuration methods by using the same naming convention as if you were configuring an input. There are some exceptions:
 
 ### Renamed Input Methods
-- **.inputType()** is equal to calling `input.type()`
+- **.inputId()** is equal to calling `input.id()`
+- **.inputName()** is equal to calling `input.name()`
+- **.inputValue()** is equal to calling `input.value()`
+- **.inputGroup()** is equal to calling `input.group()`
 
 See [Input API](#apiInput) for a complete list of all available configuration methods.
  
 ### Component Configuration
 - **.type(** type **)** - the type of the component. Used to identify your component during `.compose()` handlers.
+- **.id(** id **)** - this should be set to a unique id for this instance of the component. It is upto the `.compose()` method to process this id.
 - **.name(** name **)** - this is a unique name for this instance of the component. It is also the group that all of the component's inputs will be added to. This is equivilant to calling `input.group('name')`.
 - **.encase(** encase **)** - specifies how the component encases the inputs. This will modify the inputs group/alias. By default it is set to `null` (auto) but it can also be set to `true` or `false`. If you have only 1 input in your component and the `.encase()` is set to `null` or `false` then forme will set the `input.alias()` to the name of the component. If there are multiple inputs or you have set `.encase(true)`, the inputs will be grouped by the components name.  
 - **.group(** group, *[append]* **)** - specifies a group for values and template vars. Forme will automatically group value/template information when you specify a group, even if there is only 1 item in the group. You can chain multiple calls to .group() or provide an array of group names. This allows you to create groups at any depth. The `append` flag (defaults to true) allows you to add groups at the start of the chain, if specified as false.
