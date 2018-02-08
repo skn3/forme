@@ -27,5 +27,10 @@
     "extend": "^3.0.1",
     "string-template": "^1.0.0",
     "validator": "^9.3.0"
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "chai-as-promised": "^7.1.1",
+    "mocha": "^5.0.0"
   }
 }

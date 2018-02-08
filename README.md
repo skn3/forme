@@ -53,6 +53,31 @@ The project is still in development but feel free to have a play!
 
 ## <a name="changeLog"></a> Change Log
 
+## Breaking changes in version 3.0.0
+- Changed the structure of templateVars. Container types (eg form, page, input) now put their child objects in `.children: {}`.
+- Removed `component.encase()`. It was a bad design choice. All components now encapsulate their data/templateVars.
+- Removed `component.foo()` and `component.inputFoo()` input configuration methods. Before we could modify internal inputs via *magic* methods. These *magic* are gone! 
+- Refactored the internals for all exection steps. Now everything is programmed generically in base.js. Overidding objects now customise the behaviour accordingly.
+- Refactored the _clone() method across the entire system!
+- Refactored a ton of internal function names.
+- Refactored a ton of ordering of code, for good housekeeping!
+_ Removed dead variable `input._convert`. It was previously tracking if the input has a a conversion process handler, but this value is not used! 
+- Added initial test files using mocha (lots of work here still)
+- Changed FormeForm constructor to accept driver as second param.
+- Changed form, page, component, input constructors to not require form objects passed in, only the details of the creating object. These form objects are linked elsewhere now.
+- Fixed page/pages configuration option for form.
+- Added `input.getValue()` to get runtime input value.
+- Added `input.setValue(value)` to set runtime input value.
+- Changed `input.value()` to only set the inputs default value during configuration.
+- Added `FormeResult.getContext(name)`. To get form context value.
+- Added `FormeResult.getContext(path, name)`. To get input/component context value.  
+- Changed `form.submit()` to `form.execute()` for when you wish to *submit* the form. `form.submit(callback)` still exists for adding submit handlers. 
+- Added `.__formeClass:` to all templateVars. Can be `__formeClass: 'form'`, `__formeClass: 'group'`, `__formeClass: 'component'` or `__formeClass: 'input'`. 
+- Changed `form.templateVars` output from `{form:{foo:bar}, input:{}}` to `{foo:bar, children:{}}`. 
+- Changed how component inputs are modified. Now only inputs configured with `.expose()` will be effected by `component.foo()` configuration calls.
+- Fixed bug in validation of configurable array of callbacks.
+- Fixed inclusion of `input.validate()` allowed on component. Is ignored as component has its own input validation.
+
 ## New in version 2.9.5
 - Fixed bug in configuration when input param is a null object.
 - Fixed issue where certain handlers were not exported from `.configuration` (input process handlers).
@@ -980,30 +1005,30 @@ Forme does not dictate how your form should be rendered. We provide a mechanism 
 
 ```javascript
 template = {
-    form: {
-        name: '',
-        method: '',
-        action: '', //not to be confused with Forme actions
-        first: true/false, //is this the first time the form is being viewed
-        context: {
-            any: 'data',
-            added: 'to',
-            the: 'form',
-            using: 'form.context()',
-        },
-        errors: [
-            {
-                name: '',
-                error: 'form error',
-            },
-            {
-                name: 'field1',
-                error: 'input error',
-            },
-        ],
+    __formeClass: 'form',//for easily identifying what this node is
+    name: '',
+    method: '',
+    action: '', //not to be confused with Forme actions
+    first: true/false, //is this the first time the form is being viewed
+    context: {
+        any: 'data',
+        added: 'to',
+        the: 'form',
+        using: 'form.context()',
     },
-    input: {
+    errors: [
+        {
+            name: '',
+            error: 'form error',
+        },
+        {
+            name: 'field1',
+            error: 'input error',
+        },
+    ],
+    children: {
         field1: {
+            __formeClass: 'input',//for easily identifying what this node is
             id: '',//default: 'forme_input__' + input._name
             name: '',
             alias: '',//default: to input._name 
@@ -1038,10 +1063,13 @@ template = {
             },
         },
         group1: {
+            __formeClass: 'group',
             field2: {
+                __formeClass: 'input',
                 //input details here
             },
             alias1: {
+                __formeClass: 'input',
                 //input details here                
             }
         }
@@ -1467,6 +1495,7 @@ Here we have a complete reference to all methods available for all form objects.
 - **.value(** value **)** - (when building) set the default value. This will only when the form is inactive. (**not** currently in `form.view()` or `form.submit()`)
 - **.permanent(** value **)** - forces the input to always have this value
 - **.override(** value **)** - overrides the inputs value upon submit. Useful for displaying a dummy value on a form that has a fixed value in your results!
+- **.expose(** expose **)** - Defaults to `false`. when this input is added to a component, this tells the component that the input is exposed to the world. This means any calls to `component.foo()` get mapped to `input.foo()`.
 - **.type(** type **)** - override input template var *type*. By default forme will guess a type based on the input properties that you have defined. 
 - **.bool(** *[null]* **)** - converts the value to a bool. If `.bool(true)` then null value will be allowed. 
 - **.int(** *[null]* **)** - converts the value to an int. If `.int(true)` then null value will be allowed.
