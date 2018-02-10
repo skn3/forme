@@ -54,6 +54,7 @@ The project is still in development but feel free to have a play!
 ## <a name="changeLog"></a> Change Log
 
 ## Breaking changes in version 3.0.0
+- Replaced `input.value()` with `input.defaultValue()` (sorry for such a gnarly change).
 - Added `form.setNamedValue()`.
 - Added `container.setElementValue()`.
 - Removed `form.setValue()`. Now replaced with `container.setElementValue()` and `form.setNamedValue()`.

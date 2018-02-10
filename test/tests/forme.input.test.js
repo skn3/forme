@@ -13,7 +13,7 @@ describe('Input', function () {
                     {
                         type: 'text',
                         name: 'myInput1',
-                        value: 'theDefaultValue',
+                        defaultValue: 'theDefaultValue',
                     },
                 ],
             });

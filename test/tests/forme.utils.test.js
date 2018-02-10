@@ -147,11 +147,11 @@ describe('Utils', function () {
             const obj = {
                 node1: {
                     sub1: {
-                        value: 'one',
+                        defaultValue: 'one',
                         other: 'hello',
                     },
                     sub2: {
-                        value: 'two',
+                        defaultValue: 'two',
                         other: 'world',
                     },
                     other: 't00t!',
@@ -162,7 +162,7 @@ describe('Utils', function () {
             const pointer = utils.object.find.path(obj, 'node1.sub2');
             expect(pointer).to.deep.equal({
                 other: 'world',
-                value: 'two',
+                defaultValue: 'two',
             });
         });
 
@@ -170,11 +170,11 @@ describe('Utils', function () {
             const obj = {
                 node1: {
                     sub1: {
-                        value: 'one',
+                        defaultValue: 'one',
                         other: 'hello',
                     },
                     sub2: {
-                        value: 'two',
+                        defaultValue: 'two',
                         other: 'world',
                     },
                     other: 't00t!',
