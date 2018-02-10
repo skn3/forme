@@ -14,12 +14,10 @@ describe('Container', function () {
             expect(pointer).to.have.property('_name').that.equals('input1');
         });
 
-        it('should get self (element) when no path given', function () {
+        it('should NOT get self (element) when no path given', function () {
             const pointer = createForm.withTwoRootInputs().getElement();
 
-            expect(pointer).to.have.property('formeClass').that.equals('form');
-            expect(pointer).to.have.property('_method').that.equals('POST');
-            expect(pointer).to.have.property('_name').that.equals('testForm');
+            expect(pointer).to.not.exist;
         });
 
         it('should fail to find element', function () {
@@ -31,7 +29,7 @@ describe('Container', function () {
         it('should get element by name on built form', function () {
             return createForm.withTwoRootInputs().view(createExpressRequest())
             .then(result => {
-                const pointer = result.getElement('input1');
+                const pointer = result.form.getElement('input1');
 
                 expect(pointer).to.have.property('formeClass').that.equals('input');
                 expect(pointer).to.have.property('_type').that.equals('text');
@@ -42,7 +40,7 @@ describe('Container', function () {
         it('should get element that was added in build handler', function () {
             return createForm.withTwoInputAddedDuringBuild().view(createExpressRequest())
             .then(result => {
-                const pointer = result.getElement('input1');
+                const pointer = result.form.getElement('input1');
 
                 expect(pointer).to.have.property('formeClass').that.equals('input');
                 expect(pointer).to.have.property('_type').that.equals('text');

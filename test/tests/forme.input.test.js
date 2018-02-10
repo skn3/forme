@@ -51,7 +51,7 @@ describe('Input', function () {
             return form.execute(createExpressRequest())
             .then(result => {
                 expect(result.valid).to.equal(false);
-                expect(result).to.have.nested.property('_errors').that.is.an('array').with.lengthOf(1).and.nested.property('[0].error').that.equals('CUSTOM_ERROR_TOKEN');
+                expect(result).to.have.property('errors').that.is.an('array').with.lengthOf(1).and.nested.property('[0].error').that.equals('CUSTOM_ERROR_TOKEN');
             });
         });
 
@@ -79,7 +79,7 @@ describe('Input', function () {
             }))
             .then(result => {
                 expect(result.valid).to.equal(true);
-                expect(result).to.have.nested.property('_errors').that.is.an('array').with.lengthOf(0);
+                expect(result).to.have.property('errors').that.is.an('array').with.lengthOf(0);
             });
         });
 
@@ -108,7 +108,7 @@ describe('Input', function () {
             }))
             .then(result => {
                 expect(result.valid).to.equal(true);
-                expect(result).to.have.nested.property('_errors').that.is.an('array').with.lengthOf(0);
+                expect(result).to.have.property('errors').that.is.an('array').with.lengthOf(0);
             });
         });
 
@@ -137,7 +137,7 @@ describe('Input', function () {
             }))
             .then(result => {
                 expect(result.valid).to.equal(true);
-                expect(result).to.have.nested.property('_errors').that.is.an('array').with.lengthOf(0);
+                expect(result).to.have.property('errors').that.is.an('array').with.lengthOf(0);
             });
         });
     });

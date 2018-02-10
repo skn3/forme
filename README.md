@@ -54,9 +54,44 @@ The project is still in development but feel free to have a play!
 ## <a name="changeLog"></a> Change Log
 
 ## Breaking changes in version 3.0.0
+- Added `form.setNamedValue()`.
+- Added `container.setElementValue()`.
+- Removed `form.setValue()`. Now replaced with `container.setElementValue()` and `form.setNamedValue()`.
+- Changed `input.match()` to now support any valid element as a target to match against!
+- Added `form.getNamedValue(name, unsafe)` and `form.getUnsafeNamedValue(name, unsafe)`.
+- Removed `form.getValue()`.
+- Removed all `FormeResult.getFoo()` methods. The result object is now generated at time of creation. Any more detailed results should be accessed via `result.form.getFoo()`.
+- Refactored all *"state"* methods/properties to be prefixed e.g. `form.error()` becomes `form.addError()`. Have globally applied these state methods to all *container* or *element* objects where applicable. These are all all explained further indvidually in this 3.0.0 changelog.
+- Renamed `form.completedPage()` to `form.hasCompleted()`.
+- Renamed `form.visitedPage()` to `form.hasVisited()`.
+- Renamed `form.url(page)` to `form.getUrl(page=null)`.
+- Added `element.getRawValue(defaultValue=undefined)` methods on all supported objects.
+- Replaced `form.raw()` with `form.getRawElementValue()`.
+- Added `container.getRawElementValue(path, defaultValue=undefined)` methods on all supported objects.
+- Replaced `form.values()` with `form.getValues()`.
+- Added `container.getValues()` methods on all supported objects.
+- Replaced `form.storage()` *method* with `element.storage` property. This has also been added to all supported objects as `element.storage`.
+- Changed `input.remove()`, `page.remove()` and `form.remove()`. Renamed to `element.removeHandler()`.
+- Added `element.path` property to all supported objects.
+- Removed `input.path()` method. (replaced with `input.path` property)
+- Added `element.getErrors()` methods on all supported objects.
+- Added `container.getElementErrors(path)` methods on all supported objects.
+- Added `form.getNamedErrors(name)` to form.
+- Added `form.getAllErrors(name)` to form.
+- Removed `form.errors()`.
+- Added `container.addElementError(path, message)` methods on all supported objects.
+- Added `element.addError(message)` methods on all supported objects.
+- Removed `form.error()`.
+- Added `container.getInputs()` methods on all supported objects.
+- Added `container.getInputTypes()` methods on all supported objects.
+- Added `FormeRequest.form` property.
+- Added `FormeRequest.page` property.
+- Removed `form.inputs()` (would get list of input names).
+- Added `container.getInputNames()` methods on all supported objects.
+- Removed all public methods from `FormeRequest`. These are now all accessed via the `request.form.foo()`.
+- Changed `form.inputs()` to `form.getAllInputNames()` for clarity!
 - Added `.error()` to all form objects. Allows for generating error from any form object. The internal error piping will handle where the error goes.
 - Changed `input.pipe()` to new format and added `.pipe()` to all form objects. The path can now be an element path or one of the following `->form`, `->page`, `->container` or `-parent`. Error piping will keeping piping between targets until it finds teh request storage object! 
-- Added `result.getElement(path)` to get input from the result object.
 - Refactored how forme stores results (per page identifier). We now just store whatever `_buildValues()` spits out!
 - Refactored how forme builds *"templateVars"*. Everything now pumped through the actual physical structure instead of being offloaded to a crusty `utils.group.merge.create.find.blah.foo` call.
 - Refactored how forme builds *"values"*. Everything now pumped through the actual physical structure instead of being offloaded to a monolithic `request._fetchValues()` call.
@@ -74,9 +109,7 @@ _ Removed dead variable `input._convert`. It was previously tracking if the inpu
 - Fixed page/pages configuration option for form.
 - Added `input.getValue()` to get runtime input value.
 - Added `input.setValue(value)` to set runtime input value.
-- Changed `input.value()` to only set the inputs default value during configuration.
-- Added `FormeResult.getContext(name)`. To get form context value.
-- Added `FormeResult.getContext(path, name)`. To get input/component context value.  
+- Changed `input.value()` to only set the inputs default value during configuration.  
 - Changed `form.submit()` to `form.execute()` for when you wish to *submit* the form. `form.submit(callback)` still exists for adding submit handlers. 
 - Added `.__formeClass:` to all templateVars. Can be `__formeClass: 'form'`, `__formeClass: 'group'`, `__formeClass: 'component'` or `__formeClass: 'input'`. 
 - Changed `form.templateVars` output from `{form:{foo:bar}, input:{}}` to `{foo:bar, children:{}}`. 

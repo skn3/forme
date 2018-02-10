@@ -35,7 +35,7 @@ describe('Utils', function () {
                 const structure = result.templateVars;
                 const pointer = utils.structure.find.path(structure, 'group1.group2');
 
-                expect(result.getInputs()).to.be.an('array').that.has.lengthOf(3);
+                expect(result.inputs).to.be.an('array').that.has.lengthOf(3);
                 expect(pointer).to.containSubset({
                     __formeClass: 'group',
                     children: {
@@ -76,7 +76,7 @@ describe('Utils', function () {
                 const structure = result.templateVars;
                 const pointer = utils.structure.find.path(structure, ['group1', 'group2']);
 
-                expect(result.getInputs()).to.be.an('array').that.has.lengthOf(3);
+                expect(result.inputs).to.be.an('array').that.has.lengthOf(3);
                 expect(pointer).to.containSubset({
                     __formeClass: 'group',
                     children: {

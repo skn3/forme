@@ -100,7 +100,7 @@ describe('Component', function () {
             //view the form
             return form.view(createExpressRequest())
             .then(result => {
-                const value = result.form.getValue('myComponent1');
+                const value = result.form.getNamedValue('myComponent1');
 
                 var wtf = 123;
             });
@@ -122,11 +122,7 @@ describe('Component', function () {
             return form.view(createExpressRequest())
             .then(result => {
 
-                const values = result.form._buildValues({
-                    alias: true,
-                    group: true,
-                    store: true,
-                });
+                const values = result.form.getValues();
 
                 var wtf = 123;
             });

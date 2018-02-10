@@ -194,13 +194,13 @@ describe('Form', function () {
             //validate the submit
             result => {
                 expect(result.valid).to.equal(false);
-                expect(result).to.have.nested.property('_errors').that.is.an('array').with.lengthOf(1).and.nested.property('[0].error').that.equals('CUSTOM_ERROR_TOKEN');
+                expect(result).to.have.nested.property('errors').that.is.an('array').with.lengthOf(1).and.has.nested.property('[0].error').that.equals('CUSTOM_ERROR_TOKEN');
             })
 
             //test the view
             .then(result => {
                 expect(result.valid).to.equal(true);
-                expect(result).to.have.nested.property('_errors').that.is.an('array').with.lengthOf(1).and.nested.property('[0].error').that.equals('CUSTOM_ERROR_TOKEN');
+                expect(result).to.have.nested.property('errors').that.is.an('array').with.lengthOf(1).and.has.nested.property('[0].error').that.equals('CUSTOM_ERROR_TOKEN');
                 expect(result.values).to.have.property('myInput2').that.equals('insert_value_here');
             });
         });
@@ -234,13 +234,13 @@ describe('Form', function () {
             //validate the submit
             result => {
                 expect(result.valid).to.equal(false);
-                expect(result).to.have.nested.property('_errors').that.is.an('array').with.lengthOf(1).and.nested.property('[0].error').that.equals('CUSTOM_ERROR_TOKEN');
+                expect(result).to.have.property('errors').that.is.an('array').with.lengthOf(1).and.nested.property('[0].error').that.equals('CUSTOM_ERROR_TOKEN');
             })
 
             //test the view
             .then(result => {
                 expect(result.valid).to.equal(true);
-                expect(result).to.have.nested.property('_errors').that.is.an('array').with.lengthOf(1).and.nested.property('[0].error').that.equals('CUSTOM_ERROR_TOKEN');
+                expect(result).to.have.property('errors').that.is.an('array').with.lengthOf(1).and.nested.property('[0].error').that.equals('CUSTOM_ERROR_TOKEN');
                 expect(result.values).to.deep.equal({
                     group1: {
                         group2: {
