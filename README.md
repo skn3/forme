@@ -54,6 +54,12 @@ The project is still in development but feel free to have a play!
 ## <a name="changeLog"></a> Change Log
 
 ## Breaking changes in version 3.0.0
+- Added `.error()` to all form objects. Allows for generating error from any form object. The internal error piping will handle where the error goes.
+- Changed `input.pipe()` to new format and added `.pipe()` to all form objects. The path can now be an element path or one of the following `->form`, `->page`, `->container` or `-parent`. Error piping will keeping piping between targets until it finds teh request storage object! 
+- Added `result.getElement(path)` to get input from the result object.
+- Refactored how forme stores results (per page identifier). We now just store whatever `_buildValues()` spits out!
+- Refactored how forme builds *"templateVars"*. Everything now pumped through the actual physical structure instead of being offloaded to a crusty `utils.group.merge.create.find.blah.foo` call.
+- Refactored how forme builds *"values"*. Everything now pumped through the actual physical structure instead of being offloaded to a monolithic `request._fetchValues()` call.
 - Changed the structure of templateVars. Container types (eg form, page, input) now put their child objects in `.children: {}`.
 - Removed `component.encase()`. It was a bad design choice. All components now encapsulate their data/templateVars.
 - Removed `component.foo()` and `component.inputFoo()` input configuration methods. Before we could modify internal inputs via *magic* methods. These *magic* are gone! 
