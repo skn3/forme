@@ -54,6 +54,7 @@ The project is still in development but feel free to have a play!
 ## <a name="changeLog"></a> Change Log
 
 ## Breaking changes in version 3.0.0
+- Renamed `element.getValues()` to `element.getValue()` but we still have `element.getValues()` as a shortcut!
 - Fixed `container.input`, `container.component` and `form.page` configuration when passed as single object. The configuration method override analyzer was eating the input values incorrectly!
 - Added `element.groups()` shortcut for `element.group()`.
 - Added testing "blueprint" form helpers. To simplify the writting of tests!

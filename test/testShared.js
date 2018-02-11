@@ -40,14 +40,14 @@ function findComponentType(type) {
 registerComponentType('componentValue1', (form, page, component, details) => {
     component.input({
         type: 'text',
-        name: 'value1',
+        name: 'input1',
     });
 });
 
 registerComponentType('componentValue2', (form, page, component, details) => {
     component.input({
         type: 'text',
-        name: 'value2',
+        name: 'input2',
     });
 });
 
@@ -56,11 +56,28 @@ registerComponentType('componentWithTwoInputs', (form, page, component, details)
         inputs:[
             {
                 type: 'text',
-                name: 'value1',
+                name: 'input1',
             },
             {
                 type: 'text',
-                name: 'value2',
+                name: 'input2',
+            }
+        ],
+    });
+});
+
+registerComponentType('componentWithTwoInputDefaultValues', (form, page, component, details) => {
+    component.configure({
+        inputs:[
+            {
+                type: 'text',
+                name: 'input1',
+                defaultValue: 'default1',
+            },
+            {
+                type: 'text',
+                name: 'input2',
+                defaultValue: 'default2',
             }
         ],
     });
@@ -71,11 +88,11 @@ registerComponentType('componentWithSetter', (form, page, component, details) =>
         inputs:[
             {
                 type: 'text',
-                name: 'value1',
+                name: 'input1',
             },
             {
                 type: 'text',
-                name: 'value2',
+                name: 'input2',
             }
         ],
         setter: (component, value) => {
@@ -205,7 +222,7 @@ function viewFormSubmitThenView(form, values, validate=null) {
     });
 }
 
-//form shortcuts
+//configuration shortcuts
 function createFormWithConfiguration(configuration) {
     return new TestDriverForm(Object.assign({
         name: 'testForm',
@@ -241,6 +258,7 @@ function createFormWithInputConfiguration(configuration) {
     });
 }
 
+//1 input shortcuts
 function createFormWithInput() {
     return new TestDriverForm({
         name: 'testForm',
@@ -282,6 +300,7 @@ function createFormwithInputRequired(error=null) {
     });
 }
 
+//two input shortcuts
 function createFormWithTwoInputs() {
     return new TestDriverForm({
         name: 'testForm',
@@ -376,6 +395,7 @@ function createFormWithTwoGroupedInputsOneRequired(error) {
     });
 }
 
+//three input shortcuts
 function createFormWithThreeGroupedInputs() {
     return new TestDriverForm({
         name: 'testForm',
@@ -399,6 +419,7 @@ function createFormWithThreeGroupedInputs() {
     });
 }
 
+//component shortcuts
 function createFormWithGroupedComponent() {
     return new TestDriverForm({
         name: 'testForm',
@@ -406,6 +427,26 @@ function createFormWithGroupedComponent() {
             name: 'component1',
             type: 'componentValue1',
             group: ['group1', 'group2'],
+        },
+    });
+}
+
+function createFormWithMultiInputComponent() {
+    return new TestDriverForm({
+        name: 'testForm',
+        component: {
+            name: 'component1',
+            type: 'componentWithTwoInputs',
+        },
+    });
+}
+
+function createFormWithMultiInputComponentWithDefaultValues() {
+    return new TestDriverForm({
+        name: 'testForm',
+        component: {
+            name: 'component1',
+            type: 'componentWithTwoInputDefaultValues',
         },
     });
 }
@@ -429,7 +470,9 @@ const formBlueprints = {
 
     withThreeGroupedInputs: createFormWithThreeGroupedInputs,
 
-    withGroupedComponent: createFormWithGroupedComponent
+    withGroupedComponent: createFormWithGroupedComponent,
+    withMultiInputComponent: createFormWithMultiInputComponent,
+    withMultiInputComponentWithDefaultValues: createFormWithMultiInputComponentWithDefaultValues,
 };
 
 //expose

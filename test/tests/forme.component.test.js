@@ -18,9 +18,9 @@ describe('Component', function () {
                         component2: {
                             __formeClass: 'component',
                             children: {
-                                value2: {
+                                input2: {
                                     __formeClass: 'input',
-                                    alias: 'value2',
+                                    alias: 'input2',
                                     type: 'text',
                                 },
                             },
@@ -45,9 +45,9 @@ describe('Component', function () {
                                         component1: {
                                             __formeClass: 'component',
                                             children: {
-                                                value1: {
+                                                input1: {
                                                     __formeClass: 'input',
-                                                    alias: 'value1',
+                                                    alias: 'input1',
                                                     type: 'text',
                                                 },
                                             },
@@ -57,6 +57,19 @@ describe('Component', function () {
                             },
                         },
                     },
+                });
+            });
+        });
+    });
+
+    describe('#values', function () {
+        it('should get the value of a multi input component', function () {
+            return blueprints.view.withMultiInputComponentWithDefaultValues()
+            .then(result => {
+                const value = result.form.getElementValue('component1');
+                expect(value).to.deep.equal({
+                    input1: 'default1',
+                    input2: 'default2',
                 });
             });
         });
