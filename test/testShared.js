@@ -51,6 +51,17 @@ registerComponentType('componentValue2', (form, page, component, details) => {
     });
 });
 
+registerComponentType('componentInputRequired', (form, page, component, details) => {
+    component.input({
+        type: 'text',
+        name: 'input1',
+        required: {
+            required: true,
+            error: 'CUSTOM_REQUIRED_ERROR',
+        }
+    });
+});
+
 registerComponentType('componentWithTwoInputs', (form, page, component, details) => {
     component.configure({
         inputs:[
@@ -266,7 +277,7 @@ function createFormWithInputDefaultValue() {
     });
 }
 
-function createFormwithInputRequired(error=null) {
+function createFormWithInputRequired() {
     return new TestDriverForm({
         name: 'form1',
         inputs: [
@@ -275,7 +286,39 @@ function createFormwithInputRequired(error=null) {
                 name: 'input1',
                 required: {
                     required: true,
-                    error: error,
+                    error: 'CUSTOM_REQUIRED_ERROR',
+                },
+            },
+        ]
+    });
+}
+
+function createFormWithInputOptions() {
+    return new TestDriverForm({
+        name: 'form1',
+        inputs: [
+            {
+                type: 'text',
+                name: 'input1',
+                options: {
+                    options: 'I_AM_ALLOWED',
+                    error: 'CUSTOM_OPTIONS_ERROR',
+                },
+            },
+        ]
+    });
+}
+
+function createFormWithInputBlacklist() {
+    return new TestDriverForm({
+        name: 'form1',
+        inputs: [
+            {
+                type: 'text',
+                name: 'input1',
+                blacklist: {
+                    options: 'I_AM_NOT_ALLOWED!!!',
+                    error: 'CUSTOM_BLACKLIST_ERROR',
                 },
             },
         ]
@@ -299,7 +342,7 @@ function createFormWithTwoInputs() {
     });
 }
 
-function createFormWithTwoInputsOneRequired(error) {
+function createFormWithTwoInputsOneRequired() {
     return new TestDriverForm({
         name: 'form1',
         inputs: [
@@ -308,7 +351,7 @@ function createFormWithTwoInputsOneRequired(error) {
                 type: 'text',
                 required: {
                     required: true,
-                    error: error,
+                    error: 'CUSTOM_REQUIRED_ERROR',
                 },
             },
             {
@@ -375,7 +418,7 @@ function createFormWithTwoGroupedAliasedInputs() {
     });
 }
 
-function createFormWithTwoGroupedInputsOneRequired(error) {
+function createFormWithTwoGroupedInputsOneRequired() {
     return new TestDriverForm({
         name: 'form1',
         inputs: [
@@ -385,7 +428,7 @@ function createFormWithTwoGroupedInputsOneRequired(error) {
                 group: ['group1', 'group2'],
                 required: {
                     required: true,
-                    error: error,
+                    error: 'CUSTOM_REQUIRED_ERROR',
                 },
             },
             {
@@ -429,6 +472,16 @@ function createFormWithGroupedComponent() {
             name: 'component1',
             type: 'componentValue1',
             group: ['group1', 'group2'],
+        },
+    });
+}
+
+function createFormWithComponentInputRequired() {
+    return new TestDriverForm({
+        name: 'form1',
+        component: {
+            name: 'component1',
+            type: 'componentInputRequired',
         },
     });
 }
@@ -487,7 +540,9 @@ const formBlueprints = {
 
     withInput: createFormWithInput,
     withInputDefaultValue: createFormWithInputDefaultValue,
-    withInputRequired: createFormwithInputRequired,
+    withInputRequired: createFormWithInputRequired,
+    withInputOptions: createFormWithInputOptions,
+    withInputBlacklist: createFormWithInputBlacklist,
 
     withTwoInputs: createFormWithTwoInputs,
     withTwoInputsOneRequired: createFormWithTwoInputsOneRequired,
@@ -498,11 +553,14 @@ const formBlueprints = {
 
     withThreeGroupedInputs: createFormWithThreeGroupedInputs,
 
+    withComponentInputRequired: createFormWithComponentInputRequired,
+    withComponentSetter: createFormWithComponentSetter,
+
     withGroupedComponent: createFormWithGroupedComponent,
+
     withMultiComponent: createFormWithMultiComponent,
     withMultiComponentDefaultValue: createFormWithMultiComponentDefaultValue,
     withMultiComponentInputDefaultValues: createFormWithMultiComponentInputDefaultValues,
-    withComponentSetter: createFormWithComponentSetter,
 };
 
 //expose
@@ -544,7 +602,7 @@ module.exports = {
                     //set the query details!
                     request.configure({
                         query: result.destination,
-                        body: Object.assign(result.namedValues, result.form.convertElementValues(values)),
+                        body: Object.assign(result.namedValues, result.form.convertElementValues(values)),//merge in the result values with the submit data. This simulates the defaultValues for a form
                     });
 
                     //view the form

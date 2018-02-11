@@ -89,11 +89,11 @@ describe('Form', function () {
         it('should persist a form using session', function () {
             return blueprints.submitThenView.withTwoInputsOneRequired({
                 input2: 'insert_value_here'
-            }, 'CUSTOM_ERROR')
+            })
             .then(result => {
                 //after view
                 expect(result.valid).to.equal(true);
-                expect(result).to.have.nested.property('errors').that.is.an('array').with.lengthOf(1).and.has.nested.property('[0].error').that.equals('CUSTOM_ERROR');
+                expect(result).to.have.nested.property('errors').that.is.an('array').with.lengthOf(1).and.has.nested.property('[0].error').that.equals('CUSTOM_REQUIRED_ERROR');
                 expect(result.values).to.have.property('input2').that.equals('insert_value_here');
             });
         });
@@ -103,11 +103,11 @@ describe('Form', function () {
                 group1: {
                     input2: 'insert_value_here',
                 },
-            }, 'CUSTOM_ERROR')
+            })
             .then(result => {
                 //after view
                 expect(result.valid).to.equal(true);
-                expect(result).to.have.nested.property('errors').that.is.an('array').with.lengthOf(1).and.has.nested.property('[0].error').that.equals('CUSTOM_ERROR');
+                expect(result).to.have.nested.property('errors').that.is.an('array').with.lengthOf(1).and.has.nested.property('[0].error').that.equals('CUSTOM_REQUIRED_ERROR');
                 expect(result.values).to.deep.equal({
                     group1: {
                         group2: {

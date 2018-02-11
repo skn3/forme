@@ -54,6 +54,13 @@ The project is still in development but feel free to have a play!
 ## <a name="changeLog"></a> Change Log
 
 ## Breaking changes in version 3.0.0
+- Refactored some error api functions across the lib.
+- Changed what information is provided in each error. We now have `error.source.class`, `error.source.path` and `error.source.name` which points to the originator of the error. We also have `error.class`, `error.path` and `error.name` which point to the *"owner"* of the error. The owner is the element where piping finished for a particular error! So for example all elements within a component will pipe their errors to the top most component! 
+- Fixed `.configuration()` param type `array` not validating properly!
+- Fixed missing custom error functionality in `input.options()`.
+- Removed `strict` option from `input.options()`. All comparisons now done with `===`. Use a custom validation handler to replicate the old functionality.
+- Removed `strict` option from `input.match()`. All comparisons now done with `===`. Use a custom validation handler to replicate the old functionality.
+- Removed `strict` option from `input.blacklist()`. All comparisons now done with `===`. Use a custom validation handler to replicate the old functionality.
 - Added `container.getNamedValues()` to get the named values for this container.
 - Added `element.alwaysInvalid()` which allows to set an element to always fail validation! Probably only useful for debugging your forms.
 - Added `container.convertElementValues(input)` which takes input of element structured values object and converts to the named input values.

@@ -204,4 +204,25 @@ describe('Component', function () {
             });
         });
     });
+
+    describe('#validation', function () {
+        it('should fail validation for component with required input error piped to component', function () {
+            return blueprints.submit.withComponentInputRequired()
+            .then(result => {
+                const errors = result.form.getElementErrors('input1');
+                expect(result.valid).to.equal(false);
+                expect(result.errors).to.deep.equal([{
+                    error: 'CUSTOM_REQUIRED_ERROR',
+                    class: 'component',
+                    name: null,
+                    path: 'component1',
+                    source: {
+                        class: 'input',
+                        path: 'component1.input1',
+                        name: '__forme_element__component1__input1',
+                    }
+                }]);
+            });
+        });
+    });
 });

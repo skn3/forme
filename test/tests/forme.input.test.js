@@ -15,13 +15,13 @@ describe('Input', function () {
         });
     });
 
-    describe('#.required()', function () {
+    describe('#validation', function () {
         it('should should catch required input', function () {
             let called = false;
-            return blueprints.submit.withInputRequired(null, 'CUSTOM_ERROR')
+            return blueprints.submit.withInputRequired()
             .then(result => {
                 expect(result.valid).to.equal(false);
-                expect(result.errors).to.be.an('array').with.lengthOf(1).and.nested.property('[0].error').that.equals('CUSTOM_ERROR');
+                expect(result.errors).to.be.an('array').with.lengthOf(1).and.have.nested.property('[0].error').that.equals('CUSTOM_REQUIRED_ERROR');
             });
         });
 
@@ -52,6 +52,34 @@ describe('Input', function () {
             .then(result => {
                 expect(result.valid).to.equal(true);
                 expect(result).to.have.property('errors').that.is.an('array').with.lengthOf(0);
+            });
+        });
+
+        it('should fail validation with blacklisted value', function () {
+            return blueprints.submit.withInputBlacklist({input1: 'I_AM_NOT_ALLOWED!!!'})
+            .then(result => {
+                expect(result.valid).to.equal(false);
+                expect(result.errors).to.be.an('array').with.lengthOf(1).and.have.nested.property('[0].error').that.equals('CUSTOM_BLACKLIST_ERROR');
+            });
+        });
+
+        it('should fail validation with invalid option', function () {
+            return blueprints.submit.withInputOptions({input1: 'I_AM_NOT_ALLOWED!!!'})
+            .then(result => {
+                expect(result.valid).to.equal(false);
+                expect(result.errors).to.be.an('array').with.lengthOf(1).and.have.nested.property('[0].error').that.equals('CUSTOM_OPTIONS_ERROR');
+            });
+        });
+    });
+
+    describe('#errors', function () {
+        it('should get element errors', function () {
+            let called = false;
+            return blueprints.submit.withInputRequired()
+            .then(result => {
+                const errors = result.form.getElementErrors('input1');
+                expect(result.valid).to.equal(false);
+                expect(errors).to.be.an('array').with.lengthOf(1).and.have.nested.property('[0].error').that.equals('CUSTOM_REQUIRED_ERROR');
             });
         });
     });
