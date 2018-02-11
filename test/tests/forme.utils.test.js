@@ -1,41 +1,17 @@
 "use strict";
 
 //local imports
-const {expect, TestDriverForm, createExpressRequest} = require('../testShared');
+const {expect, TestDriverForm, createExpressRequest, blueprints} = require('../testShared');
 const utils = require('../../lib/utils');
 
 //tests
 describe('Utils', function () {
     describe('#structure', function () {
         it('should find a path in structure using a path string', function () {
-            const form = new TestDriverForm({
-                name: 'testForm',
-                inputs: [
-                    {
-                        type: 'text',
-                        name: 'myInput1',
-                        group: ['group1', 'group2'],
-                    },
-                    {
-                        type: 'text',
-                        name: 'myInput2',
-                        group: ['group1'],
-                    },
-                    {
-                        type: 'text',
-                        name: 'myInput3',
-                        group: ['group1', 'group2', 'group3'],
-                    },
-                ],
-            });
-
-            //view the form
-            return form.view(createExpressRequest())
+            return blueprints.view.withThreeGroupedInputs()
             .then(result => {
-                const structure = result.templateVars;
-                const pointer = utils.structure.find.path(structure, 'group1.group2');
-
                 expect(result.inputs).to.be.an('array').that.has.lengthOf(3);
+                const pointer = utils.structure.find.path(result.templateVars, 'group1.group2');
                 expect(pointer).to.containSubset({
                     __formeClass: 'group',
                     children: {
@@ -49,34 +25,10 @@ describe('Utils', function () {
         });
 
         it('should find a path in structure using a path array', function () {
-            const form = new TestDriverForm({
-                name: 'testForm',
-                inputs: [
-                    {
-                        type: 'text',
-                        name: 'myInput1',
-                        group: ['group1', 'group2'],
-                    },
-                    {
-                        type: 'text',
-                        name: 'myInput2',
-                        group: ['group1'],
-                    },
-                    {
-                        type: 'text',
-                        name: 'myInput3',
-                        group: ['group1', 'group2', 'group3'],
-                    },
-                ],
-            });
-
-            //view the form
-            return form.view(createExpressRequest())
+            return blueprints.view.withThreeGroupedInputs()
             .then(result => {
-                const structure = result.templateVars;
-                const pointer = utils.structure.find.path(structure, ['group1', 'group2']);
-
                 expect(result.inputs).to.be.an('array').that.has.lengthOf(3);
+                const pointer = utils.structure.find.path(result.templateVars, ['group1', 'group2']);
                 expect(pointer).to.containSubset({
                     __formeClass: 'group',
                     children: {
@@ -93,7 +45,6 @@ describe('Utils', function () {
     describe('#object', function () {
         it('should add path segments to empty object', function () {
             const obj = {};
-
             utils.object.add.path(obj, 'node1.subNode.endPoint');
             expect(obj).to.deep.equal({
                 node1: {
@@ -112,7 +63,6 @@ describe('Utils', function () {
                     },
                 },
             };
-
             utils.object.add.path(obj, 'node1.anotherSub.blahBlah');
             expect(obj).to.deep.equal({
                 node1: {
@@ -132,7 +82,6 @@ describe('Utils', function () {
                     wasAValue: 'hello world',
                 },
             };
-
             utils.object.add.path(obj, 'node1.wasAValue.nestedWee');
             expect(obj).to.deep.equal({
                 node1: {
@@ -158,7 +107,6 @@ describe('Utils', function () {
                 },
                 other: 'uuhhh nottingham!?',
             };
-
             const pointer = utils.object.find.path(obj, 'node1.sub2');
             expect(pointer).to.deep.equal({
                 other: 'world',
@@ -181,7 +129,6 @@ describe('Utils', function () {
                 },
                 other: 'uuhhh nottingham!?',
             };
-
             const pointer = utils.object.find.path(obj, 'node1.subNotAtHome');
             expect(pointer).to.equal(undefined);
         });

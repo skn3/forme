@@ -1,30 +1,21 @@
 "use strict";
 
 //local imports
-const {expect, TestDriverForm, createExpressRequest} = require('../testShared');
+const {expect, TestDriverForm, createExpressRequest, blueprints} = require('../testShared');
 
 //tests
 describe('Component', function () {
     describe('#create', function () {
         it('should create a form with a component', function () {
-            const form = new TestDriverForm({
-                name: 'testForm',
-                components: [
-                    {
-                        type: 'componentValue2',
-                        name: 'myComponent2',
-                    },
-                ],
-            });
-
-            //view the form
-            return form.view(createExpressRequest())
+            return blueprints.view.withComponentConfiguration({
+                type: 'componentValue2',
+                name: 'component2',
+            })
             .then(result => {
-                const templateVars = result.templateVars;
-                expect(templateVars).to.be.an('object').that.containSubset({
+                expect(result.templateVars).to.be.an('object').that.containSubset({
                     __formeClass: 'form',
                     children: {
-                        myComponent2: {
+                        component2: {
                             __formeClass: 'component',
                             children: {
                                 value2: {
@@ -40,23 +31,9 @@ describe('Component', function () {
         });
 
         it('should create a component in a group', function () {
-            const form = new TestDriverForm({
-                name: 'testForm',
-                components: [
-                    {
-                        type: 'componentValue1',
-                        name: 'myComponent',
-                        group: ['group1', 'group2'],
-                    },
-                ],
-            });
-
-            //view the form
-            return form.view(createExpressRequest())
+            return blueprints.view.withGroupedComponent()
             .then(result => {
-                const templateVars = result.templateVars;
-
-                expect(templateVars).to.be.an('object').that.containSubset({
+                expect(result.templateVars).to.be.an('object').that.containSubset({
                     __formeClass: 'form',
                     children: {
                         group1: {
@@ -65,7 +42,7 @@ describe('Component', function () {
                                 group2: {
                                     __formeClass: 'group',
                                     children: {
-                                        myComponent: {
+                                        component1: {
                                             __formeClass: 'component',
                                             children: {
                                                 value1: {
@@ -92,7 +69,7 @@ describe('Component', function () {
                 components: [
                     {
                         type: 'componentWithTwoInputs',
-                        name: 'myComponent1',
+                        name: 'component1',
                     },
                 ],
             });
@@ -100,29 +77,7 @@ describe('Component', function () {
             //view the form
             return form.view(createExpressRequest())
             .then(result => {
-                const value = result.form.getNamedValue('myComponent1');
-
-                var wtf = 123;
-            });
-        });
-
-        it('should set a components value using a setter', function () {
-            const form = new TestDriverForm({
-                name: 'testForm',
-                components: [
-                    {
-                        type: 'componentWithSetter',
-                        name: 'myComponent1',
-                        group: ['group1', 'sub1'],
-                    },
-                ],
-            });
-
-            //view the form
-            return form.view(createExpressRequest())
-            .then(result => {
-
-                const values = result.form.getValues();
+                const value = result.form.getNamedValue('component1');
 
                 var wtf = 123;
             });
