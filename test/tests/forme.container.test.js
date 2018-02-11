@@ -59,5 +59,24 @@ describe('Container', function () {
             const pointer = blueprints.create.withTwoGroupedInputs().getElement('group1.group2.input1.TOO_FAR');
             expect(pointer).to.not.exist;
         });
-    })
+    });
+
+    describe('#elements', function () {
+        it('should convert element value structure to flat named values', function () {
+            return blueprints.view.withTwoGroupedAliasedInputs()
+            .then(result => {
+                expect(result.form.convertElementValues({
+                    group1: {
+                        group2: {
+                            input1: 'goodbye'
+                        },
+                        input2: 'hello',
+                    },
+                })).to.deep.equal({
+                    this_is_input1_with_funky_long_name: 'goodbye',
+                    element_123456: 'hello',
+                });
+            });
+        });
+    });
 });

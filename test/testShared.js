@@ -83,24 +83,6 @@ registerComponentType('componentWithTwoInputDefaultValues', (form, page, compone
     });
 });
 
-registerComponentType('componentWithSetter', (form, page, component, details) => {
-    component.configure({
-        inputs:[
-            {
-                type: 'text',
-                name: 'input1',
-            },
-            {
-                type: 'text',
-                name: 'input2',
-            }
-        ],
-        setter: (component, value) => {
-            var wtf = 123;
-        },
-    });
-});
-
 //forme objects
 class TestFormeDriver extends FormeDriver {
     static get formClass() {
@@ -225,13 +207,13 @@ function viewFormSubmitThenView(form, values, validate=null) {
 //configuration shortcuts
 function createFormWithConfiguration(configuration) {
     return new TestDriverForm(Object.assign({
-        name: 'testForm',
+        name: 'form1',
     }, configuration));
 }
 
 function createFormWithPageConfiguration(configuration) {
     return new TestDriverForm({
-        name: 'testForm',
+        name: 'form1',
         page: Object.assign({
             name: 'page1',
         }, configuration),
@@ -240,7 +222,7 @@ function createFormWithPageConfiguration(configuration) {
 
 function createFormWithComponentConfiguration(configuration) {
     return new TestDriverForm({
-        name: 'testForm',
+        name: 'form1',
         component: Object.assign({
             name: 'component1',
             type: 'componentValue1',
@@ -250,7 +232,7 @@ function createFormWithComponentConfiguration(configuration) {
 
 function createFormWithInputConfiguration(configuration) {
     return new TestDriverForm({
-        name: 'testForm',
+        name: 'form1',
         input: Object.assign({
             name: 'input1',
             type: 'text',
@@ -261,7 +243,7 @@ function createFormWithInputConfiguration(configuration) {
 //1 input shortcuts
 function createFormWithInput() {
     return new TestDriverForm({
-        name: 'testForm',
+        name: 'form1',
         inputs: [
             {
                 name: 'input1',
@@ -273,7 +255,7 @@ function createFormWithInput() {
 
 function createFormWithInputDefaultValue() {
     return new TestDriverForm({
-        name: 'testForm',
+        name: 'form1',
         inputs: [
             {
                 type: 'text',
@@ -286,7 +268,7 @@ function createFormWithInputDefaultValue() {
 
 function createFormwithInputRequired(error=null) {
     return new TestDriverForm({
-        name: 'testForm',
+        name: 'form1',
         inputs: [
             {
                 type: 'text',
@@ -303,7 +285,7 @@ function createFormwithInputRequired(error=null) {
 //two input shortcuts
 function createFormWithTwoInputs() {
     return new TestDriverForm({
-        name: 'testForm',
+        name: 'form1',
         inputs: [
             {
                 name: 'input1',
@@ -319,7 +301,7 @@ function createFormWithTwoInputs() {
 
 function createFormWithTwoInputsOneRequired(error) {
     return new TestDriverForm({
-        name: 'testForm',
+        name: 'form1',
         inputs: [
             {
                 name: 'input1',
@@ -339,7 +321,7 @@ function createFormWithTwoInputsOneRequired(error) {
 
 function createFormWithTwoDynamicInputs() {
     return new TestDriverForm({
-        name: 'testForm',
+        name: 'form1',
         build: form => {
             form.input([
                 {
@@ -357,7 +339,7 @@ function createFormWithTwoDynamicInputs() {
 
 function createFormWithTwoGroupedInputs() {
     return new TestDriverForm({
-        name: 'testForm',
+        name: 'form1',
         inputs: [
             {
                 name: 'input1',
@@ -373,9 +355,29 @@ function createFormWithTwoGroupedInputs() {
     });
 }
 
+function createFormWithTwoGroupedAliasedInputs() {
+    return new TestDriverForm({
+        name: 'form1',
+        inputs: [
+            {
+                name: 'this_is_input1_with_funky_long_name',
+                alias: 'input1',
+                type: 'text',
+                group: ['group1', 'group2'],
+            },
+            {
+                name: 'element_123456',
+                alias: 'input2',
+                type: 'text',
+                group: ['group1'],
+            },
+        ]
+    });
+}
+
 function createFormWithTwoGroupedInputsOneRequired(error) {
     return new TestDriverForm({
-        name: 'testForm',
+        name: 'form1',
         inputs: [
             {
                 name: 'input1',
@@ -398,7 +400,7 @@ function createFormWithTwoGroupedInputsOneRequired(error) {
 //three input shortcuts
 function createFormWithThreeGroupedInputs() {
     return new TestDriverForm({
-        name: 'testForm',
+        name: 'form1',
         inputs: [
             {
                 type: 'text',
@@ -422,7 +424,7 @@ function createFormWithThreeGroupedInputs() {
 //component shortcuts
 function createFormWithGroupedComponent() {
     return new TestDriverForm({
-        name: 'testForm',
+        name: 'form1',
         component: {
             name: 'component1',
             type: 'componentValue1',
@@ -431,9 +433,9 @@ function createFormWithGroupedComponent() {
     });
 }
 
-function createFormWithMultiInputComponent() {
+function createFormWithMultiComponent() {
     return new TestDriverForm({
-        name: 'testForm',
+        name: 'form1',
         component: {
             name: 'component1',
             type: 'componentWithTwoInputs',
@@ -441,12 +443,37 @@ function createFormWithMultiInputComponent() {
     });
 }
 
-function createFormWithMultiInputComponentWithDefaultValues() {
+function createFormWithMultiComponentDefaultValue(defaultValue) {
     return new TestDriverForm({
-        name: 'testForm',
+        name: 'form1',
+        component: {
+            name: 'component1',
+            type: 'componentWithTwoInputs',
+            defaultValue: defaultValue || {
+                input1: 'default1',
+                input2: 'default2',
+            }
+        },
+    });
+}
+
+function createFormWithMultiComponentInputDefaultValues() {
+    return new TestDriverForm({
+        name: 'form1',
         component: {
             name: 'component1',
             type: 'componentWithTwoInputDefaultValues',
+        },
+    });
+}
+
+function createFormWithComponentSetter(setter) {
+    return new TestDriverForm({
+        name: 'form1',
+        component: {
+            name: 'component1',
+            type: 'componentWithTwoInputs',
+            setter: setter,
         },
     });
 }
@@ -466,13 +493,16 @@ const formBlueprints = {
     withTwoInputsOneRequired: createFormWithTwoInputsOneRequired,
     withTwoDynamicInputs: createFormWithTwoDynamicInputs,
     withTwoGroupedInputs: createFormWithTwoGroupedInputs,
+    withTwoGroupedAliasedInputs: createFormWithTwoGroupedAliasedInputs,
     withTwoGroupedInputsOneRequired: createFormWithTwoGroupedInputsOneRequired,
 
     withThreeGroupedInputs: createFormWithThreeGroupedInputs,
 
     withGroupedComponent: createFormWithGroupedComponent,
-    withMultiInputComponent: createFormWithMultiInputComponent,
-    withMultiInputComponentWithDefaultValues: createFormWithMultiInputComponentWithDefaultValues,
+    withMultiComponent: createFormWithMultiComponent,
+    withMultiComponentDefaultValue: createFormWithMultiComponentDefaultValue,
+    withMultiComponentInputDefaultValues: createFormWithMultiComponentInputDefaultValues,
+    withComponentSetter: createFormWithComponentSetter,
 };
 
 //expose
@@ -492,16 +522,44 @@ module.exports = {
         submit: Object.assign({}, ...Object.keys(formBlueprints).map(key => ({
             [key]: function(values=null, ...params) {
                 const form = formBlueprints[key](...params);
-                const request = createExpressRequest({body: values});
+                const request = createExpressRequest({body: form.convertElementValues(values)});
 
                 return form.execute(request);
+            }
+        }))),
+
+        viewThenSubmit: Object.assign({}, ...Object.keys(formBlueprints).map(key => ({
+            [key]: function(values=null, ...params) {
+                const form = formBlueprints[key](...params);
+                const request = createExpressRequest();
+
+                return form.view(request)
+                .then(result => {
+                    //continue...
+                    const request = result.storage;
+
+                    //reset the request
+                    request.reset();
+
+                    //set the query details!
+                    request.configure({
+                        query: result.destination,
+                        body: Object.assign(result.namedValues, result.form.convertElementValues(values)),
+                    });
+
+                    //view the form
+                    return form.execute(request);
+                });
             }
         }))),
 
         submitThenView: Object.assign({}, ...Object.keys(formBlueprints).map(key => ({
             [key]: function(values=null, ...params) {
                 const form = formBlueprints[key](...params);
-                const request = createExpressRequest({body: values});
+                const request = createExpressRequest({body: form.convertElementValues(values)});
+
+                //add an always failing validation handler to form so the view happens. Otherwise forme will end the session on successful submit
+                form.alwaysInvalid();
 
                 return form.execute(request)
                 .then(result => {

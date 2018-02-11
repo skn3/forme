@@ -64,7 +64,7 @@ describe('Component', function () {
 
     describe('#values', function () {
         it('should get the value of a multi input component', function () {
-            return blueprints.view.withMultiInputComponentWithDefaultValues()
+            return blueprints.view.withMultiComponentInputDefaultValues()
             .then(result => {
                 const value = result.form.getElementValue('component1');
                 expect(value).to.deep.equal({
@@ -73,26 +73,134 @@ describe('Component', function () {
                 });
             });
         });
-    });
 
-    describe('#values', function () {
-        it('should set a component value', function () {
-            const form = new TestDriverForm({
-                name: 'testForm',
-                components: [
-                    {
-                        type: 'componentWithTwoInputs',
-                        name: 'component1',
-                    },
-                ],
+        it('should set component value', function () {
+            return blueprints.view.withMultiComponent()
+            .then(result => {
+                result.form.setElementValue('component1', {input1: 'hello', input2: 'world'});
+                expect(result.form.getElementValue('component1')).to.deep.equal({
+                    input1: 'hello',
+                    input2: 'world',
+                });
+            });
+        });
+
+        it('should partially set component values', function () {
+            return blueprints.view.withMultiComponent()
+            .then(result => {
+                result.form.setElementValue('component1', {input1: 'hello', input3: 'world'});
+                expect(result.form.getElementValue('component1')).to.deep.equal({
+                    input1: 'hello',
+                    input2: null,
+                });
+            });
+        });
+
+        it('should overwrite component values with null when input not provided', function () {
+            return blueprints.view.withMultiComponent()
+            .then(result => {
+                result.form.setElementValue('component1', {input1: 'hello', input2: 'world'});
+                expect(result.form.getElementValue('component1')).to.deep.equal({
+                    input1: 'hello',
+                    input2: 'world',
+                });
+                result.form.setElementValue('component1', {input1: 'monkies'});
+                expect(result.form.getElementValue('component1')).to.deep.equal({
+                    input1: 'monkies',
+                    input2: null,
+                });
+            });
+        });
+
+        it('should wipe component when null given', function () {
+            return blueprints.view.withMultiComponent()
+            .then(result => {
+                result.form.setElementValue('component1', {input1: 'hello', input2: 'world'});
+                expect(result.form.getElementValue('component1')).to.deep.equal({
+                    input1: 'hello',
+                    input2: 'world',
+                });
+                result.form.setElementValue('component1', null);
+                expect(result.form.getElementValue('component1')).to.deep.equal({
+                    input1: null,
+                    input2: null,
+                });
+            });
+        });
+
+        it('should merge component value', function () {
+            return blueprints.view.withMultiComponent()
+            .then(result => {
+                result.form.setElementValue('component1', {input1: 'hello', input2: 'world'});
+                expect(result.form.getElementValue('component1')).to.deep.equal({
+                    input1: 'hello',
+                    input2: 'world',
+                });
+                result.form.mergeElementValue('component1', {input2: 'goodbye!'});
+                expect(result.form.getElementValue('component1')).to.deep.equal({
+                    input1: 'hello',
+                    input2: 'goodbye!',
+                });
+            });
+        });
+
+        it('should change component value with setter', function () {
+            return blueprints.view.withComponentSetter((form, component, value, merge) => {
+                //set (using the without setter option)
+                component.setValueWithoutSetter({
+                    input1: 'AWESOME:' + value,
+                    input2: 'BEANS:' + value,
+                });
+
+                //handled
+                return true;
+            })
+            .then(result => {
+                result.form.setElementValue('component1', 'THIS_VALUE_IS_COOL');
+                expect(result.form.getElementValue('component1')).to.deep.equal({
+                    input1: 'AWESOME:THIS_VALUE_IS_COOL',
+                    input2: 'BEANS:THIS_VALUE_IS_COOL',
+                });
+            });
+        });
+
+        it('should set default value of inputs from component defaultValue', function () {
+            return blueprints.view.withMultiComponentDefaultValue()
+            .then(result => {
+                expect(result.form.getElementValue('component1')).to.deep.equal({
+                    input1: 'default1',
+                    input2: 'default2',
+                });
+            });
+        });
+
+        it('should change component default value and then still apply to internal inputs', function () {
+            const form = blueprints.create.withMultiComponentDefaultValue()
+
+            form.getElement('component1').defaultValue({
+                input1: 'CHANGED!',
             });
 
-            //view the form
             return form.view(createExpressRequest())
             .then(result => {
-                const value = result.form.getNamedValue('component1');
+                expect(result.form.getElementValue('component1')).to.deep.equal({
+                    input1: 'CHANGED!',
+                    input2: null,
+                });
+            });
+        });
 
-                var wtf = 123;
+        it('should submit component defaults but not overwrite post values', function () {
+            return blueprints.viewThenSubmit.withMultiComponentDefaultValue({
+                component1: {
+                    input1: 'CHANGED!'
+                },
+            })
+            .then(result => {
+                expect(result.form.getElementValue('component1')).to.deep.equal({
+                    input1: 'CHANGED!',
+                    input2: 'default2',
+                });
             });
         });
     });

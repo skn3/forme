@@ -100,7 +100,9 @@ describe('Form', function () {
 
         it('should persist a form using session where inputs are grouped', function () {
             return blueprints.submitThenView.withTwoGroupedInputsOneRequired({
-                input2: 'insert_value_here'
+                group1: {
+                    input2: 'insert_value_here',
+                },
             }, 'CUSTOM_ERROR')
             .then(result => {
                 //after view

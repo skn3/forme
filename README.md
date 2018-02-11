@@ -54,6 +54,17 @@ The project is still in development but feel free to have a play!
 ## <a name="changeLog"></a> Change Log
 
 ## Breaking changes in version 3.0.0
+- Added `container.getNamedValues()` to get the named values for this container.
+- Added `element.alwaysInvalid()` which allows to set an element to always fail validation! Probably only useful for debugging your forms.
+- Added `container.convertElementValues(input)` which takes input of element structured values object and converts to the named input values.
+- Added `element.setter()` for adding setter handlers to any element! This allows us to manually process "setting" values via a callback. An element can have multiple setter handlers, but the first to return true will halt execution. This is mainly useful if we have a component that needs some special setting behaviour!
+- Added `container.setElementValueWithoutSetter()` see `element.setValueWithoutSetter()` for info.
+- Added `container.mergeElementValueWithoutSetter()` see `element.setValueWithoutSetter()` for info.
+- Added `element.mergeValueWithoutSetter()` see `element.setValueWithoutSetter()` for info.
+- Added `element.setValueWithoutSetter()` to allow setting value without triggering internal setters. This is potentially dangerous as you bypass your setter behaviour. It is mainly useful to use within a setter, as you may want to set the value of something from the setter.. naturally!
+- Added `container.mergeElementValue(path, value)` which does the same as `element.mergeValue()` but lets you do this on a child of container via path.
+- Added `element.mergeValue(value)` which allows to apply the value to an element and its children. Existing values will remain intact unless present in the input value provided.
+- Added `element.setValue(value)` support to all elements! Now supports setting value on containers and children by passing object. Any non existing child elements within the input value, will have their value cleared. Use `.mergeValue()` to set without wiping.
 - Renamed `element.getValues()` to `element.getValue()` but we still have `element.getValues()` as a shortcut!
 - Fixed `container.input`, `container.component` and `form.page` configuration when passed as single object. The configuration method override analyzer was eating the input values incorrectly!
 - Added `element.groups()` shortcut for `element.group()`.
