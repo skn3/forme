@@ -204,8 +204,8 @@ describe('Component', function () {
             });
         });
 
-        it('should get value of exposed component', function () {
-            return blueprints.viewThenSubmit.withMultiComponentExposed({
+        it('should get value of single exposed component', function () {
+            return blueprints.viewThenSubmit.withMultiComponentOneExposed({
                 component1: {
                     input1: 'value1',
                     input2: 'value2',
@@ -214,6 +214,23 @@ describe('Component', function () {
             .then(result => {
                 expect(result.values).to.deep.equal({
                     component1: 'value1',
+                });
+            });
+        });
+
+        it('should get value of multiple exposed component', function () {
+            return blueprints.viewThenSubmit.withMultiComponentTwoExposed({
+                component1: {
+                    input1: 'value1',
+                    input3: 'value3',
+                },
+            })
+            .then(result => {
+                expect(result.values).to.deep.equal({
+                    component1: {
+                        input1: 'value1',
+                        input3: 'value3',
+                    }
                 });
             });
         });

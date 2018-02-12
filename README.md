@@ -54,6 +54,7 @@ The project is still in development but feel free to have a play!
 ## <a name="changeLog"></a> Change Log
 
 ## Breaking changes in version 3.0.0
+- Added `component.expose()` ability to specify multiple elements to expose. If a single element is exposed then the value will be `value = value`. If multiple `value = {input1:value, input2:...}` 
 - Added `options.expose` to `_buildValues` options.
 - Added `component.expose(path)` for specifying a single component descendant as the exported value. This is the value exported to public facing api calls
 - Changed input to use _uniqueName for auto generating its id!

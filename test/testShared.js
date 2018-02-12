@@ -110,6 +110,26 @@ registerComponentType('componentWithTwoInputsWithOneExposed', (form, page, compo
     });
 });
 
+registerComponentType('componentWithThreeInputsWithTwoExposed', (form, page, component, details) => {
+    component.configure({
+        expose: ['input1', 'input3'],
+        inputs: [
+            {
+                type: 'text',
+                name: 'input1',
+            },
+            {
+                type: 'text',
+                name: 'input2',
+            },
+            {
+                type: 'text',
+                name: 'input3',
+            }
+        ],
+    });
+});
+
 //forme objects
 class TestFormeDriver extends FormeDriver {
     static get formClass() {
@@ -526,12 +546,22 @@ function createFormWithMultiComponentDefaultValue(defaultValue) {
     });
 }
 
-function createFormWithMultiComponentExposed(defaultValue) {
+function createFormWithMultiComponentOneExposed(defaultValue) {
     return new TestDriverForm({
         name: 'form1',
         component: {
             name: 'component1',
             type: 'componentWithTwoInputsWithOneExposed',
+        },
+    });
+}
+
+function createFormWithMultiComponentTwoExposed(defaultValue) {
+    return new TestDriverForm({
+        name: 'form1',
+        component: {
+            name: 'component1',
+            type: 'componentWithThreeInputsWithTwoExposed',
         },
     });
 }
@@ -587,7 +617,8 @@ const formBlueprints = {
     withMultiComponent: createFormWithMultiComponent,
     withMultiComponentDefaultValue: createFormWithMultiComponentDefaultValue,
     withMultiComponentInputDefaultValues: createFormWithMultiComponentInputDefaultValues,
-    withMultiComponentExposed: createFormWithMultiComponentExposed,
+    withMultiComponentOneExposed: createFormWithMultiComponentOneExposed,
+    withMultiComponentTwoExposed: createFormWithMultiComponentTwoExposed,
 };
 
 //expose
