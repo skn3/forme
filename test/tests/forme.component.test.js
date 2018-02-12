@@ -234,6 +234,30 @@ describe('Component', function () {
                 });
             });
         });
+
+        it('should set defaultValue of single exposed component', function () {
+            return blueprints.viewThenSubmit.withMultiComponentOneExposedDefaultValue()
+            .then(result => {
+                expect(result.values).to.deep.equal({
+                    component1: 'default1',
+                });
+            });
+        });
+
+        it('should set defaultValue of multiple exposed component', function () {
+            return blueprints.viewThenSubmit.withMultiComponentTwoExposedDefaultValue()
+            .then(result => {
+                expect(result.values).to.deep.equal({
+                    component1: {
+                        input1: 'default1',
+                        input3: 'default3',
+                    },
+                });
+
+                //validate we didnt set default of unexposed input
+                expect(result.form.getElementValue('component1.input2')).to.equal(null);
+            });
+        });
     });
 
     describe('#validation', function () {

@@ -556,12 +556,38 @@ function createFormWithMultiComponentOneExposed(defaultValue) {
     });
 }
 
+function createFormWithMultiComponentOneExposedDefaultValue(defaultValue) {
+    return new TestDriverForm({
+        name: 'form1',
+        component: {
+            name: 'component1',
+            type: 'componentWithTwoInputsWithOneExposed',
+            defaultValue: 'default1',
+        },
+    });
+}
+
 function createFormWithMultiComponentTwoExposed(defaultValue) {
     return new TestDriverForm({
         name: 'form1',
         component: {
             name: 'component1',
             type: 'componentWithThreeInputsWithTwoExposed',
+        },
+    });
+}
+
+function createFormWithMultiComponentTwoExposedDefaultValue(defaultValue) {
+    return new TestDriverForm({
+        name: 'form1',
+        component: {
+            name: 'component1',
+            type: 'componentWithThreeInputsWithTwoExposed',
+            defaultValue: {
+                input1: 'default1',
+                input2: 'default2',//this wont actually set because the component has not exposed it!
+                input3: 'default3',
+            },
         },
     });
 }
@@ -618,7 +644,9 @@ const formBlueprints = {
     withMultiComponentDefaultValue: createFormWithMultiComponentDefaultValue,
     withMultiComponentInputDefaultValues: createFormWithMultiComponentInputDefaultValues,
     withMultiComponentOneExposed: createFormWithMultiComponentOneExposed,
+    withMultiComponentOneExposedDefaultValue: createFormWithMultiComponentOneExposedDefaultValue,
     withMultiComponentTwoExposed: createFormWithMultiComponentTwoExposed,
+    withMultiComponentTwoExposedDefaultValue: createFormWithMultiComponentTwoExposedDefaultValue,
 };
 
 //expose
