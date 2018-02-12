@@ -54,6 +54,11 @@ The project is still in development but feel free to have a play!
 ## <a name="changeLog"></a> Change Log
 
 ## Breaking changes in version 3.0.0
+- Added `options.expose` to `_buildValues` options.
+- Added `component.expose(path)` for specifying a single component descendant as the exported value. This is the value exported to public facing api calls
+- Changed input to use _uniqueName for auto generating its id!
+- Added id to component template vars
+- Added component _uniqueId property for universallyy getting the uniqueId for a component. 
 - Refactored some error api functions across the lib.
 - Changed what information is provided in each error. We now have `error.source.class`, `error.source.path` and `error.source.name` which points to the originator of the error. We also have `error.class`, `error.path` and `error.name` which point to the *"owner"* of the error. The owner is the element where piping finished for a particular error! So for example all elements within a component will pipe their errors to the top most component! 
 - Fixed `.configuration()` param type `array` not validating properly!

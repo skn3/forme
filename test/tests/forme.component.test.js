@@ -203,6 +203,20 @@ describe('Component', function () {
                 });
             });
         });
+
+        it('should get value of exposed component', function () {
+            return blueprints.viewThenSubmit.withMultiComponentExposed({
+                component1: {
+                    input1: 'value1',
+                    input2: 'value2',
+                },
+            })
+            .then(result => {
+                expect(result.values).to.deep.equal({
+                    component1: 'value1',
+                });
+            });
+        });
     });
 
     describe('#validation', function () {
