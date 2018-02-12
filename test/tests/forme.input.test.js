@@ -79,7 +79,7 @@ describe('Input', function () {
             .then(result => {
                 const errors = result.form.getElementErrors('input1');
                 expect(result.valid).to.equal(false);
-                expect(errors).to.be.an('array').with.lengthOf(1).and.have.nested.property('[0].error').that.equals('CUSTOM_REQUIRED_ERROR');
+                expect(result.errors).to.be.an('array').with.lengthOf(1).and.have.nested.property('[0].error').that.equals('CUSTOM_REQUIRED_ERROR');
             });
         });
     });

@@ -219,7 +219,7 @@ describe('Component', function () {
                     source: {
                         class: 'input',
                         path: 'component1.input1',
-                        name: '__forme_element__component1__input1',
+                        name: '__forme_element__form1__component1__input1',
                     }
                 }]);
             });
