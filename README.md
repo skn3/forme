@@ -54,6 +54,14 @@ The project is still in development but feel free to have a play!
 ## <a name="changeLog"></a> Change Log
 
 ## Breaking changes in version 3.0.0
+- Changed all element template vars to have `stateClassNames`. This var will also add the error class names now if the element caused and error (as well as previous behaviour where its the current owner of error) 
+- Added `causedError` to all element tempalte vars. This is true when the element caused an error. As the error it generated could ahve been piped, we can use this to track where errors came from.
+- Refactored some templateVars into element base!
+- Renamed `element.getErrors()` to `element.getOwnErrors()`.
+- Added `element.className()` to all elements!
+- Changed so forme does not force a label on elements. Before it was a requirement to identify in errors. We now have a separate error label that automatically gets populated by forme.
+- Added `element.hideDescendantLabels()` for hiding all descendant labels from templateVars.
+- Added `element.hideLabel()` for hiding the elements label from templateVars.
 - Added `component.checked()` for setting checked state of exposed component inputs!
 - Added more param shortcuts for `component.expose` configuration.
 - Fixed `component.defaultValue()` properly respecting the `component.expose()` settings. Now when a component has exposed, it only modifies child element defaultValues in accordance to the single/multiple exposed setting! If a single input is exposed, then the entire `component.defaultValue()` is passed to it!
