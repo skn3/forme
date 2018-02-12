@@ -54,6 +54,8 @@ The project is still in development but feel free to have a play!
 ## <a name="changeLog"></a> Change Log
 
 ## Breaking changes in version 3.0.0
+- Added `component.checked()` for setting checked state of exposed component inputs!
+- Added more param shortcuts for `component.expose` configuration.
 - Fixed `component.defaultValue()` properly respecting the `component.expose()` settings. Now when a component has exposed, it only modifies child element defaultValues in accordance to the single/multiple exposed setting! If a single input is exposed, then the entire `component.defaultValue()` is passed to it!
 - Fixed some promises not being returned in FormeRequest
 - Added `component.expose()` ability to specify multiple elements to expose. If a single element is exposed then the value will be `value = value`. If multiple `value = {input1:value, input2:...}` 
