@@ -54,6 +54,12 @@ The project is still in development but feel free to have a play!
 ## <a name="changeLog"></a> Change Log
 
 ## Breaking changes in version 3.0.0
+- Changed how forme applies the order of configuration properties to elements. It tries to predict that certain configuration methods would be percieved to come first, and so calls these first. It does this by allowing method definitions to specify a priority. 
+- Added `element.configurableMethodsList` property
+- Added `element.configurableMethodsLookup` property
+- Added `element.configurableMethodNames` property
+- Added `element.errorClassName` and `input.requiredClassName` to template vars, so that we can gain access to individual class names for state!
+- Moved `input.data()` to `element.data()` so any element can have data!
 - Changed all element template vars to have `stateClassNames`. This var will also add the error class names now if the element caused and error (as well as previous behaviour where its the current owner of error) 
 - Added `causedError` to all element tempalte vars. This is true when the element caused an error. As the error it generated could ahve been piped, we can use this to track where errors came from.
 - Refactored some templateVars into element base!

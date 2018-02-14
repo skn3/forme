@@ -228,6 +228,24 @@ function createExpressRequest(options=null) {
     return new ExpressRequest(options);
 }
 
+function trackInputConfigurationCalls(configuration) {
+    const form = new TestDriverForm('form1');
+    const input = form.input('input1');
+
+    //replace all configurable methods with own special ones that track the order of execution
+    const output = [];
+    const methods = input.configurableMethodNames;
+    for(let method of methods) {
+        input[method] = () => {output.push(method)};
+    }
+
+    //apply the configuration passed in
+    input.configure(configuration);
+
+    //chain output
+    return output;
+}
+
 function viewFormSubmitThenView(form, values, validate=null) {
     //execute the form
     return form.execute(createExpressRequest({
@@ -727,6 +745,7 @@ module.exports = {
     expect: expect,
     TestDriverForm: TestDriverForm,
     createExpressRequest: createExpressRequest,
+    trackInputConfigurationCalls: trackInputConfigurationCalls,
     viewFormSubmitThenView: viewFormSubmitThenView,
     request: {
         create: createExpressRequest,
