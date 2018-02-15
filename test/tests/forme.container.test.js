@@ -47,7 +47,8 @@ describe('Container', function () {
             const pointer = blueprints.create.withTwoGroupedInputs().getElement('group1.group2.input1');
             expect(pointer).to.have.property('formeClass').that.equals('input');
             expect(pointer).to.have.property('_type').that.equals('text');
-            expect(pointer).to.have.property('_name').that.equals('input1');
+            expect(pointer).to.have.property('_name').that.equals('this_is_input1_with_funky_long_name');
+            expect(pointer).to.have.property('_alias').that.equals('input1');
         });
 
         it('should fail to get element from nested group', function () {
@@ -63,7 +64,7 @@ describe('Container', function () {
 
     describe('#elements', function () {
         it('should convert element value structure to flat named values', function () {
-            return blueprints.view.withTwoGroupedAliasedInputs()
+            return blueprints.view.withTwoGroupedInputs()
             .then(result => {
                 expect(result.form.convertElementValues({
                     group1: {

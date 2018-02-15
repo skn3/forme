@@ -229,6 +229,8 @@ function createExpressRequest(options=null) {
 }
 
 function trackInputConfigurationCalls(configuration) {
+    //this helper will create a form, add an input and then override all configuration methods on that input. The overrides simply
+    //dump the method name into an output array, which we can use to track the order of calls.
     const form = new TestDriverForm('form1');
     const input = form.input('input1');
 
@@ -452,7 +454,7 @@ function createFormWithTwoGroupedInputs() {
     });
 }
 
-function createFormWithTwoGroupedAliasedInputs() {
+function createFormWithTwoGroupedInputs() {
     return new TestDriverForm({
         name: 'form1',
         inputs: [
@@ -487,6 +489,27 @@ function createFormWithTwoGroupedInputsOneRequired() {
             },
             {
                 name: 'input2',
+                type: 'text',
+                group: ['group1'],
+            },
+        ]
+    });
+}
+
+function createFormWithTwoGroupedInputsOneSecured() {
+    return new TestDriverForm({
+        name: 'form1',
+        inputs: [
+            {
+                name: 'this_is_input1_with_funky_long_name',
+                alias: 'input1',
+                type: 'text',
+                group: ['group1', 'group2'],
+                secure: true,
+            },
+            {
+                name: 'element_123456',
+                alias: 'input2',
                 type: 'text',
                 group: ['group1'],
             },
@@ -648,8 +671,9 @@ const formBlueprints = {
     withTwoInputsOneRequired: createFormWithTwoInputsOneRequired,
     withTwoDynamicInputs: createFormWithTwoDynamicInputs,
     withTwoGroupedInputs: createFormWithTwoGroupedInputs,
-    withTwoGroupedAliasedInputs: createFormWithTwoGroupedAliasedInputs,
+    withTwoGroupedInputs: createFormWithTwoGroupedInputs,
     withTwoGroupedInputsOneRequired: createFormWithTwoGroupedInputsOneRequired,
+    withTwoGroupedInputsOneSecured: createFormWithTwoGroupedInputsOneSecured,
 
     withThreeGroupedInputs: createFormWithThreeGroupedInputs,
 

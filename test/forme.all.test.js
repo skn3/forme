@@ -6,6 +6,8 @@ const testShared = require('./testShared');
 //root tests :D
 describe('Forme', function() {
     require('./tests/forme.utils.test');
+    require('./tests/forme.base.test');
+    require('./tests/forme.configuration.test');
     require('./tests/forme.form.test');
     require('./tests/forme.page.test');
     require('./tests/forme.component.test');

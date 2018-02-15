@@ -54,6 +54,7 @@ The project is still in development but feel free to have a play!
 ## <a name="changeLog"></a> Change Log
 
 ## Breaking changes in version 3.0.0
+- Fixed issue where values saved to session/storage were in grouped structure, but they needed to be in named input format
 - Changed how forme applies the order of configuration properties to elements. It tries to predict that certain configuration methods would be percieved to come first, and so calls these first. It does this by allowing method definitions to specify a priority. 
 - Added `element.configurableMethodsList` property
 - Added `element.configurableMethodsLookup` property
