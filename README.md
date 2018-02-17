@@ -54,6 +54,10 @@ The project is still in development but feel free to have a play!
 ## <a name="changeLog"></a> Change Log
 
 ## Breaking changes in version 3.0.0
+- Renamed private `form._tokenField` to be public `form.tokenName`.
+- Added `form.token` property
+- Safe guarded FormeResult from attempting to use public API methods to gather results.
+- Fixed some error handling when invalid form session.
 - Fixed bug with infinite loop when doing `container.getNamedValue()` on form that is still building!
 - Fixed missing form argument in input validation execution
 - Fixed issue where values saved to session/storage were in grouped structure, but they needed to be in named input format
