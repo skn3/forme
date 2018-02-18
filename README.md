@@ -54,6 +54,7 @@ The project is still in development but feel free to have a play!
 ## <a name="changeLog"></a> Change Log
 
 ## Breaking changes in version 3.0.0
+- Moved `input.icon()` to `element.icon()`
 - Renamed private `form._tokenField` to be public `form.tokenName`.
 - Added `form.token` property
 - Safe guarded FormeResult from attempting to use public API methods to gather results.
