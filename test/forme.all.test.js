@@ -13,4 +13,5 @@ describe('Forme', function() {
     require('./tests/forme.component.test');
     require('./tests/forme.input.test');
     require('./tests/forme.container.test');
+    require('./tests/forme.template.test');
 });

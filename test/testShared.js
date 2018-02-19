@@ -381,6 +381,22 @@ function createFormWithInputBlacklist() {
     });
 }
 
+function createFormWithInputContext() {
+    const form = new TestDriverForm({
+        name: 'form1',
+    });
+
+    const input = form.input({
+        type: 'text',
+        name: 'input1',
+    });
+
+    input.context('context1', 'privateValue1', false);
+    input.context('context2', 'publicValue2', true);
+
+    return form;
+}
+
 //two input shortcuts
 function createFormWithTwoInputs() {
     return new TestDriverForm({
@@ -666,11 +682,11 @@ const formBlueprints = {
     withInputRequired: createFormWithInputRequired,
     withInputOptions: createFormWithInputOptions,
     withInputBlacklist: createFormWithInputBlacklist,
+    withInputContext: createFormWithInputContext,
 
     withTwoInputs: createFormWithTwoInputs,
     withTwoInputsOneRequired: createFormWithTwoInputsOneRequired,
     withTwoDynamicInputs: createFormWithTwoDynamicInputs,
-    withTwoGroupedInputs: createFormWithTwoGroupedInputs,
     withTwoGroupedInputs: createFormWithTwoGroupedInputs,
     withTwoGroupedInputsOneRequired: createFormWithTwoGroupedInputsOneRequired,
     withTwoGroupedInputsOneSecured: createFormWithTwoGroupedInputsOneSecured,

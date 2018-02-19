@@ -54,6 +54,18 @@ The project is still in development but feel free to have a play!
 ## <a name="changeLog"></a> Change Log
 
 ## Breaking changes in version 3.0.0
+- Added elements cause ancestors to fire `invalid()` handlers. This allows a component to trap invalid descendants.
+- Removed elements `invalid()` and `valid()` trickling down to children.
+- Fixed it so unsafe reading of values can now read from the driver request (get/post) properties!
+- Improved input `.is()` validation handling with null/undefined/non-string values. 
+- Added `templateClient` to element template vars
+- Fixed missing template related vars in base.
+- Changed `base.context(name, value)` or `base.context(object)` to have optional last argument of `base.context(name, value, expose)`. This defaults to false. Any exposed contexts will be added to template vars. This breaks version 3 and lower behaviour where all contexts were exposed to the template vars! 
+- Renamed `driver.renderInputTemplate(form, input, template, vars)` to `driver.renderTemplate(form, element, template, vars)`.
+- Moved `input.template()` and `component.template()` to `base.template()`
+- Added `component.getDefaultValue()` and `input.getDefaultValue()`
+- Added `container.getUnsafeElementValue()`.
+- Added `element.getNamedValue()` and `element.getUnsafeNamedValue()`. (previously could only be called on form)
 - Fixed `input.options()` when array of strings passed in.
 - Moved `input.icon()` to `element.icon()`
 - Renamed private `form._tokenField` to be public `form.tokenName`.
