@@ -54,6 +54,9 @@ The project is still in development but feel free to have a play!
 ## <a name="changeLog"></a> Change Log
 
 ## Breaking changes in version 3.0.0
+- Moved `input.alias()` to `element.alias()`.
+- Added `component.require()` to specify that a component is required. This currently does no validation, but just forces the template vars to have `required = true` for the component.
+- Fixed `required` templateVar not return as true/false when component has descendant input.
 - Added elements cause ancestors to fire `invalid()` handlers. This allows a component to trap invalid descendants.
 - Removed elements `invalid()` and `valid()` trickling down to children.
 - Fixed it so unsafe reading of values can now read from the driver request (get/post) properties!
