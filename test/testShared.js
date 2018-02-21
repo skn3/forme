@@ -670,6 +670,98 @@ function createFormWithComponentSetter(setter) {
     });
 }
 
+//page shortcuts
+function createFormWithTwoPagesFourInputsKeepTwo() {
+    return new TestDriverForm({
+        name: 'form1',
+        pages: [
+            {
+                name: 'page1',
+                inputs: [
+                    {
+                        name: 'input1',
+                        type: 'text',
+                        keep: true,
+                    },
+                    {
+                        name: 'input2',
+                        type: 'text',
+                        keep: false,
+                    },
+                ],
+            },
+            {
+                name: 'page2',
+                inputs: [
+                    {
+                        name: 'input3',
+                        type: 'text',
+                        keep: true,
+                    },
+                    {
+                        name: 'input4',
+                        type: 'text',
+                        keep: false,
+                    },
+                ],
+            },
+        ],
+    });
+}
+
+function createFormWithThreePagesSixInputsKeepThree() {
+    return new TestDriverForm({
+        name: 'form1',
+        pages: [
+            {
+                name: 'page1',
+                inputs: [
+                    {
+                        name: 'input1',
+                        type: 'text',
+                        keep: true,
+                    },
+                    {
+                        name: 'input2',
+                        type: 'text',
+                        keep: false,
+                    },
+                ],
+            },
+            {
+                name: 'page2',
+                inputs: [
+                    {
+                        name: 'input3',
+                        type: 'text',
+                        keep: true,
+                    },
+                    {
+                        name: 'input4',
+                        type: 'text',
+                        keep: false,
+                    },
+                ],
+            },
+            {
+                name: 'page3',
+                inputs: [
+                    {
+                        name: 'input5',
+                        type: 'text',
+                        keep: true,
+                    },
+                    {
+                        name: 'input6',
+                        type: 'text',
+                        keep: false,
+                    },
+                ],
+            },
+        ],
+    });
+}
+
 //create shortcuts
 const formBlueprints = {
     withConfiguration: createFormWithConfiguration,
@@ -705,6 +797,10 @@ const formBlueprints = {
     withMultiComponentOneExposedDefaultValue: createFormWithMultiComponentOneExposedDefaultValue,
     withMultiComponentTwoExposed: createFormWithMultiComponentTwoExposed,
     withMultiComponentTwoExposedDefaultValue: createFormWithMultiComponentTwoExposedDefaultValue,
+
+    withTwoPagesFourInputsKeepTwo: createFormWithTwoPagesFourInputsKeepTwo,
+
+    withThreePagesSixInputsKeepThree: createFormWithThreePagesSixInputsKeepThree,
 };
 
 //expose
@@ -779,6 +875,121 @@ module.exports = {
                     //view the form
                     return form.view(request);
                 });
+            }
+        }))),
+
+        submitThenViewNextPage: Object.assign({}, ...Object.keys(formBlueprints).map(key => ({
+            [key]: function(values=null, ...params) {
+                const form = formBlueprints[key](...params);
+                const request = createExpressRequest({body: form.convertElementValues(values)});
+
+                //make sure form has enough pages
+                if (form.totalPages < 2) {
+                    throw(`form needs at least 2 pages to submitThenViewNextPage`);
+                }
+                const page2Name = form.getPageWithIndex(1).getName();
+
+                //add next redirect as success handler!
+                form.success(form => {
+                    form.next();
+                });
+
+                return form.execute(request)
+                .then(result => {
+                    if (!result.valid) {
+                        throw(`cant view next page as result was not valid`);
+                    }
+
+                    if (result.future !== page2Name) {
+                        throw(`failed to navigate to next page`);
+                    }
+
+                    //continue...
+                    const request = result.storage;
+
+                    //reset the request
+                    request.reset();
+
+                    //set the query details!
+                    request.configure({
+                        query: result.destination,
+                    });
+
+                    //view the form
+                    return form.view(request);
+                });
+            }
+        }))),
+
+        submitMultiplePages: Object.assign({}, ...Object.keys(formBlueprints).map(key => ({
+            [key]: function(steps, values, ...params) {
+                const form = formBlueprints[key](...params);
+                const request = createExpressRequest();
+
+                //make sure form has enough pages
+                if (steps > form.totalPages) {
+                    throw(`cant submitMultiplePages with ${steps} steps when form only has ${form.totalPages} pages`);
+                }
+
+                //add next redirect as success handler!
+                form.success(form => {
+                    form.next();
+                });
+
+                //steps handler
+                const nextStep = (step, result) => {
+                    if (step === steps) {
+                        //end of steps so chain back the result
+                        return result;
+                    } else {
+                        //handle next step
+                        const stepValues = (Array.isArray(values)?values[step]:values) || null;
+
+                        //view form (clones form)
+                        return form.view(request)
+                        .then(result => {
+                            if (!result.valid) {
+                                throw(`invalid view result on page index ${step}`);
+                            }
+
+                            //prepare the request
+                            const request = result.storage;
+                            request.reset();
+                            request.setBody(result.form.convertElementValues(stepValues));
+                            request.configure({
+                                query: result.destination,
+                            });
+
+                            //submit form (clones form)
+                            return form.execute(request);
+                        })
+                        .then(result => {
+                            if (!result.valid) {
+                                throw(`invalid submit result on page index ${step}`);
+                            }
+
+                            //validate we can continue to next page
+                            if (step < steps-1 && result.future !== form.getPageWithIndex(step+1).getName()) {
+                                throw(`failed to navigate to next page`);
+                            }
+
+                            //reset the request
+                            const request = result.storage;
+                            request.reset();
+                            request.configure({
+                                query: result.destination,
+                            });
+
+                            //view the form and then next?
+                            return nextStep(step+1, result);
+                            return form.view(request)
+                            .then(result => nextStep(step+1, result));
+                        });
+                    }
+                };
+
+                //start steps
+                return nextStep(0, null);
             }
         }))),
     },

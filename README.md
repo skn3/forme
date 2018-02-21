@@ -54,6 +54,13 @@ The project is still in development but feel free to have a play!
 ## <a name="changeLog"></a> Change Log
 
 ## Breaking changes in version 3.0.0
+- Fixed bug where _pageFirst was not being properly set so the form thought it was viewing a page for the first time!
+- Updated dependency versions to latest as of 20/02/2018
+- Removed dependency on *extend* and *clone* modules. Added dependency on *lodash* module. 
+- Refactored how external pages are created/stored, now extends from base.
+- Added `form.pageIndex`.
+- Added `form.totalPages`.
+- Added `form.getPageWithIndex()`.
 - Fixed `input.is('phone')` not validating properly when space in input value.
 - Moved `input.alias()` to `element.alias()`.
 - Added `component.require()` to specify that a component is required. This currently does no validation, but just forces the template vars to have `required = true` for the component.
