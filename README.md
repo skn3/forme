@@ -54,6 +54,7 @@ The project is still in development but feel free to have a play!
 ## <a name="changeLog"></a> Change Log
 
 ## Breaking changes in version 3.0.0
+- Completely refactored how pages are processed in the form. Pages are now a fully qualified citizen of the forme structure. The current page will get attached to the root of the form element structure and then proceed to maintain the structure of its own elements. What this means is that no longer are we manually processing form._currentPAge.foo, as its all handled by the existing functionality in base. In the future this means we could essentially have multiple pages on the same form as there is no difference to how they operate!
 - Fixed bug where _pageFirst was not being properly set so the form thought it was viewing a page for the first time!
 - Updated dependency versions to latest as of 20/02/2018
 - Removed dependency on *extend* and *clone* modules. Added dependency on *lodash* module. 
