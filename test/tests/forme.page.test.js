@@ -1,7 +1,7 @@
 "use strict";
 
 //local imports
-const {expect, blueprints} = require('../testShared');
+const {expect, blueprints, executeExternalPageForms} = require('../testShared');
 
 //tests
 describe('Page', function () {
@@ -80,6 +80,60 @@ describe('Page', function () {
                     input4: 'value4NO'
                 });
             });
+        });
+    });
+
+    describe('#externalPages', function () {
+        it('should submit next through multiple external pages', function () {
+            return executeExternalPageForms([
+                blueprints.create.withExternalPageOneOfThree(),
+                blueprints.create.withExternalPageTwoOfThree(),
+                blueprints.create.withExternalPageThreeOfThree(),
+            ], [
+                {
+                    input1: 'value1YES',
+                    input2: 'value2NO',
+                },
+                {
+                    input3: 'value3YES',
+                    input4: 'value4NO',
+                },
+                {
+                    input5: 'value5YES',
+                    input6: 'value6NO',
+                },
+            ])
+            .then(result => {
+                expect(result.valid).to.equal(true);
+                expect(result.future).to.equal(null);
+                expect(result.values).to.deep.equal({
+                    input1: 'value1YES',
+                    input3: 'value3YES',
+                    input5: 'value5YES',
+                    input6: 'value6NO',
+                });
+            });
+        });
+
+        it('should fail when invalid external page is given', function () {
+            return expect(executeExternalPageForms([
+                blueprints.create.withExternalPageOneOfThree(),
+                blueprints.create.withInput(),//this one doesnt have page information so will fail!
+                blueprints.create.withExternalPageThreeOfThree(),
+            ], [
+                {
+                    input1: 'value1YES',
+                    input2: 'value2NO',
+                },
+                {
+                    input3: 'value3YES',
+                    input4: 'value4NO',
+                },
+                {
+                    input5: 'value5YES',
+                    input6: 'value6NO',
+                },
+            ])).to.eventually.be.rejectedWith('invalid page index -1 expected 1');
         });
     });
 });

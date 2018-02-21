@@ -3,10 +3,12 @@
 //module imports
 const chai = require('chai');
 const chaiSubset = require('chai-subset');
+const chaiAsPromised = require("chai-as-promised");
 const expect = chai.expect;
 const querystring = require('querystring');
 
 chai.use(chaiSubset);
+chai.use(chaiAsPromised);
 
 //local imports
 const forme = require('../index');
@@ -248,27 +250,84 @@ function trackInputConfigurationCalls(configuration) {
     return output;
 }
 
-function viewFormSubmitThenView(form, values, validate=null) {
-    //execute the form
-    return form.execute(createExpressRequest({
-        body: values,
-    }))
-    .then(result => {
-        //check we had validation error!
-        if (validate) {
-            validate(result);
+function executeExternalPageForms(forms, values=null, steps=null) {
+    const request = createExpressRequest();
+
+    if (steps <= 0 || steps === undefined) {
+        steps = null;
+    }
+
+    //steps handler
+    const nextStep = (index, result) => {
+        //check for end
+        if (index === steps || (steps === null && index === forms.length)) {
+            //end of steps so chain back the result
+            return Promise.resolve(result);
+        } else {
+            //handle next step
+
+            //get details for this step
+            const form = forms[index];
+            const stepValues = (Array.isArray(values)?values[index]:values) || null;
+
+            //add next redirect as success handler!
+            form.success(form => {
+                form.next();
+            });
+
+            //view form (clones form)
+            return form.view(request)
+            .then(result => {
+                if (!result.valid) {
+                    throw(`invalid view result on page index ${index}`);
+                }
+
+                //validate that we are still in the page system!
+                if (result.pageIndex !== index) {
+                    throw(`invalid page index ${result.pageIndex} expected ${index}`);
+                }
+
+                //prepare the request
+                const request = result.storage;
+                request.reset();
+                request.setBody(result.form.convertElementValues(stepValues));
+                request.configure({
+                    query: result.destination,
+                });
+
+                //submit form (clones form)
+                return form.execute(request);
+            })
+            .then(result => {
+                if (!result.valid) {
+                    throw(`invalid submit result on page index ${index}`);
+                }
+
+                //validate that we are still in the page system!
+                if (result.pageIndex !== index) {
+                    throw(`invalid page index ${result.pageIndex} expected ${index}`);
+                }
+
+                //validate we can continue to next page
+                if (index < forms-1 && result.future !== form.getPageWithIndex(index+1).getName()) {
+                    throw(`failed to navigate to next page`);
+                }
+
+                //reset the request
+                const request = result.storage;
+                request.reset();
+                request.configure({
+                    query: result.destination,
+                });
+
+                //view the form and then next?
+                return nextStep(index+1, result);
+            });
         }
+    };
 
-        //reset the request
-        const request = result.storage;
-        request.reset();
-        request.configure({
-            query: result.destination,
-        });
-
-        //view the form
-        return form.view(request);
-    });
+    //start steps
+    return nextStep(0, null);
 }
 
 //configuration shortcuts
@@ -449,24 +508,6 @@ function createFormWithTwoDynamicInputs() {
                 },
             ])
         },
-    });
-}
-
-function createFormWithTwoGroupedInputs() {
-    return new TestDriverForm({
-        name: 'form1',
-        inputs: [
-            {
-                name: 'input1',
-                type: 'text',
-                group: ['group1', 'group2'],
-            },
-            {
-                name: 'input2',
-                type: 'text',
-                group: ['group1'],
-            },
-        ]
     });
 }
 
@@ -762,6 +803,69 @@ function createFormWithThreePagesSixInputsKeepThree() {
     });
 }
 
+//external page shortcuts
+function createFormWithExternalPages(pages, configure) {
+    return new TestDriverForm({
+        name: 'form1',
+        externalPages: pages,
+    }).configure(configure);
+}
+
+function createFormWithThreeExternalPages(configure) {
+    return createFormWithExternalPages(['website.com/page1.html', 'website.com/page2.html', 'website.com/page3.html'], configure);
+}
+
+function createFormWithExternalPageOneOfThree() {
+    return createFormWithThreeExternalPages({
+        inputs: [
+            {
+                name: 'input1',
+                type: 'text',
+                keep: true,
+            },
+            {
+                name: 'input2',
+                type: 'text',
+                keep: false,
+            },
+        ],
+    });
+}
+
+function createFormWithExternalPageTwoOfThree() {
+    return createFormWithThreeExternalPages({
+        inputs: [
+            {
+                name: 'input3',
+                type: 'text',
+                keep: true,
+            },
+            {
+                name: 'input4',
+                type: 'text',
+                keep: false,
+            },
+        ],
+    });
+}
+
+function createFormWithExternalPageThreeOfThree() {
+    return createFormWithThreeExternalPages({
+        inputs: [
+            {
+                name: 'input5',
+                type: 'text',
+                keep: true,
+            },
+            {
+                name: 'input6',
+                type: 'text',
+                keep: false,
+            },
+        ],
+    });
+}
+
 //create shortcuts
 const formBlueprints = {
     withConfiguration: createFormWithConfiguration,
@@ -801,6 +905,12 @@ const formBlueprints = {
     withTwoPagesFourInputsKeepTwo: createFormWithTwoPagesFourInputsKeepTwo,
 
     withThreePagesSixInputsKeepThree: createFormWithThreePagesSixInputsKeepThree,
+
+    withExternalPages: createFormWithExternalPages,
+    withThreeExternalPages: createFormWithThreeExternalPages,
+    withExternalPageOneOfThree: createFormWithExternalPageOneOfThree,
+    withExternalPageTwoOfThree: createFormWithExternalPageTwoOfThree,
+    withExternalPageThreeOfThree: createFormWithExternalPageThreeOfThree,
 };
 
 //expose
@@ -997,7 +1107,7 @@ module.exports = {
     TestDriverForm: TestDriverForm,
     createExpressRequest: createExpressRequest,
     trackInputConfigurationCalls: trackInputConfigurationCalls,
-    viewFormSubmitThenView: viewFormSubmitThenView,
+    executeExternalPageForms: executeExternalPageForms,
     request: {
         create: createExpressRequest,
     },
