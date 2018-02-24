@@ -54,6 +54,9 @@ The project is still in development but feel free to have a play!
 ## <a name="changeLog"></a> Change Log
 
 ## Breaking changes in version 3.0.0
+- Refactored some internal request value getters.
+- Fixed checked status on input template vars (was only indicating checked when first and manually set to checked!)
+- Reimplimented the visited invalidation when navigating already back through visited pages
 - Fixed more bugs where stored values were dieing/persisting out of time!
 - Fixed current submitted values (null values) not overwritting previous page values. So added a new merge util to allow this (standard lodash.merge).
 - Added `checkedValue` to input templateVars. So a checkbox will always be on if its `defaultValue` is set (or if it has been submitted with **any** non null value). The `checkedValue` lets us customise what value a checkbox should submit. 
