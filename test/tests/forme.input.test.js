@@ -72,18 +72,17 @@ describe('Input', function () {
         });
     });
 
-    describe('#types', function () {
+    describe('#checkbox', function () {
         it('should submit two checkboxes but with onl1 1 selected', function () {
             return blueprints.submitThenView.withTwoCheckboxes({
                 checkbox1: 'checked',
             })
             .then(result => {
                 expect(result.valid).to.equal(true);
-                const templateVars = result.templateVars;
-                expect(templateVars).to.have.nested.property('children.checkbox1.type').that.equals('checkbox');
-                expect(templateVars).to.have.nested.property('children.checkbox2.type').that.equals('checkbox');
-                expect(templateVars).to.have.nested.property('children.checkbox1.checked').that.equals(true);
-                expect(templateVars).to.have.nested.property('children.checkbox2.checked').that.equals(false);
+                expect(result.templateVars).to.have.nested.property('children.checkbox1.type').that.equals('checkbox');
+                expect(result.templateVars).to.have.nested.property('children.checkbox2.type').that.equals('checkbox');
+                expect(result.templateVars).to.have.nested.property('children.checkbox1.checked').that.equals(true);
+                expect(result.templateVars).to.have.nested.property('children.checkbox2.checked').that.equals(false);
             });
         });
 
@@ -98,21 +97,39 @@ describe('Input', function () {
             ], ['next', 'prev'])
             .then(result => {
                 expect(result.valid).to.equal(true);
-                const templateVars = result.templateVars;
-                expect(templateVars).to.have.nested.property('children.checkbox1.type').that.equals('checkbox');
-                expect(templateVars).to.have.nested.property('children.checkbox2.type').that.equals('checkbox');
-                expect(templateVars).to.have.nested.property('children.checkbox1.checked').that.equals(true);
-                expect(templateVars).to.have.nested.property('children.checkbox2.checked').that.equals(false);
+                expect(result.templateVars).to.have.nested.property('children.checkbox1.type').that.equals('checkbox');
+                expect(result.templateVars).to.have.nested.property('children.checkbox2.type').that.equals('checkbox');
+                expect(result.templateVars).to.have.nested.property('children.checkbox1.checked').that.equals(true);
+                expect(result.templateVars).to.have.nested.property('children.checkbox2.checked').that.equals(false);
+            });
+        });
+
+        it('should append selected checkboxes to previous selections', function () {
+            return blueprints.executeActionsThenView.withTwoPagesFourInputsTwoCheckboxes([
+                {
+                    checkbox1: 'checked',
+                },
+                {
+                    input1: 'value1',
+                },
+                {
+                    checkbox2: 'checked',
+                },
+            ], ['next', 'prev', 'next'])
+            .then(result => {
+                expect(result.valid).to.equal(true);
+                expect(result.templateVars).to.have.nested.property('children.input1.type').that.equals('text');
+                expect(result.templateVars).to.have.nested.property('children.input1.value').that.equals('value1');//make sure the middle step worked
+                expect(result.values).to.have.property('checkbox1').that.equals('checked');
+                expect(result.values).to.have.property('checkbox2').that.equals('checked');
             });
         });
     });
 
     describe('#errors', function () {
         it('should get element errors', function () {
-            let called = false;
             return blueprints.submit.withInputRequired()
             .then(result => {
-                const errors = result.form.getElementErrors('input1');
                 expect(result.valid).to.equal(false);
                 expect(result.errors).to.be.an('array').with.lengthOf(1).and.have.nested.property('[0].error').that.equals('CUSTOM_REQUIRED_ERROR');
             });

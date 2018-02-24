@@ -54,6 +54,8 @@ The project is still in development but feel free to have a play!
 ## <a name="changeLog"></a> Change Log
 
 ## Breaking changes in version 3.0.0
+- Created custom lodash mergeWith profile that handles the null values we use in forme. This previously was causing the page value merge operation to overwrite when newer source was null!
+- Refactored how the current "store" is saved. We now save a list of input names as well as teh complete structure.
 - Refactored how most of the request state is modified (might have missed a few). Now all state manipulation is done via `request._flagFoo()` calls. This lets us abstract the internal workings, and later we can turn it into a full state machine with 1 solitary state string! 
 - Fixed form not identifying that a page had already been visited on all scenarios. Was causing certain values not to repopulate.
 - Added `element.clearValue()`
