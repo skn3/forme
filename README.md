@@ -54,6 +54,8 @@ The project is still in development but feel free to have a play!
 ## <a name="changeLog"></a> Change Log
 
 ## Breaking changes in version 3.0.0
+- Added `checkedValue` to input templateVars. So a checkbox will always be on if its `defaultValue` is set (or if it has been submitted with **any** non null value). The `checkedValue` lets us customise what value a checkbox should submit. 
+- Added `input.checkedValue()` (defaults to 'on') which allows to customise the vale that will be submitted for a checked checkbox. This is provided to the templateVars so it is upto user code to define the `<input>` correctly. If a checkedValue of `false`, `null`, `undefined` or *"empty"* is specified, then the default value of `on` will be used. If `true` is specified then the user must handle this is their template. Some template engines might interpret a `true` html attribute to resolve to `checked="checked"`
 - Created custom lodash mergeWith profile that handles the null values we use in forme. This previously was causing the page value merge operation to overwrite when newer source was null!
 - Refactored how the current "store" is saved. We now save a list of input names as well as teh complete structure.
 - Refactored how most of the request state is modified (might have missed a few). Now all state manipulation is done via `request._flagFoo()` calls. This lets us abstract the internal workings, and later we can turn it into a full state machine with 1 solitary state string! 

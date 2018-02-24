@@ -602,12 +602,12 @@ function createFormWithTwoCheckboxes() {
             {
                 name: 'checkbox1',
                 type: 'checkbox',
-                defaultValue: 1,
+                checkedValue: 1,
             },
             {
                 name: 'checkbox2',
                 type: 'checkbox',
-                defaultValue: 1,
+                checkedValue: 1,
             },
         ]
     });
@@ -934,13 +934,13 @@ function createFormWithTwoPagesFourInputsTwoCheckboxes() {
                         name: 'checkbox1',
                         type: 'checkbox',
                         keep: true,
-                        defaultValue: 1,
+                        checkedValue: 1,
                     },
                     {
                         name: 'checkbox2',
                         type: 'checkbox',
                         keep: true,
-                        defaultValue: 1,
+                        checkedValue: 1,
                     },
                 ],
             },
