@@ -54,6 +54,7 @@ The project is still in development but feel free to have a play!
 ## <a name="changeLog"></a> Change Log
 
 ## Breaking changes in version 3.0.0
+- Fixed more bugs where stored values were dieing/persisting out of time!
 - Fixed current submitted values (null values) not overwritting previous page values. So added a new merge util to allow this (standard lodash.merge).
 - Added `checkedValue` to input templateVars. So a checkbox will always be on if its `defaultValue` is set (or if it has been submitted with **any** non null value). The `checkedValue` lets us customise what value a checkbox should submit. 
 - Added `input.checkedValue()` (defaults to 'on') which allows to customise the vale that will be submitted for a checked checkbox. This is provided to the templateVars so it is upto user code to define the `<input>` correctly. If a checkedValue of `false`, `null`, `undefined` or *"empty"* is specified, then the default value of `on` will be used. If `true` is specified then the user must handle this is their template. Some template engines might interpret a `true` html attribute to resolve to `checked="checked"`
