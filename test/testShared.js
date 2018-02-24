@@ -392,7 +392,11 @@ function executeFormActions(form, submit=true, values=null, actions=null) {
                 const stepValues = (Array.isArray(values)?values[actionIndex]:values) || null;
                 const request = result.storage;
                 request.reset();
-                request.setBody(result.form.convertElementValues(stepValues));
+
+                //build body values and remember we need to merge in previous values (because the test code may only provide a limited set of submit values)
+                const bodyValues = utils.merge.allowOverwriteWithNull(result.form.getNamedValues(), result.form.convertElementValues(stepValues));
+                request.setBody(bodyValues);
+
                 request.configure({
                     query: result.destination,
                 });

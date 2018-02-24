@@ -113,6 +113,7 @@ describe('Input', function () {
                     input1: 'value1',
                 },
                 {
+                    /*checkbox1 should have the previously submitted value here*/
                     checkbox2: 'checked',
                 },
             ], ['next', 'prev', 'next'])
