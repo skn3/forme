@@ -330,6 +330,108 @@ function executeExternalPageForms(forms, values=null, steps=null) {
     return nextStep(0, null);
 }
 
+function executeFormActions(form, submit=true, values=null, actions=null) {
+    const request = createExpressRequest();
+
+    if (!actions || actions.length === 0) {
+        throw new Error(`no actions provided to executeFormActions()`)
+    }
+
+    //add the auto form handler on the inactive form!
+    form.success(form => {
+        switch(form.context('currentAction')) {
+            case 'prev':
+                form.context('actionSuccess', true);
+                form.prev();
+                break;
+            case 'next':
+                form.context('actionSuccess', true);
+                form.next();
+                break;
+            case null:
+                //let the form act as normal! (probably counts as a 'next' action unless validation fails)
+                form.context('actionSuccess', true);
+                break;
+
+            default:
+                throw new Error(`action '${action}' not supported in executeFormActions()`)
+        }
+    });
+
+    //steps handler
+    const nextStep = (actionIndex, result) => {
+        //check for end
+        if (actionIndex === actions.length) {
+            //end of steps so chain back the result
+            if (submit) {
+                //as we are in submit mode we can just pass the previous result on
+                return Promise.resolve(result);
+            } else {
+                //need to view as last action!
+                return form.view(request);
+            }
+        } else {
+            //handle next step
+            const action = actions[actionIndex];
+            form.context('currentAction', action);
+            form.context('actionSuccess', false);
+
+            //view form (clones form)
+            return form.view(request)
+            .then(result => {
+                if (!result.valid) {
+                    throw(`invalid result.valid on page index ${result.pageIndex} in executeFormActions()`);
+                }
+
+                //validate that we are still in the page system!
+                if (result.pageIndex === -1) {
+                    throw(`invalid page index ${result.pageIndex} in executeFormActions()`);
+                }
+
+                //prepare the request
+                const stepValues = (Array.isArray(values)?values[actionIndex]:values) || null;
+                const request = result.storage;
+                request.reset();
+                request.setBody(result.form.convertElementValues(stepValues));
+                request.configure({
+                    query: result.destination,
+                });
+
+                //submit form (clones form)
+                return form.execute(request);
+            })
+            .then(result => {
+                if (!result.valid) {
+                    throw(`invalid submit result on page index ${actionIndex}`);
+                }
+
+                //validate that we are still in the page system!
+                if (result.pageIndex === -1) {
+                    throw(`invalid page index ${result.pageIndex} in executeFormActions()`);
+                }
+
+                //validate the action executed
+                if (!result.form.context('actionSuccess')) {
+                    throw(`did not execute action in executeFormActions()`);
+                }
+
+                //reset the request
+                const request = result.storage;
+                request.reset();
+                request.configure({
+                    query: result.destination,
+                });
+
+                //process next step
+                return nextStep(actionIndex+1, result);
+            });
+        }
+    };
+
+    //start steps
+    return nextStep(0, null);
+}
+
 //configuration shortcuts
 function createFormWithConfiguration(configuration) {
     return new TestDriverForm(Object.assign({
@@ -488,6 +590,24 @@ function createFormWithTwoInputsOneRequired() {
             {
                 name: 'input2',
                 type: 'text',
+            },
+        ]
+    });
+}
+
+function createFormWithTwoCheckboxes() {
+    return new TestDriverForm({
+        name: 'form1',
+        inputs: [
+            {
+                name: 'checkbox1',
+                type: 'checkbox',
+                defaultValue: 1,
+            },
+            {
+                name: 'checkbox2',
+                type: 'checkbox',
+                defaultValue: 1,
             },
         ]
     });
@@ -803,6 +923,46 @@ function createFormWithThreePagesSixInputsKeepThree() {
     });
 }
 
+function createFormWithTwoPagesFourInputsTwoCheckboxes() {
+    return new TestDriverForm({
+        name: 'form1',
+        pages: [
+            {
+                name: 'page1',
+                inputs: [
+                    {
+                        name: 'checkbox1',
+                        type: 'checkbox',
+                        keep: true,
+                        defaultValue: 1,
+                    },
+                    {
+                        name: 'checkbox2',
+                        type: 'checkbox',
+                        keep: true,
+                        defaultValue: 1,
+                    },
+                ],
+            },
+            {
+                name: 'page2',
+                inputs: [
+                    {
+                        name: 'input1',
+                        type: 'text',
+                        keep: true,
+                    },
+                    {
+                        name: 'input2',
+                        type: 'text',
+                        keep: true,
+                    },
+                ],
+            },
+        ],
+    });
+}
+
 //external page shortcuts
 function createFormWithExternalPages(pages, configure) {
     return new TestDriverForm({
@@ -886,6 +1046,7 @@ const formBlueprints = {
     withTwoGroupedInputs: createFormWithTwoGroupedInputs,
     withTwoGroupedInputsOneRequired: createFormWithTwoGroupedInputsOneRequired,
     withTwoGroupedInputsOneSecured: createFormWithTwoGroupedInputsOneSecured,
+    withTwoCheckboxes: createFormWithTwoCheckboxes,
 
     withThreeGroupedInputs: createFormWithThreeGroupedInputs,
 
@@ -903,6 +1064,7 @@ const formBlueprints = {
     withMultiComponentTwoExposedDefaultValue: createFormWithMultiComponentTwoExposedDefaultValue,
 
     withTwoPagesFourInputsKeepTwo: createFormWithTwoPagesFourInputsKeepTwo,
+    withTwoPagesFourInputsTwoCheckboxes: createFormWithTwoPagesFourInputsTwoCheckboxes,
 
     withThreePagesSixInputsKeepThree: createFormWithThreePagesSixInputsKeepThree,
 
@@ -1102,12 +1264,27 @@ module.exports = {
                 return nextStep(0, null);
             }
         }))),
+
+        executeActionsThenSubmit: Object.assign({}, ...Object.keys(formBlueprints).map(key => ({
+            [key]: function(values, actions, ...params) {
+                const form = formBlueprints[key](...params);
+                return executeFormActions(form, true, values, actions);
+            }
+        }))),
+
+        executeActionsThenView: Object.assign({}, ...Object.keys(formBlueprints).map(key => ({
+            [key]: function(values, actions, ...params) {
+                const form = formBlueprints[key](...params);
+                return executeFormActions(form, false, values, actions);
+            }
+        }))),
     },
     expect: expect,
     TestDriverForm: TestDriverForm,
     createExpressRequest: createExpressRequest,
     trackInputConfigurationCalls: trackInputConfigurationCalls,
     executeExternalPageForms: executeExternalPageForms,
+    executeFormActions: executeFormActions,
     request: {
         create: createExpressRequest,
     },

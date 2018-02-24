@@ -54,6 +54,8 @@ The project is still in development but feel free to have a play!
 ## <a name="changeLog"></a> Change Log
 
 ## Breaking changes in version 3.0.0
+- Refactored how most of the request state is modified (might have missed a few). Now all state manipulation is done via `request._flagFoo()` calls. This lets us abstract the internal workings, and later we can turn it into a full state machine with 1 solitary state string! 
+- Fixed form not identifying that a page had already been visited on all scenarios. Was causing certain values not to repopulate.
 - Added `element.clearValue()`
 - Fixed `getValue()` func to get page values too!
 - Fixed bug where components compose was trying to apply compose handlers from external pages (which have none).

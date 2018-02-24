@@ -1,7 +1,7 @@
 "use strict";
 
 //local imports
-const {expect, TestDriverForm, createExpressRequest, blueprints} = require('../testShared');
+const {expect, executeFormActions, blueprints} = require('../testShared');
 
 //tests
 describe('Input', function () {
@@ -68,6 +68,41 @@ describe('Input', function () {
             .then(result => {
                 expect(result.valid).to.equal(false);
                 expect(result.errors).to.be.an('array').with.lengthOf(1).and.have.nested.property('[0].error').that.equals('CUSTOM_OPTIONS_ERROR');
+            });
+        });
+    });
+
+    describe('#types', function () {
+        it('should submit two checkboxes but with onl1 1 selected', function () {
+            return blueprints.submitThenView.withTwoCheckboxes({
+                checkbox1: 'checked',
+            })
+            .then(result => {
+                expect(result.valid).to.equal(true);
+                const templateVars = result.templateVars;
+                expect(templateVars).to.have.nested.property('children.checkbox1.type').that.equals('checkbox');
+                expect(templateVars).to.have.nested.property('children.checkbox2.type').that.equals('checkbox');
+                expect(templateVars).to.have.nested.property('children.checkbox1.checked').that.equals(true);
+                expect(templateVars).to.have.nested.property('children.checkbox2.checked').that.equals(false);
+            });
+        });
+
+        it('should maintain checkbox selection after navigating back to page', function () {
+            return blueprints.executeActionsThenView.withTwoPagesFourInputsTwoCheckboxes([
+                {
+                    checkbox1: 'checked',
+                },
+                {
+                    input1: 'value1',
+                }
+            ], ['next', 'prev'])
+            .then(result => {
+                expect(result.valid).to.equal(true);
+                const templateVars = result.templateVars;
+                expect(templateVars).to.have.nested.property('children.checkbox1.type').that.equals('checkbox');
+                expect(templateVars).to.have.nested.property('children.checkbox2.type').that.equals('checkbox');
+                expect(templateVars).to.have.nested.property('children.checkbox1.checked').that.equals(true);
+                expect(templateVars).to.have.nested.property('children.checkbox2.checked').that.equals(false);
             });
         });
     });
