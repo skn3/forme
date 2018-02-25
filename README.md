@@ -54,6 +54,9 @@ The project is still in development but feel free to have a play!
 ## <a name="changeLog"></a> Change Log
 
 ## Breaking changes in version 3.0.0
+- Fixed non driver compose handlers which were not being called and also being called from the wrong context (container)
+- Fixed the order in which component handlers are called. Internally *composed* handlers (the ones added during compose) are always called before others!
+- Added `container.compose()` support to configuration.
 - Refactored some internal request value getters.
 - Fixed checked status on input template vars (was only indicating checked when first and manually set to checked!)
 - Reimplimented the visited invalidation when navigating already back through visited pages

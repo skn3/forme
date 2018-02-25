@@ -60,6 +60,24 @@ describe('Component', function () {
                 });
             });
         });
+
+        it('should create a component with form compose handler', function () {
+            const form = new TestDriverForm({
+                name: 'form1',
+                compose: (form, page, component, details) => true,
+                component: {
+                    name: 'component1',
+                    type: 'handledByFormComposeAbove',
+                },
+            });
+
+            //execute the custom form
+            return form.execute(createExpressRequest())
+            .then(result => {
+                expect(result.valid).to.equal(true);
+                expect(result.form.getElement('component1')).to.exist;
+            });
+        });
     });
 
     describe('#values', function () {
@@ -277,6 +295,43 @@ describe('Component', function () {
                         name: '__forme_element__form1__component1__input1',
                     }
                 }]);
+            });
+        });
+
+        it('should call internal composed validation handlers first', function () {
+            const callList = [];
+
+            const form = new TestDriverForm({
+                name: 'form1',
+
+                //custom form compose handler
+                compose: (form, page, component, details) => {
+                    component.configure({
+                        validate: (form, component, state) => {
+                            callList.push('compose');
+                        },
+                    });
+
+                    //handled!
+                    return true;
+                },
+
+                //components in form
+                component: {
+                    name: 'component1',
+                    type: 'handledByFormComposeAbove',
+                    validate: (form, component, state) => {
+                        callList.push('component');
+                    },
+                },
+            });
+
+            //execute the custom form
+            return form.execute(createExpressRequest())
+            .then(result => {
+                expect(result.valid).to.equal(true);
+                expect(result.form.getElement('component1')).to.exist;
+                expect(callList).to.be.an('array').that.deep.equals(['compose', 'component']);
             });
         });
     });
