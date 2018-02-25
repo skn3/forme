@@ -54,6 +54,9 @@ The project is still in development but feel free to have a play!
 ## <a name="changeLog"></a> Change Log
 
 ## Breaking changes in version 3.0.0
+- Changed component validate handlers to have two modes of operation. When added during the `.compose()` operation, then validate handlers should expect to receive the raw version of values (eg with no expose handling). Any other `.validate()` handlers, such as those added in the component initial configuration, these will respect the `.expose()` settings of the component. In english this means, `component.validate()` handlers added during compose are considered internal so receive all of the private values in `state.value`.   
+- Changed component execution handlers that recieve a `state` param, now respect the expose setting of the component! 
+- Changed all validation handles to have a unified `state.value` instead of a mix between `state.values` and `state.value` depending on who owned teh handler!
 - Fixed non driver compose handlers which were not being called and also being called from the wrong context (container)
 - Fixed the order in which component handlers are called. Internally *composed* handlers (the ones added during compose) are always called before others!
 - Added `container.compose()` support to configuration.
@@ -855,7 +858,7 @@ form.add('value1');
 form.add('value2');
 
 form.validate((form, state) => {
-	if (state.values.value1 == 'database' || state.values.value2 == 'database') {
+	if (state.value.value1 == 'database' || state.value.value2 == 'database') {
 	    return Promise.reject(new Error('form contained a reserved word'));
  	}
  }, 'Invalid values');
@@ -878,7 +881,7 @@ const page1 = form.page1('page1');
 page1.add('value1');
 
 page1.validate((form, page, state) => {
-	if (state.values.value1 == 'testing') {
+	if (state.value.value1 == 'testing') {
 	    return Promise.reject(new Error('no testing!'));
  	}
  }, 'Invalid values');
@@ -898,7 +901,7 @@ const forme = require('forme');
 const form = forme('testForm');
 
 form.add('input1').validate((form, input, state) => {
-	if (state.values.input1 == 'boombox') {
+	if (state.value.input1 == 'boombox') {
 	    return Promise.reject(new Error('sorry to loud!'));
  	}
  }, 'Invalid values');
@@ -916,7 +919,7 @@ Notice in the examples above we are using Promise.reject to indicate an error. T
 
 If you would like to provide a custom error message from within the callback, simply `Promise.reject(new Error())`. Forme lets you use the same placeholder tokens as described in the [Custom Errors](#customErrors) section.
 
-If you want to alter the submitted values, simply modify `state.values` or `state.value`. 
+If you want to alter the submitted values, simply modify `state.value` or `state.value`. 
 
 
 ## <a name="customSubmitHandling"></a> Custom Submit Handling 
@@ -1483,7 +1486,7 @@ form.compose((form, component, details) => {
             
             //add custom validation
             component.validate((form, component, state) => {
-                if (state.values.value === state.values.key) {
+                if (state.value.value === state.value.key) {
                     throw new Error(`value and key cant be the same!`);
                 }
             });
