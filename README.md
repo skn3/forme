@@ -54,6 +54,7 @@ The project is still in development but feel free to have a play!
 ## <a name="changeLog"></a> Change Log
 
 ## Breaking changes in version 3.0.0
+- Fixed duplicate error bug
 - Fixed bug in state validation comparison which would cause one of the comparison sides to always be null/undefined!
 - Changed `state.value` comparison to use lodash `_.isEqual()`.
 - Changed component validate handlers to have two modes of operation. When added during the `.compose()` operation, then validate handlers should expect to receive the raw version of values (eg with no expose handling). Any other `.validate()` handlers, such as those added in the component initial configuration, these will respect the `.expose()` settings of the component. In english this means, `component.validate()` handlers added during compose are considered internal so receive all of the private values in `state.value`.   
