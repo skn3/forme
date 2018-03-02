@@ -54,6 +54,8 @@ The project is still in development but feel free to have a play!
 ## <a name="changeLog"></a> Change Log
 
 ## Breaking changes in version 3.0.0
+- Added `component.keep()` to set keep on all exposed elements.
+- Fixed calling guard for some form methods
 - Fixed duplicate error bug
 - Fixed bug in state validation comparison which would cause one of the comparison sides to always be null/undefined!
 - Changed `state.value` comparison to use lodash `_.isEqual()`.
