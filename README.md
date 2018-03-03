@@ -54,6 +54,8 @@ The project is still in development but feel free to have a play!
 ## <a name="changeLog"></a> Change Log
 
 ## Breaking changes in version 3.0.0
+- Added `templateVars.autoComplete` to input template vars. Please notice the forme casing differs from the expected *html* attribute casing.  `autoComplete` vs `autocomplete`, so your template might implement like so `<input autocomplete=${vars.autoComplete} />`
+- Added `input.autoComplete(string or null)` method to set teh autocomplete attribute of an input.  
 - Changed so when `_createExecutionState()` is called internally, it uses the new `options.isolate` flag for `_buildValues()`. This means that the `state.value` passed to validate handlers will now trim out the root group (as one would expect). So for example if you had a component on group `hello` that had an internal input, then previously the `state.value` would have been `{value: {hello: {input1: 'bar'}}}`. Now it will be `{value: {input1: 'bar'}}` as expected!   
 - Added `depth` param to all `_buildValue()` internal functions. This lets us track the REAL element depth to perform certain actions based on options.
 - Added `component.keep()` to set keep on all exposed elements.
