@@ -73,8 +73,8 @@ describe('Input', function () {
     });
 
     describe('#checkbox', function () {
-        it('should submit two checkboxes but with onl1 1 selected', function () {
-            return blueprints.submitThenView.withTwoCheckboxes({
+        it('should submit two checkboxes but with only 1 selected', function () {
+            return blueprints.submitView.withTwoCheckboxes({
                 checkbox1: 'checked',
             })
             .then(result => {
@@ -87,14 +87,31 @@ describe('Input', function () {
         });
 
         it('should maintain checkbox selection after navigating back to page', function () {
-            return blueprints.executeActionsThenView.withTwoPagesFourInputsTwoCheckboxes([
+            return blueprints.runCommands.withTwoPagesFourInputsTwoCheckboxes([
                 {
-                    checkbox1: 'checked',
+                    command: 'view',
                 },
                 {
-                    input1: 'value1',
-                }
-            ], ['next', 'prev'])
+                    command: 'execute',
+                    values: {
+                        checkbox1: 'checked',
+                    },
+                    page: 'next',
+                },
+                {
+                    command: 'view',
+                },
+                {
+                    command: 'execute',
+                    values: {
+                        input1: 'value1',
+                    },
+                    page: 'prev',
+                },
+                {
+                    command: 'view',
+                },
+            ])
             .then(result => {
                 expect(result.valid).to.equal(true);
                 expect(result.templateVars).to.have.nested.property('children.checkbox1.type').that.equals('checkbox');
@@ -105,18 +122,41 @@ describe('Input', function () {
         });
 
         it('should append selected checkboxes to previous selections', function () {
-            return blueprints.executeActionsThenView.withTwoPagesFourInputsTwoCheckboxes([
+            return blueprints.runCommands.withTwoPagesFourInputsTwoCheckboxes([
                 {
-                    checkbox1: 'checked',
+                    command: 'view',
                 },
                 {
-                    input1: 'value1',
+                    command: 'execute',
+                    values: {
+                        checkbox1: 'checked',
+                    },
+                    page: 'next',
                 },
                 {
-                    /*checkbox1 should have the previously submitted value here*/
-                    checkbox2: 'checked',
+                    command: 'view',
                 },
-            ], ['next', 'prev', 'next'])
+                {
+                    command: 'execute',
+                    values: {
+                        input1: 'value1',
+                    },
+                    page: 'prev',
+                },
+                {
+                    command: 'view',
+                },
+                {
+                    command: 'execute',
+                    values: {
+                        checkbox2: 'checked',
+                    },
+                    page: 'next',
+                },
+                {
+                    command: 'view',
+                },
+            ])
             .then(result => {
                 expect(result.valid).to.equal(true);
                 expect(result.templateVars).to.have.nested.property('children.input1.type').that.equals('text');

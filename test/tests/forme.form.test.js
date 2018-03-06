@@ -86,20 +86,19 @@ describe('Form', function () {
     });
 
     describe('#store', function () {
-        it('should persist a form using session', function () {
-            return blueprints.submitThenView.withTwoInputsOneRequired({
-                input2: 'insert_value_here'
+        it('should persist a form in the session', function () {
+            return blueprints.submitView.withTwoInputsOneRequired({
+                input2: 'insert_value_here',
             })
             .then(result => {
                 //after view
                 expect(result.valid).to.equal(true);
-                expect(result).to.have.nested.property('errors').that.is.an('array').with.lengthOf(1).and.has.nested.property('[0].error').that.equals('CUSTOM_REQUIRED_ERROR');
                 expect(result.values).to.have.property('input2').that.equals('insert_value_here');
             });
         });
 
         it('should persist a form using session where inputs are grouped', function () {
-            return blueprints.submitThenView.withTwoGroupedInputsOneRequired({
+            return blueprints.submitView.withTwoGroupedInputsOneRequired({
                 group1: {
                     input2: 'insert_value_here',
                 },
@@ -107,7 +106,6 @@ describe('Form', function () {
             .then(result => {
                 //after view
                 expect(result.valid).to.equal(true);
-                expect(result).to.have.nested.property('errors').that.is.an('array').with.lengthOf(1).and.has.nested.property('[0].error').that.equals('CUSTOM_REQUIRED_ERROR');
                 expect(result.values).to.deep.equal({
                     group1: {
                         group2: {

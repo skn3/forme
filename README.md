@@ -54,6 +54,20 @@ The project is still in development but feel free to have a play!
 ## <a name="changeLog"></a> Change Log
 
 ## Breaking changes in version 3.0.0
+- Refactored some internal code/naming to make things easier to understand!
+- Improved loading of `request._values` earlier and with some possibility to guess in external page mode. This means we can gain access to values much earlier in the form lifecycle! Potentially solves a chicken+egg scenario where an input relies on its previously submitted/stored value!
+- Removed some ancient code that was passing `(view, submit, values)` to a ton of functions. It was from a time where forme was potentially going to allow multiple methods of submit! Have now cleaned up how the request is created so we know early if a form is for submit or for view!
+- Removed the need for separate `_view` and `_submit` flags in request 
+- Added some more request validation flag helpers
+- Improved page url generation
+- Fixed external pages added via configuration, actually getting added as internal pages!
+- Added deep cloning for various internal objects.
+- Added some more tests for page journey validation.
+- Improved all tests to pump through a single form command runner.
+- Added `form.getPageWithName()`.
+- Added `form.forceFail()` for forcing the form to fail validation!
+- Changed `form.getUrl()` (and internal url creation for all elements) so that "better" cleaner urls are generated. For example now the page is in charge of generating its own url, this way external pages can ommit the page querystring!
+- Fixed issue with `form.getUrl()` not properly setting the correct page querystring  details!
 - Added `component.placeholder()` to pass on to exposed inputs.
 - Added `component.autoComplete()` to pass on to exposed inputs.
 - Added `vars.hidden` to input template vars. This allows us to manually detect if a user has specified an input as hidden, even if the calculated type different!
@@ -75,7 +89,7 @@ The project is still in development but feel free to have a play!
 - Added `container.compose()` support to configuration.
 - Refactored some internal request value getters.
 - Fixed checked status on input template vars (was only indicating checked when first and manually set to checked!)
-- Reimplimented the visited invalidation when navigating already back through visited pages
+- Re-implemented the visited invalidation when navigating already back through visited pages
 - Fixed more bugs where stored values were dieing/persisting out of time!
 - Fixed current submitted values (null values) not overwritting previous page values. So added a new merge util to allow this (standard lodash.merge).
 - Added `checkedValue` to input templateVars. So a checkbox will always be on if its `defaultValue` is set (or if it has been submitted with **any** non null value). The `checkedValue` lets us customise what value a checkbox should submit. 

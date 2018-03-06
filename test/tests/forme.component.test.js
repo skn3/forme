@@ -209,7 +209,7 @@ describe('Component', function () {
         });
 
         it('should submit component defaults but not overwrite post values', function () {
-            return blueprints.viewThenSubmit.withMultiComponentDefaultValue({
+            return blueprints.viewSubmit.withMultiComponentDefaultValue({
                 component1: {
                     input1: 'CHANGED!'
                 },
@@ -223,7 +223,7 @@ describe('Component', function () {
         });
 
         it('should get value of single exposed component', function () {
-            return blueprints.viewThenSubmit.withMultiComponentOneExposed({
+            return blueprints.viewSubmit.withMultiComponentOneExposed({
                 component1: {
                     input1: 'value1',
                     input2: 'value2',
@@ -237,7 +237,7 @@ describe('Component', function () {
         });
 
         it('should get value of multiple exposed component', function () {
-            return blueprints.viewThenSubmit.withMultiComponentTwoExposed({
+            return blueprints.viewSubmit.withMultiComponentTwoExposed({
                 component1: {
                     input1: 'value1',
                     input3: 'value3',
@@ -254,7 +254,7 @@ describe('Component', function () {
         });
 
         it('should set defaultValue of single exposed component', function () {
-            return blueprints.viewThenSubmit.withMultiComponentOneExposedDefaultValue()
+            return blueprints.viewSubmit.withMultiComponentOneExposedDefaultValue()
             .then(result => {
                 expect(result.values).to.deep.equal({
                     component1: 'default1',
@@ -263,7 +263,7 @@ describe('Component', function () {
         });
 
         it('should set defaultValue of multiple exposed component', function () {
-            return blueprints.viewThenSubmit.withMultiComponentTwoExposedDefaultValue()
+            return blueprints.viewSubmit.withMultiComponentTwoExposedDefaultValue()
             .then(result => {
                 expect(result.values).to.deep.equal({
                     component1: {

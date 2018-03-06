@@ -4,19 +4,22 @@
 const chai = require('chai');
 const chaiSubset = require('chai-subset');
 const chaiAsPromised = require("chai-as-promised");
+const chaiString = require('chai-string');
 const expect = chai.expect;
 const querystring = require('querystring');
 
 chai.use(chaiSubset);
 chai.use(chaiAsPromised);
+chai.use(chaiString);
 
 //local imports
 const forme = require('../index');
 const utils = require('../lib/utils');
 
-//flag dev mode on in forme constants (so that we catch errors)
+//flag dev mode on in forme constants (so that we catch more errors)
 const constants = require('../lib/constants');
 constants.dev = true;
+//constants.logErrors = false;//disable
 
 //forme imports
 const {
@@ -210,12 +213,24 @@ class ExpressRequest {
             if (options.body !== undefined && options.body !== null) {
                 this.setBody(options.body);
             }
+
+            if (options.originalUrl !== undefined && options.originalUrl !== null) {
+                this.setOriginalUrl(options.originalUrl);
+            }
         }
+    }
+
+    redirect(url) {
+        this.configure({
+            query: url,
+            originalUrl: url,
+        });
+        var wtf = 123;
     }
 
     setQuery(query) {
         if (typeof query === 'string') {
-            this.query = querystring.parse(query.slice(1));
+            this.query = utils.url.extractQuery(query);
         } else {
             this.query = Object.assign({}, query);
         }
@@ -223,6 +238,10 @@ class ExpressRequest {
 
     setBody(body) {
         this.body = Object.assign({}, body);
+    }
+
+    setOriginalUrl(originalUrl) {
+        this.originalUrl = originalUrl;
     }
 }
 
@@ -250,190 +269,162 @@ function trackInputConfigurationCalls(configuration) {
     return output;
 }
 
-function executeExternalPageForms(forms, values=null, steps=null) {
-    const request = createExpressRequest();
-
-    if (steps <= 0 || steps === undefined) {
-        steps = null;
+function runFormCommands(commands=null, globalForm=null) {
+    if (!commands || commands.length === 0) {
+        throw new Error(`no commands provided to runFormCommands()`)
     }
 
     //steps handler
-    const nextStep = (index, result) => {
-        //check for end
-        if (index === steps || (steps === null && index === forms.length)) {
-            //end of steps so chain back the result
-            return Promise.resolve(result);
-        } else {
-            //handle next step
+    const nextStep = (commandIndex, request, lastResult) => {
+        //get the command!
+        const command = commands[commandIndex];
 
-            //get details for this step
-            const form = forms[index];
-            const stepValues = (Array.isArray(values)?values[index]:values) || null;
+        //get current form for the current command (revert back to global form otherwise)
+        const currentForm = command.form || globalForm;
 
-            //add next redirect as success handler!
-            form.success(form => {
-                form.next();
+        //validate
+        if (!currentForm) {
+            throw new Error(`invalid form for command #${commandIndex} ('${command.command}') in runFormCommands()`)
+        }
+
+        //save/reset action state on teh current form, for this command!
+        currentForm.context('commandIndex', commandIndex);
+        currentForm.context('commandCurrent', command);
+        currentForm.context('commandSuccess', false);
+
+        //attach command handlers if we have not already
+        if (!currentForm.context('commandHandlerAttached')) {
+            //flag as attached
+            currentForm.context('commandHandlerAttached', true);
+
+            //load handler
+            currentForm.load(form => {
+                const command = form.context('commandCurrent');
+
+                //force fail the form
+                if (command.fail) {
+                    form.forceFail();
+                }
             });
 
-            //view form (clones form)
-            return form.view(request)
-            .then(result => {
-                if (!result.valid) {
-                    throw(`invalid view result on page index ${index}`);
+            //success handler
+            currentForm.success(form => {
+                //this basically looks for a form success, and based on the currentCommand, performs some forme thang!
+                const commandIndex = form.context('commandIndex');
+                const command = form.context('commandCurrent');
+
+                //flag success!
+                form.context('commandSuccess', true);
+
+                //move the page
+                switch (command.page) {
+                    case 'prev':
+                        if (form.pageIndex === -1) {
+                            throw new Error(`invalid prev on un-paged form for command #${commandIndex} ('${command.command}') in runFormCommands()`)
+                        }
+                        form.prev();
+                        break;
+
+                    case 'next':
+                        if (form.pageIndex === -1) {
+                            throw new Error(`invalid next on un-paged form for command #${commandIndex} ('${command.command}') in runFormCommands()`)
+                        }
+                        form.next();
+                        break;
                 }
-
-                //validate that we are still in the page system!
-                if (result.pageIndex !== index) {
-                    throw(`invalid page index ${result.pageIndex} expected ${index}`);
-                }
-
-                //prepare the request
-                const request = result.storage;
-                request.reset();
-                request.setBody(result.form.convertElementValues(stepValues));
-                request.configure({
-                    query: result.destination,
-                });
-
-                //submit form (clones form)
-                return form.execute(request);
-            })
-            .then(result => {
-                if (!result.valid) {
-                    throw(`invalid submit result on page index ${index}`);
-                }
-
-                //validate that we are still in the page system!
-                if (result.pageIndex !== index) {
-                    throw(`invalid page index ${result.pageIndex} expected ${index}`);
-                }
-
-                //validate we can continue to next page
-                if (index < forms-1 && result.future !== form.getPageWithIndex(index+1).getName()) {
-                    throw(`failed to navigate to next page`);
-                }
-
-                //reset the request
-                const request = result.storage;
-                request.reset();
-                request.configure({
-                    query: result.destination,
-                });
-
-                //view the form and then next?
-                return nextStep(index+1, result);
             });
         }
-    };
 
-    //start steps
-    return nextStep(0, null);
-}
-
-function executeFormActions(form, submit=true, values=null, actions=null) {
-    const request = createExpressRequest();
-
-    if (!actions || actions.length === 0) {
-        throw new Error(`no actions provided to executeFormActions()`)
-    }
-
-    //add the auto form handler on the inactive form!
-    form.success(form => {
-        switch(form.context('currentAction')) {
-            case 'prev':
-                form.context('actionSuccess', true);
-                form.prev();
-                break;
-            case 'next':
-                form.context('actionSuccess', true);
-                form.next();
-                break;
-            case null:
-                //let the form act as normal! (probably counts as a 'next' action unless validation fails)
-                form.context('actionSuccess', true);
-                break;
-
-            default:
-                throw new Error(`action '${action}' not supported in executeFormActions()`)
+        //do stuff before
+        if (command.originalUrl !== undefined) {
+            request.setOriginalUrl(command.originalUrl);
         }
-    });
 
-    //steps handler
-    const nextStep = (actionIndex, result) => {
-        //check for end
-        if (actionIndex === actions.length) {
-            //end of steps so chain back the result
-            if (submit) {
-                //as we are in submit mode we can just pass the previous result on
-                return Promise.resolve(result);
-            } else {
-                //need to view as last action!
-                return form.view(request);
+        //execute teh main command!
+        return Promise.resolve()
+        .then(() => {
+            switch (command.command) {
+                //view style actions
+                case 'view':
+                    //flag success on view because the success handler doesnt obviously get called!
+                    currentForm.context('commandSuccess', true);
+
+                    return currentForm.view(request);
+
+                //submit style actions
+                case 'execute':
+                    //build body values and remember we need to merge in previous values (because the test code may only provide a limited set of submit values)
+                    let bodyValues;
+                    if (command.values && typeof command.values === 'object') {
+                        if (!lastResult) {
+                            bodyValues = currentForm.convertElementValues(command.values);
+                        } else {
+                            bodyValues = utils.merge.allowOverwriteWithNull(lastResult.form.getNamedValues(), lastResult.form.convertElementValues(command.values));
+                        }
+                    } else {
+                        if (lastResult) {
+                            bodyValues = lastResult.form.getNamedValues();
+                        }
+                    }
+
+                    //set body values in the request
+                    request.setBody(bodyValues);
+
+                    //execute the form!
+                    return currentForm.execute(request);
+                default:
+                    throw new Error(`unknown command #${commandIndex} ('${command.command}') in runFormCommands()`)
             }
-        } else {
-            //handle next step
-            const action = actions[actionIndex];
-            form.context('currentAction', action);
-            form.context('actionSuccess', false);
+        })
+        .then(result => {
+            const form = result.form;
+            const command = form.context('commandCurrent');
+            const commandIndex = form.context('commandIndex');
+            const request = result.storage;
 
-            //view form (clones form)
-            return form.view(request)
-            .then(result => {
-                if (!result.valid) {
-                    throw(`invalid result.valid on page index ${result.pageIndex} in executeFormActions()`);
+            //make sure teh success handler got called (or overidden in view mode)
+            if (command.expectSuccess === true && !result.form.context('commandSuccess')) {
+                throw new Error(`failed success handler for command #${commandIndex} ('${command.command}') in runFormCommands()`);
+            }
+
+            //validate expected page index
+            if (command.expectPageIndex !== undefined && command.expectPageIndex !== result.pageIndex) {
+                throw new Error(`unexpected page index '${result.pageIndex}' for command #${commandIndex} ('${command.command}') in runFormCommands()`);
+            }
+
+            //validate valid (last)
+            if (command.expectValidResult === true && !result.valid) {
+                throw new Error(`invalid result.valid for command #${commandIndex} ('${command.command}') runFormCommands()`);
+            }
+
+            //reset the request for the next step!
+            request.reset();
+            request.redirect(result.destination);
+
+            //do things before
+            if (command.goto !== undefined) {
+                const page = form.getPageWithIndex(parseInt(command.goto)) || form.getPageWithName(command.goto);
+                if (!page) {
+                    throw new Error(`can't find goto page '${command.goto}' for command #${commandIndex} ('${command.command}') in runFormCommands()`);
                 }
 
-                //validate that we are still in the page system!
-                if (result.pageIndex === -1) {
-                    throw(`invalid page index ${result.pageIndex} in executeFormActions()`);
-                }
+                //redirect teh request
+                request.redirect(page._url);
+            }
 
-                //prepare the request
-                const stepValues = (Array.isArray(values)?values[actionIndex]:values) || null;
-                const request = result.storage;
-                request.reset();
-
-                //build body values and remember we need to merge in previous values (because the test code may only provide a limited set of submit values)
-                const bodyValues = utils.merge.allowOverwriteWithNull(result.form.getNamedValues(), result.form.convertElementValues(stepValues));
-                request.setBody(bodyValues);
-
-                request.configure({
-                    query: result.destination,
-                });
-
-                //submit form (clones form)
-                return form.execute(request);
-            })
-            .then(result => {
-                if (!result.valid) {
-                    throw(`invalid submit result on page index ${actionIndex}`);
-                }
-
-                //validate that we are still in the page system!
-                if (result.pageIndex === -1) {
-                    throw(`invalid page index ${result.pageIndex} in executeFormActions()`);
-                }
-
-                //validate the action executed
-                if (!result.form.context('actionSuccess')) {
-                    throw(`did not execute action in executeFormActions()`);
-                }
-
-                //reset the request
-                const request = result.storage;
-                request.reset();
-                request.configure({
-                    query: result.destination,
-                });
-
-                //process next step
-                return nextStep(actionIndex+1, result);
-            });
-        }
+            //next step?
+            if (commandIndex < commands.length - 1) {
+                //next step
+                return nextStep(commandIndex+1, request, result);
+            } else {
+                //finished, so pass on the result!
+                return result;
+            }
+        });
     };
 
     //start steps
-    return nextStep(0, null);
+    return nextStep(0, createExpressRequest(), null);
 }
 
 //configuration shortcuts
@@ -1081,215 +1072,75 @@ const formBlueprints = {
 
 //expose
 module.exports = {
+    //blueprints (shortcuts)
     blueprints: {
         create: formBlueprints,
 
         view: Object.assign({}, ...Object.keys(formBlueprints).map(key => ({
             [key]: function(...params) {
-                const form = formBlueprints[key](...params);
-                const request = createExpressRequest();
-
-                return form.view(request);
+                return runFormCommands([
+                    {
+                        command: 'view',
+                    },
+                ], formBlueprints[key](...params));
             },
         }))),
 
         submit: Object.assign({}, ...Object.keys(formBlueprints).map(key => ({
             [key]: function(values=null, ...params) {
-                const form = formBlueprints[key](...params);
-                const request = createExpressRequest({body: form.convertElementValues(values)});
-
-                return form.execute(request);
+                return runFormCommands([
+                    {
+                        command: 'execute',
+                        values: values,
+                    },
+                ], formBlueprints[key](...params));
             }
         }))),
 
-        viewThenSubmit: Object.assign({}, ...Object.keys(formBlueprints).map(key => ({
+        viewSubmit: Object.assign({}, ...Object.keys(formBlueprints).map(key => ({
             [key]: function(values=null, ...params) {
-                const form = formBlueprints[key](...params);
-                const request = createExpressRequest();
-
-                return form.view(request)
-                .then(result => {
-                    //continue...
-                    const request = result.storage;
-
-                    //reset the request
-                    request.reset();
-
-                    //set the query details!
-                    request.configure({
-                        query: result.destination,
-                        body: Object.assign(result.namedValues, result.form.convertElementValues(values)),//merge in the result values with the submit data. This simulates the defaultValues for a form
-                    });
-
-                    //view the form
-                    return form.execute(request);
-                });
+                return runFormCommands([
+                    {
+                        command: 'view',
+                    },
+                    {
+                        command: 'execute',
+                        values: values,
+                    },
+                ], formBlueprints[key](...params));
             }
         }))),
 
-        submitThenView: Object.assign({}, ...Object.keys(formBlueprints).map(key => ({
+        submitView: Object.assign({}, ...Object.keys(formBlueprints).map(key => ({
             [key]: function(values=null, ...params) {
-                const form = formBlueprints[key](...params);
-                const request = createExpressRequest({body: form.convertElementValues(values)});
-
-                //add an always failing validation handler to form so the view happens. Otherwise forme will end the session on successful submit
-                form.alwaysInvalid();
-
-                return form.execute(request)
-                .then(result => {
-                    //continue...
-                    const request = result.storage;
-
-                    //reset the request
-                    request.reset();
-
-                    //set the query details!
-                    request.configure({
-                        query: result.destination,
-                    });
-
-                    //view the form
-                    return form.view(request);
-                });
+                return runFormCommands([
+                    {
+                        command: 'execute',
+                        values: values,
+                        fail: true,//must do this otherwise the form will be completed and thus the result would be unexpected
+                    },
+                    {
+                        command: 'view',
+                    },
+                ], formBlueprints[key](...params));
             }
         }))),
 
-        submitThenViewNextPage: Object.assign({}, ...Object.keys(formBlueprints).map(key => ({
-            [key]: function(values=null, ...params) {
-                const form = formBlueprints[key](...params);
-                const request = createExpressRequest({body: form.convertElementValues(values)});
-
-                //make sure form has enough pages
-                if (form.totalPages < 2) {
-                    throw(`form needs at least 2 pages to submitThenViewNextPage`);
-                }
-                const page2Name = form.getPageWithIndex(1).getName();
-
-                //add next redirect as success handler!
-                form.success(form => {
-                    form.next();
-                });
-
-                return form.execute(request)
-                .then(result => {
-                    if (!result.valid) {
-                        throw(`cant view next page as result was not valid`);
-                    }
-
-                    if (result.future !== page2Name) {
-                        throw(`failed to navigate to next page`);
-                    }
-
-                    //continue...
-                    const request = result.storage;
-
-                    //reset the request
-                    request.reset();
-
-                    //set the query details!
-                    request.configure({
-                        query: result.destination,
-                    });
-
-                    //view the form
-                    return form.view(request);
-                });
-            }
-        }))),
-
-        submitMultiplePages: Object.assign({}, ...Object.keys(formBlueprints).map(key => ({
-            [key]: function(steps, values, ...params) {
-                const form = formBlueprints[key](...params);
-                const request = createExpressRequest();
-
-                //make sure form has enough pages
-                if (steps > form.totalPages) {
-                    throw(`cant submitMultiplePages with ${steps} steps when form only has ${form.totalPages} pages`);
-                }
-
-                //add next redirect as success handler!
-                form.success(form => {
-                    form.next();
-                });
-
-                //steps handler
-                const nextStep = (step, result) => {
-                    if (step === steps) {
-                        //end of steps so chain back the result
-                        return result;
-                    } else {
-                        //handle next step
-                        const stepValues = (Array.isArray(values)?values[step]:values) || null;
-
-                        //view form (clones form)
-                        return form.view(request)
-                        .then(result => {
-                            if (!result.valid) {
-                                throw(`invalid view result on page index ${step}`);
-                            }
-
-                            //prepare the request
-                            const request = result.storage;
-                            request.reset();
-                            request.setBody(result.form.convertElementValues(stepValues));
-                            request.configure({
-                                query: result.destination,
-                            });
-
-                            //submit form (clones form)
-                            return form.execute(request);
-                        })
-                        .then(result => {
-                            if (!result.valid) {
-                                throw(`invalid submit result on page index ${step}`);
-                            }
-
-                            //validate we can continue to next page
-                            if (step < steps-1 && result.future !== form.getPageWithIndex(step+1).getName()) {
-                                throw(`failed to navigate to next page`);
-                            }
-
-                            //reset the request
-                            const request = result.storage;
-                            request.reset();
-                            request.configure({
-                                query: result.destination,
-                            });
-
-                            //view the form and then next?
-                            return nextStep(step+1, result);
-                            return form.view(request)
-                            .then(result => nextStep(step+1, result));
-                        });
-                    }
-                };
-
-                //start steps
-                return nextStep(0, null);
-            }
-        }))),
-
-        executeActionsThenSubmit: Object.assign({}, ...Object.keys(formBlueprints).map(key => ({
-            [key]: function(values, actions, ...params) {
-                const form = formBlueprints[key](...params);
-                return executeFormActions(form, true, values, actions);
-            }
-        }))),
-
-        executeActionsThenView: Object.assign({}, ...Object.keys(formBlueprints).map(key => ({
-            [key]: function(values, actions, ...params) {
-                const form = formBlueprints[key](...params);
-                return executeFormActions(form, false, values, actions);
+        runCommands: Object.assign({}, ...Object.keys(formBlueprints).map(key => ({
+            [key]: function(commands, ...params) {
+                return runFormCommands(commands, formBlueprints[key](...params));
             }
         }))),
     },
+
+    //3rd party exposed
     expect: expect,
+
+    //objects
     TestDriverForm: TestDriverForm,
+
+    //functions
     createExpressRequest: createExpressRequest,
     trackInputConfigurationCalls: trackInputConfigurationCalls,
-    executeExternalPageForms: executeExternalPageForms,
-    executeFormActions: executeFormActions,
-    request: {
-        create: createExpressRequest,
-    },
+    runFormCommands: runFormCommands,
 };
