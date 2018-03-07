@@ -99,7 +99,7 @@ registerComponentType('componentWithTwoInputDefaultValues', (form, page, compone
     });
 });
 
-registerComponentType('componentWithTwoInputsWithOneExposed', (form, page, component, details) => {
+registerComponentType('componentWithTwoInputsOneExposed', (form, page, component, details) => {
     component.configure({
         expose: 'input1',
         inputs:[
@@ -115,7 +115,25 @@ registerComponentType('componentWithTwoInputsWithOneExposed', (form, page, compo
     });
 });
 
-registerComponentType('componentWithThreeInputsWithTwoExposed', (form, page, component, details) => {
+registerComponentType('componentWithTwoInputsOneExposedDefaultValue', (form, page, component, details) => {
+    component.configure({
+        expose: ['input1'],
+        inputs:[
+            {
+                type: 'text',
+                name: 'input1',
+                defaultValue: 'default1',
+            },
+            {
+                type: 'text',
+                name: 'input2',
+                defaultValue: 'default2',
+            }
+        ],
+    });
+});
+
+registerComponentType('componentWithThreeInputsTwoExposed', (form, page, component, details) => {
     component.configure({
         expose: ['input1', 'input3'],
         inputs: [
@@ -353,13 +371,15 @@ function runFormCommands(commands=null, globalForm=null) {
 
                 //submit style actions
                 case 'execute':
-                    //build body values and remember we need to merge in previous values (because the test code may only provide a limited set of submit values)
+                    //build body values
                     let bodyValues;
                     if (command.values && typeof command.values === 'object') {
                         if (!lastResult) {
                             bodyValues = currentForm.convertElementValues(command.values);
                         } else {
-                            bodyValues = utils.merge.allowOverwriteWithNull(lastResult.form.getNamedValues(), lastResult.form.convertElementValues(command.values));
+                            //attempt to convert values (warning this probably wont work for components as they are composed dynamically and we have no way to know their grouping/naming before executing!)
+                            const convertedValues = lastResult.form.convertElementValues(command.values);
+                            bodyValues = utils.merge.allowOverwriteWithNull(lastResult.form.getNamedValues(), convertedValues);
                         }
                     } else {
                         if (lastResult) {
@@ -764,7 +784,7 @@ function createFormWithMultiComponentOneExposed(defaultValue) {
         name: 'form1',
         component: {
             name: 'component1',
-            type: 'componentWithTwoInputsWithOneExposed',
+            type: 'componentWithTwoInputsOneExposed',
         },
     });
 }
@@ -774,7 +794,7 @@ function createFormWithMultiComponentOneExposedDefaultValue(defaultValue) {
         name: 'form1',
         component: {
             name: 'component1',
-            type: 'componentWithTwoInputsWithOneExposed',
+            type: 'componentWithTwoInputsOneExposed',
             defaultValue: 'default1',
         },
     });
@@ -785,7 +805,7 @@ function createFormWithMultiComponentTwoExposed(defaultValue) {
         name: 'form1',
         component: {
             name: 'component1',
-            type: 'componentWithThreeInputsWithTwoExposed',
+            type: 'componentWithThreeInputsTwoExposed',
         },
     });
 }
@@ -795,7 +815,7 @@ function createFormWithMultiComponentTwoExposedDefaultValue(defaultValue) {
         name: 'form1',
         component: {
             name: 'component1',
-            type: 'componentWithThreeInputsWithTwoExposed',
+            type: 'componentWithThreeInputsTwoExposed',
             defaultValue: {
                 input1: 'default1',
                 input2: 'default2',//this wont actually set because the component has not exposed it!
@@ -958,6 +978,32 @@ function createFormWithTwoPagesFourInputsTwoCheckboxes() {
     });
 }
 
+function createFormWithTwoPagesComponentOnPage1AndInputOnPage2() {
+    return new TestDriverForm({
+        name: 'form1',
+        pages: [
+            {
+                name: 'page1',
+                components: [{
+                    name: 'component1',
+                    type: 'componentWithTwoInputsOneExposedDefaultValue',
+                    keep: true,
+                }],
+            },
+            {
+                name: 'page2',
+                inputs: [
+                    {
+                        name: 'input1',
+                        type: 'text',
+                        keep: true,
+                    },
+                ],
+            },
+        ],
+    });
+}
+
 //external page shortcuts
 function createFormWithExternalPages(pages, configure) {
     return new TestDriverForm({
@@ -1060,6 +1106,7 @@ const formBlueprints = {
 
     withTwoPagesFourInputsKeepTwo: createFormWithTwoPagesFourInputsKeepTwo,
     withTwoPagesFourInputsTwoCheckboxes: createFormWithTwoPagesFourInputsTwoCheckboxes,
+    withTwoPagesComponentOnPage1AndInputOnPage2: createFormWithTwoPagesComponentOnPage1AndInputOnPage2,
 
     withThreePagesSixInputsKeepThree: createFormWithThreePagesSixInputsKeepThree,
 

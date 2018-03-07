@@ -98,7 +98,7 @@ describe('Page', function () {
                 expect(result.values).to.deep.equal({
                     input1: 'value1YES',
                     input3: 'value3YES',
-                    input4: 'value4NO'
+                    input4: 'value4NO',
                 });
             });
         });
@@ -261,6 +261,39 @@ describe('Page', function () {
                 expect(result.reload).to.equal(true);
                 expect(result.pageIndex).to.equal(-1);//epic fail as we have tried to start a form in the middle
                 expect(result.totalPages).to.equal(3);
+            });
+        });
+    });
+
+    describe('#components', function () {
+        it('should submit to the next page but only keep exposed component values', function () {
+            return blueprints.runCommands.withTwoPagesComponentOnPage1AndInputOnPage2([
+                //page1
+                {
+                    command: 'view',
+                },
+                {
+                    command: 'execute',
+                    page: 'next',
+                },
+
+                //page2
+                {
+                    command: 'view',
+                },
+                {
+                    command: 'execute',
+                    values: {
+                        input1: 'world!',
+                    },
+                    fail: true,
+                },
+            ])
+            .then(result => {
+                expect(result.values).to.deep.equal({
+                    component1: 'default1',
+                    input1: 'world!',
+                });
             });
         });
     });

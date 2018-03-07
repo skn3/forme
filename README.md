@@ -54,6 +54,11 @@ The project is still in development but feel free to have a play!
 ## <a name="changeLog"></a> Change Log
 
 ## Breaking changes in version 3.0.0
+- Fixed all `element.convertElementValues` methods so that supported element types can will return the value as-is, if called without a parent output container. Not currently used, but future proofing!
+- Fixed `component.convertElementValues` allowing non-exposed values! 
+- Fixed bug in utils path traverse
+- MAJOR FIX page (+any child of page, especially components) not getting built!!!!! Wasn't visible for inputs as they don't have build handlers!
+- Fixed exposed setting not being respected for stored page values
 - Refactored some internal code/naming to make things easier to understand!
 - Improved loading of `request._values` earlier and with some possibility to guess in external page mode. This means we can gain access to values much earlier in the form lifecycle! Potentially solves a chicken+egg scenario where an input relies on its previously submitted/stored value!
 - Removed some ancient code that was passing `(view, submit, values)` to a ton of functions. It was from a time where forme was potentially going to allow multiple methods of submit! Have now cleaned up how the request is created so we know early if a form is for submit or for view!

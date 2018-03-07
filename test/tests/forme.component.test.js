@@ -223,15 +223,12 @@ describe('Component', function () {
         });
 
         it('should get value of single exposed component', function () {
-            return blueprints.viewSubmit.withMultiComponentOneExposed({
-                component1: {
-                    input1: 'value1',
-                    input2: 'value2',
-                },
+            return blueprints.viewSubmit.withMultiComponentOneExposedDefaultValue({
+                component1: 'value1',
             })
             .then(result => {
                 expect(result.values).to.deep.equal({
-                    component1: 'value1',
+                    component1: 'default1',
                 });
             });
         });
