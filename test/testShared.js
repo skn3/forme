@@ -176,7 +176,7 @@ class TestFormeDriver extends FormeDriver {
         const callback = findComponentType(details.type);
         if (callback !== null) {
             //we have a match so let that type handle the build. Make sure its wrapped in a promise...
-            return utils.promise.result(callback(form, page, component, details))
+            return Promise.resolve(callback(form, page, component, details))
 
             //return that the compose() was handled!
             .then(() => true);
