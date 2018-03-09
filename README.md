@@ -54,6 +54,9 @@ The project is still in development but feel free to have a play!
 ## <a name="changeLog"></a> Change Log
 
 ## Breaking changes in version 3.0.0
+- Fixed errors not being reported upon a form reset! Errors now get moved to the internal `reset._lastErrors` array, which only survives till the end of the page load! Perfect for retrieving the result without it polluting the fresh form upon reload!
+- Fixed bug in `result` upon creation when form had reset. Was blocking errors/form from successfully finishing within the forme pipeline (e.g. was rejecting to original caller)
+- Replaced all `utils.promise.result(foo)` with `Promise.resolve(foo)`. (I never knew that native `Promise.resolve` could accept sync or promise argument!!!) 
 - Fixed all `element.convertElementValues` methods so that supported element types can will return the value as-is, if called without a parent output container. Not currently used, but future proofing!
 - Fixed `component.convertElementValues` allowing non-exposed values! 
 - Fixed bug in utils path traverse
