@@ -1,6 +1,6 @@
 {
   "name": "forme",
-  "version": "3.0",
+  "version": "3.0.0-alpha",
   "description": "Forme has been designed to offer a sane way for handling forms & validation in nodejs; using promises.",
   "main": "index.js",
   "scripts": {
