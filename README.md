@@ -54,6 +54,7 @@ The project is still in development but feel free to have a play!
 ## <a name="changeLog"></a> Change Log
 
 ## Breaking changes in version 3.0.0
+- Added `component.help()`
 - Added uuid, uuid3, uuid4 and uuid5 to input.is()
 - Fixed errors not being reported upon a form reset! Errors now get moved to the internal `reset._lastErrors` array, which only survives till the end of the page load! Perfect for retrieving the result without it polluting the fresh form upon reload!
 - Fixed bug in `result` upon creation when form had reset. Was blocking errors/form from successfully finishing within the forme pipeline (e.g. was rejecting to original caller)
