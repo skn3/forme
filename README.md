@@ -54,7 +54,13 @@ The project is still in development but feel free to have a play!
 ## <a name="changeLog"></a> Change Log
 
 ## Breaking changes in version 3.0.0
-- Added `component.help()`
+- Changed `input.options()` to now make multiple calls additive. Use `input.clearOptions()` to reset the options in an input.
+- Changed `input.options()` to not apply any validation on the input. So basically `input.options()` is now simply used to add options to an input. Use `input.whitelist()` or `input.optionsWhitelist()` to add value validation.
+- Added `input.optionsWhitelist()` to add options to an input and set them to whitelist.
+- Added `input.clearOptions()` to clear options in an input.
+- Added `input.whitelist()` validator.
+- Added `component.icon()`.
+- Added `component.help()`.
 - Added uuid, uuid3, uuid4 and uuid5 to input.is()
 - Fixed errors not being reported upon a form reset! Errors now get moved to the internal `reset._lastErrors` array, which only survives till the end of the page load! Perfect for retrieving the result without it polluting the fresh form upon reload!
 - Fixed bug in `result` upon creation when form had reset. Was blocking errors/form from successfully finishing within the forme pipeline (e.g. was rejecting to original caller)

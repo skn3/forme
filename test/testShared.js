@@ -525,14 +525,14 @@ function createFormWithInputRequired() {
     });
 }
 
-function createFormWithInputOptions() {
+function createFormWithInputWhitelist() {
     return new TestDriverForm({
         name: 'form1',
         inputs: [
             {
                 type: 'text',
                 name: 'input1',
-                options: {
+                whitelist: {
                     options: 'I_AM_ALLOWED',
                     error: 'CUSTOM_OPTIONS_ERROR',
                 },
@@ -1077,7 +1077,7 @@ const formBlueprints = {
     withInput: createFormWithInput,
     withInputDefaultValue: createFormWithInputDefaultValue,
     withInputRequired: createFormWithInputRequired,
-    withInputOptions: createFormWithInputOptions,
+    withInputWhitelist: createFormWithInputWhitelist,
     withInputBlacklist: createFormWithInputBlacklist,
     withInputContext: createFormWithInputContext,
 

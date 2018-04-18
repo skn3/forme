@@ -64,7 +64,7 @@ describe('Input', function () {
         });
 
         it('should fail validation with invalid option', function () {
-            return blueprints.submit.withInputOptions({input1: 'I_AM_NOT_ALLOWED!!!'})
+            return blueprints.submit.withInputWhitelist({input1: 'I_AM_NOT_ALLOWED!!!'})
             .then(result => {
                 expect(result.valid).to.equal(false);
                 expect(result.errors).to.be.an('array').with.lengthOf(1).and.have.nested.property('[0].error').that.equals('CUSTOM_OPTIONS_ERROR');
