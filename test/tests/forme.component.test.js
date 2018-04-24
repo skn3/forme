@@ -332,4 +332,23 @@ describe('Component', function () {
             });
         });
     });
+
+    describe('#output', function () {
+        it('should modify component output', function () {
+            return blueprints.submit.withComponentOutput()
+            .then(result => {
+                expect(result.valid).to.equal(true);
+                expect(result.values).to.have.nested.property('component1').that.equals('CHANGED');
+            });
+        });
+
+        it('should fail to modify component output', function () {
+            let called = false;
+            return blueprints.submit.withComponentOutputError()
+            .then(result => {
+                expect(result.valid).to.equal(false);
+                expect(result.errors).to.be.an('array').with.lengthOf(1).and.have.nested.property('[0].error').that.equals('CUSTOM_OUTPUT_ERROR');
+            });
+        });
+    });
 });

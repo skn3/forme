@@ -153,6 +153,33 @@ registerComponentType('componentWithThreeInputsTwoExposed', (form, page, compone
     });
 });
 
+registerComponentType('componentWithOutput', (form, page, component, details) => {
+    component.configure({
+        input: {
+            type: 'text',
+            name: 'input1',
+            defaultValue: 'DEFAULT',
+        },
+        output: (form, component, state) => {
+            state.value = 'CHANGED';
+        },
+    });
+});
+
+registerComponentType('componentWithOutputError', (form, page, component, details) => {
+    component.configure({
+        input: {
+            type: 'text',
+            name: 'input1',
+            defaultValue: 'DEFAULT',
+        },
+        output: (form, component, state) => {
+            state.value = 'CHANGED';
+            throw new Error(`CUSTOM_OUTPUT_ERROR`);
+        },
+    });
+});
+
 //forme objects
 class TestFormeDriver extends FormeDriver {
     static get formClass() {
@@ -573,6 +600,56 @@ function createFormWithInputContext() {
     return form;
 }
 
+function createFormWithInputOutput() {
+    return new TestDriverForm({
+        name: 'form1',
+        inputs: [
+            {
+                type: 'text',
+                name: 'input1',
+                defaultValue: 'DEFAULT',
+                output: (form, input, state) => {
+                    state.value = 'CHANGED';
+                },
+            },
+        ]
+    });
+}
+
+function createFormWithInputPermanentOutput() {
+    return new TestDriverForm({
+        name: 'form1',
+        inputs: [
+            {
+                type: 'text',
+                name: 'input1',
+                defaultValue: 'DEFAULT',
+                permanent: 'FORCED',
+                output: (form, input, state) => {
+                    state.value = 'CHANGED';
+                },
+            },
+        ]
+    });
+}
+
+function createFormWithInputOutputError() {
+    return new TestDriverForm({
+        name: 'form1',
+        inputs: [
+            {
+                type: 'text',
+                name: 'input1',
+                defaultValue: 'DEFAULT',
+                output: (form, input, state) => {
+                    state.value = 'CHANGED';
+                    throw new Error(`CUSTOM_OUTPUT_ERROR`);
+                },
+            },
+        ]
+    });
+}
+
 //two input shortcuts
 function createFormWithTwoInputs() {
     return new TestDriverForm({
@@ -846,6 +923,26 @@ function createFormWithComponentSetter(setter) {
     });
 }
 
+function createFormWithComponentOutput(defaultValue) {
+    return new TestDriverForm({
+        name: 'form1',
+        component: {
+            name: 'component1',
+            type: 'componentWithOutput',
+        },
+    });
+}
+
+function createFormWithComponentOutputError(defaultValue) {
+    return new TestDriverForm({
+        name: 'form1',
+        component: {
+            name: 'component1',
+            type: 'componentWithOutputError',
+        },
+    });
+}
+
 //page shortcuts
 function createFormWithTwoPagesFourInputsKeepTwo() {
     return new TestDriverForm({
@@ -1080,6 +1177,9 @@ const formBlueprints = {
     withInputWhitelist: createFormWithInputWhitelist,
     withInputBlacklist: createFormWithInputBlacklist,
     withInputContext: createFormWithInputContext,
+    withInputOutput: createFormWithInputOutput,
+    withInputPermanentOutput: createFormWithInputPermanentOutput,
+    withInputOutputError: createFormWithInputOutputError,
 
     withTwoInputs: createFormWithTwoInputs,
     withTwoInputsOneRequired: createFormWithTwoInputsOneRequired,
@@ -1093,6 +1193,8 @@ const formBlueprints = {
 
     withComponentInputRequired: createFormWithComponentInputRequired,
     withComponentSetter: createFormWithComponentSetter,
+    withComponentOutput: createFormWithComponentOutput,
+    withComponentOutputError: createFormWithComponentOutputError,
 
     withGroupedComponent: createFormWithGroupedComponent,
 

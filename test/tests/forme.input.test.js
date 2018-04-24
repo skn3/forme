@@ -72,6 +72,35 @@ describe('Input', function () {
         });
     });
 
+    describe('#output', function () {
+        it('should modify input output', function () {
+            let called = false;
+            return blueprints.submit.withInputOutput()
+            .then(result => {
+                expect(result.valid).to.equal(true);
+                expect(result.values).to.have.nested.property('input1').that.equals('CHANGED');
+            });
+        });
+
+        it('should modify permanent input output', function () {
+            let called = false;
+            return blueprints.submit.withInputPermanentOutput()
+            .then(result => {
+                expect(result.valid).to.equal(true);
+                expect(result.values).to.have.nested.property('input1').that.equals('CHANGED');
+            });
+        });
+
+        it('should fail to modify input output', function () {
+            let called = false;
+            return blueprints.submit.withInputOutputError()
+            .then(result => {
+                expect(result.valid).to.equal(false);
+                expect(result.errors).to.be.an('array').with.lengthOf(1).and.have.nested.property('[0].error').that.equals('CUSTOM_OUTPUT_ERROR');
+            });
+        });
+    });
+
     describe('#checkbox', function () {
         it('should submit two checkboxes but with only 1 selected', function () {
             return blueprints.submitView.withTwoCheckboxes({
