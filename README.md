@@ -54,6 +54,8 @@ The project is still in development but feel free to have a play!
 ## <a name="changeLog"></a> Change Log
 
 ## Breaking changes in version 3.0.0
+- Removed notion of `merge` from setters. This is handled automatically based on what the setter handler returns.
+- Changed setter handlers so that they must now return the value they want to set. The actual setting of the value is handled automatically. So this basically means setters/getters are just value processors!  
 - Fixed some missing/errors in element getter/setters.
 - Added `element.getter()` for adding a getter handler to elements. 
 - Changed `input.output(handler)` and `component.output(handler)` to handle output only for known elements. So we can't for example replace a components value with output that doesn't exist! This makes these handlers useful for dealing with value changing that was previously being done in validate handlers.

@@ -163,16 +163,10 @@ describe('Component', function () {
         });
 
         it('should change component value with setter', function () {
-            return blueprints.view.withComponentSetter((form, component, value, merge) => {
-                //set (using the without setter option)
-                component.setValueWithoutSetter({
-                    input1: 'AWESOME:' + value,
-                    input2: 'BEANS:' + value,
-                });
-
-                //handled
-                return true;
-            })
+            return blueprints.view.withComponentSetter((form, component, value) => ({
+                input1: 'AWESOME:' + value,
+                input2: 'BEANS:' + value,
+            }))
             .then(result => {
                 result.form.setElementValue('component1', 'THIS_VALUE_IS_COOL');
                 expect(result.form.getElementValue('component1')).to.deep.equal({
