@@ -54,6 +54,9 @@ The project is still in development but feel free to have a play!
 ## <a name="changeLog"></a> Change Log
 
 ## Breaking changes in version 3.0.0
+- Fixed some missing/errors in element getter/setters.
+- Added `element.getter()` for adding a getter handler to elements. 
+- Changed `input.output(handler)` and `component.output(handler)` to handle output only for known elements. So we can't for example replace a components value with output that doesn't exist! This makes these handlers useful for dealing with value changing that was previously being done in validate handlers.
 - Fixed `throw` error catching in validation handlers!
 - Added `input.output(handler)` and `component.output(handler)` which allows us to modify the value of *valid* inputs **after** all validation handlers have executed.
 - Added `input.getRequired()` and `component.getRequired()`

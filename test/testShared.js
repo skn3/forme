@@ -161,7 +161,7 @@ registerComponentType('componentWithOutput', (form, page, component, details) =>
             defaultValue: 'DEFAULT',
         },
         output: (form, component, state) => {
-            state.value = 'CHANGED';
+            state.value.input1 = 'CHANGED';
         },
     });
 });

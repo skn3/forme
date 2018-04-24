@@ -338,7 +338,7 @@ describe('Component', function () {
             return blueprints.submit.withComponentOutput()
             .then(result => {
                 expect(result.valid).to.equal(true);
-                expect(result.values).to.have.nested.property('component1').that.equals('CHANGED');
+                expect(result.values).to.have.nested.property('component1.input1').that.equals('CHANGED');
             });
         });
 
