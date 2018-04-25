@@ -99,6 +99,46 @@ describe('Input', function () {
                 expect(result.errors).to.be.an('array').with.lengthOf(1).and.have.nested.property('[0].error').that.equals('CUSTOM_OUTPUT_ERROR');
             });
         });
+
+        it('should convert string value "true" to bool true', function () {
+            return blueprints.submit.withInputBool({
+                input1: "true",
+            })
+            .then(result => {
+                expect(result.valid).to.equal(true);
+                expect(result.values).to.have.nested.property('input1').that.equals(true);
+            });
+        });
+
+        it('should convert string value "false" to bool false', function () {
+            return blueprints.submit.withInputBool({
+                input1: "false",
+            })
+            .then(result => {
+                expect(result.valid).to.equal(true);
+                expect(result.values).to.have.nested.property('input1').that.equals(false);
+            });
+        });
+
+        it('should convert string value "TrUe" to bool true', function () {
+            return blueprints.submit.withInputBool({
+                input1: "TrUe",
+            })
+            .then(result => {
+                expect(result.valid).to.equal(true);
+                expect(result.values).to.have.nested.property('input1').that.equals(true);
+            });
+        });
+
+        it('should convert string value "foo" to bool false', function () {
+            return blueprints.submit.withInputBool({
+                input1: "foo",
+            })
+            .then(result => {
+                expect(result.valid).to.equal(true);
+                expect(result.values).to.have.nested.property('input1').that.equals(false);
+            });
+        });
     });
 
     describe('#checkbox', function () {

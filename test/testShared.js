@@ -650,6 +650,19 @@ function createFormWithInputOutputError() {
     });
 }
 
+function createFormWithInputBool() {
+    return new TestDriverForm({
+        name: 'form1',
+        inputs: [
+            {
+                type: 'text',
+                name: 'input1',
+                bool: true,
+            },
+        ]
+    });
+}
+
 //two input shortcuts
 function createFormWithTwoInputs() {
     return new TestDriverForm({
@@ -1180,6 +1193,7 @@ const formBlueprints = {
     withInputOutput: createFormWithInputOutput,
     withInputPermanentOutput: createFormWithInputPermanentOutput,
     withInputOutputError: createFormWithInputOutputError,
+    withInputBool: createFormWithInputBool,
 
     withTwoInputs: createFormWithTwoInputs,
     withTwoInputsOneRequired: createFormWithTwoInputsOneRequired,

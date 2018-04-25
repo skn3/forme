@@ -54,6 +54,7 @@ The project is still in development but feel free to have a play!
 ## <a name="changeLog"></a> Change Log
 
 ## Breaking changes in version 3.0.0
+- Changed `input.bool()` to now accept string *"true" (case-insensitive)* as valid conversion to `true`!
 - Removed notion of `merge` from setters. This is handled automatically based on what the setter handler returns.
 - Changed setter handlers so that they must now return the value they want to set. The actual setting of the value is handled automatically. So this basically means setters/getters are just value processors!  
 - Fixed some missing/errors in element getter/setters.
