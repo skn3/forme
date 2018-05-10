@@ -270,15 +270,32 @@ describe('Component', function () {
     });
 
     describe('#validation', function () {
-        it('should fail validation for component with required input error piped to component', function () {
-            return blueprints.submit.withComponentInputRequired()
+        it('should fail a form with a required component', function () {
+            return blueprints.submit.withComponentRequired()
             .then(result => {
-                const errors = result.form.getElementErrors('input1');
                 expect(result.valid).to.equal(false);
                 expect(result.errors).to.deep.equal([{
                     error: 'CUSTOM_REQUIRED_ERROR',
                     class: 'component',
-                    name: null,
+                    name: 'component1',
+                    path: 'component1',
+                    source: {
+                        class: 'component',
+                        name: 'component1',
+                        path: 'component1',
+                    }
+                }]);
+            });
+        });
+
+        it('should fail validation for component with required input error piped to component', function () {
+            return blueprints.submit.withComponentInputRequired()
+            .then(result => {
+                expect(result.valid).to.equal(false);
+                expect(result.errors).to.deep.equal([{
+                    error: 'CUSTOM_REQUIRED_ERROR',
+                    class: 'component',
+                    name: 'component1',
                     path: 'component1',
                     source: {
                         class: 'input',

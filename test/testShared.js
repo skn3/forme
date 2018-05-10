@@ -56,6 +56,19 @@ registerComponentType('componentValue2', (form, page, component, details) => {
     });
 });
 
+registerComponentType('componentRequired', (form, page, component, details) => {
+    component.configure({
+        input: {
+            type: 'text',
+            name: 'input1',
+        },
+        required: {
+            required: true,
+            error: 'CUSTOM_REQUIRED_ERROR',
+        },
+    });
+});
+
 registerComponentType('componentInputRequired', (form, page, component, details) => {
     component.input({
         type: 'text',
@@ -835,6 +848,16 @@ function createFormWithGroupedComponent() {
     });
 }
 
+function createFormWithComponentRequired() {
+    return new TestDriverForm({
+        name: 'form1',
+        component: {
+            name: 'component1',
+            type: 'componentRequired',
+        },
+    });
+}
+
 function createFormWithComponentInputRequired() {
     return new TestDriverForm({
         name: 'form1',
@@ -1205,6 +1228,7 @@ const formBlueprints = {
 
     withThreeGroupedInputs: createFormWithThreeGroupedInputs,
 
+    withComponentRequired: createFormWithComponentRequired,
     withComponentInputRequired: createFormWithComponentInputRequired,
     withComponentSetter: createFormWithComponentSetter,
     withComponentOutput: createFormWithComponentOutput,

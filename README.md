@@ -54,6 +54,7 @@ The project is still in development but feel free to have a play!
 ## <a name="changeLog"></a> Change Log
 
 ## Breaking changes in version 3.0.0
+- Added proper `component.require()` handling. This is now run as a proper validation handler!
 - Changed `input.bool()` to now accept string *"true" (case-insensitive)* as valid conversion to `true`!
 - Removed notion of `merge` from setters. This is handled automatically based on what the setter handler returns.
 - Changed setter handlers so that they must now return the value they want to set. The actual setting of the value is handled automatically. So this basically means setters/getters are just value processors!  
@@ -166,7 +167,7 @@ The project is still in development but feel free to have a play!
 - Added `element.errorClassName` and `input.requiredClassName` to template vars, so that we can gain access to individual class names for state!
 - Moved `input.data()` to `element.data()` so any element can have data!
 - Changed all element template vars to have `stateClassNames`. This var will also add the error class names now if the element caused and error (as well as previous behaviour where its the current owner of error) 
-- Added `causedError` to all element tempalte vars. This is true when the element caused an error. As the error it generated could ahve been piped, we can use this to track where errors came from.
+- Added `causedError` to all element template vars. This is true when the element caused an error. As the error it generated could ahve been piped, we can use this to track where errors came from.
 - Refactored some templateVars into element base!
 - Renamed `element.getErrors()` to `element.getOwnErrors()`.
 - Added `element.className()` to all elements!
