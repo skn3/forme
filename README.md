@@ -54,6 +54,7 @@ The project is still in development but feel free to have a play!
 ## <a name="changeLog"></a> Change Log
 
 ## Breaking changes in version 3.0.0
+- Added missing `input.optionsWhitelist` configuration option.
 - Added proper `component.require()` handling. This is now run as a proper validation handler!
 - Changed `input.bool()` to now accept string *"true" (case-insensitive)* as valid conversion to `true`!
 - Removed notion of `merge` from setters. This is handled automatically based on what the setter handler returns.
