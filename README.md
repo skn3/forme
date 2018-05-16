@@ -54,6 +54,9 @@ The project is still in development but feel free to have a play!
 ## <a name="changeLog"></a> Change Log
 
 ## Breaking changes in version 3.0.0
+- Changed input now handles setting object type value.
+- Changed components now handle all scenarios of setting primitive or object type values!
+- Added `input.read(handler)` and `component.read(handler)` to allow processing of "read" values.
 - Added missing `input.optionsWhitelist` configuration option.
 - Added proper `component.require()` handling. This is now run as a proper validation handler!
 - Changed `input.bool()` to now accept string *"true" (case-insensitive)* as valid conversion to `true`!

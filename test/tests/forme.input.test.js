@@ -130,13 +130,13 @@ describe('Input', function () {
             });
         });
 
-        it('should convert string value "foo" to bool false', function () {
+        it('should convert string value "foo" to bool true', function () {
             return blueprints.submit.withInputBool({
                 input1: "foo",
             })
             .then(result => {
                 expect(result.valid).to.equal(true);
-                expect(result.values).to.have.nested.property('input1').that.equals(false);
+                expect(result.values).to.have.nested.property('input1').that.equals(true);
             });
         });
     });
