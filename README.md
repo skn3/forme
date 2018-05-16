@@ -54,6 +54,10 @@ The project is still in development but feel free to have a play!
 ## <a name="changeLog"></a> Change Log
 
 ## Breaking changes in version 3.0.0
+- Added support for `component.empty()`, `component.bool()`, `component.float()`, `component.int()`, `component.string()`.
+- Added `input.json()` and `component.json()` which will convert the value from a string to json!
+- Refactored element building lifecycle to add in more points elements can hook into.
+- Refactored element internals to handle value reading in a more OOP way. We now have more control over the lifecycle.
 - Added `component.submit()`, `component.success()` and `component.fail()` handler support!
 - Changed input now handles setting object type value.
 - Changed components now handle all scenarios of setting primitive or object type values!

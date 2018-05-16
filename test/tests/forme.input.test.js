@@ -15,6 +15,32 @@ describe('Input', function () {
         });
     });
 
+    describe('#process', function () {
+        it('should succeed with valid input json', function () {
+            const data = {
+                hello: 'world',
+            };
+            return blueprints.submit.withInputJson({
+                input1: JSON.stringify(data),
+            })
+            .then(result => {
+                expect(result.valid).to.equal(true);
+                expect(result.values).to.have.nested.property('input1').that.deep.equals(data);
+            });
+        });
+
+        it('should fail with invalid input json', function () {
+            const data = 'INVALID_JSON_HERE';
+            return blueprints.submit.withInputJson({
+                input1: data,
+            })
+            .then(result => {
+                expect(result.valid).to.equal(false);
+                expect(result.errors).to.be.an('array').with.lengthOf(1).and.have.nested.property('[0].error').that.equals('CUSTOM_JSON_ERROR');
+            });
+        });
+    });
+
     describe('#validation', function () {
         it('should should catch required input', function () {
             let called = false;

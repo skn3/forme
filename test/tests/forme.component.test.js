@@ -222,7 +222,7 @@ describe('Component', function () {
             })
             .then(result => {
                 expect(result.values).to.deep.equal({
-                    component1: 'default1',
+                    component1: 'value1',
                 });
             });
         });
@@ -265,6 +265,32 @@ describe('Component', function () {
 
                 //validate we didnt set default of unexposed input
                 expect(result.form.getElementValue('component1.input2')).to.equal(null);
+            });
+        });
+    });
+
+    describe('#process', function () {
+        it('should succeed with valid component json', function () {
+            const data = {
+                hello: 'world',
+            };
+            return blueprints.submit.withComponentJson({
+                component1: JSON.stringify(data),
+            })
+            .then(result => {
+                expect(result.valid).to.equal(true);
+                expect(result.values).to.have.nested.property('component1').that.deep.equals(data);
+            });
+        });
+
+        it('should fail with invalid component json', function () {
+            const data = 'INVALID_JSON_HERE';
+            return blueprints.submit.withComponentJson({
+                component1: data,
+            })
+            .then(result => {
+                expect(result.valid).to.equal(false);
+                expect(result.errors).to.be.an('array').with.lengthOf(1).and.have.nested.property('[0].error').that.equals('CUSTOM_JSON_ERROR');
             });
         });
     });

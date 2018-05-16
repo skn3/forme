@@ -83,11 +83,12 @@ describe('Container', function () {
         it('should convert element value structure to flat named values when exposed component is present', function () {
             return blueprints.view.withMultiComponentOneExposed()
             .then(result => {
-                expect(result.form.convertElementValues({
+                const converted = result.form.convertElementValues({
                     component1: 'hello world!',
                     nope: 'wont be in the output',
-                })).to.deep.equal({
-                    component1: 'hello world!',
+                });
+                expect(converted).to.deep.equal({
+                    __forme_element__form1__component1__input1: 'hello world!',
                 });
             });
         });

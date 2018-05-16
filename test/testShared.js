@@ -69,6 +69,20 @@ registerComponentType('componentRequired', (form, page, component, details) => {
     });
 });
 
+registerComponentType('componentJson', (form, page, component, details) => {
+    component.configure({
+        input: {
+            type: 'text',
+            name: 'input1',
+        },
+        expose: 'input1',
+        json: {
+            allowNull: true,
+            error: 'CUSTOM_JSON_ERROR',
+        },
+    });
+});
+
 registerComponentType('componentInputRequired', (form, page, component, details) => {
     component.input({
         type: 'text',
@@ -365,6 +379,20 @@ function runFormCommands(commands=null, globalForm=null) {
                 }
             });
 
+            //read handler
+            currentForm.read((form, values) => {
+                //as we have a complete form structure we can now safely inject our submit values.
+                //we have to go about this round about way to allow the tests to submit with external values!
+                let commandValues = form.context('commandValues');
+
+                if (commandValues && typeof commandValues === 'object') {
+                    commandValues = form.convertElementValues(commandValues);
+                    values = utils.merge.allowOverwriteWithNull(values, commandValues);
+                }
+
+                return values;
+            });
+
             //success handler
             currentForm.success(form => {
                 //this basically looks for a form success, and based on the currentCommand, performs some forme thang!
@@ -413,18 +441,13 @@ function runFormCommands(commands=null, globalForm=null) {
                 case 'execute':
                     //build body values
                     let bodyValues;
-                    if (command.values && typeof command.values === 'object') {
-                        if (!lastResult) {
-                            bodyValues = currentForm.convertElementValues(command.values);
-                        } else {
-                            //attempt to convert values (warning this probably wont work for components as they are composed dynamically and we have no way to know their grouping/naming before executing!)
-                            const convertedValues = lastResult.form.convertElementValues(command.values);
-                            bodyValues = utils.merge.allowOverwriteWithNull(lastResult.form.getNamedValues(), convertedValues);
-                        }
-                    } else {
-                        if (lastResult) {
-                            bodyValues = lastResult.form.getNamedValues();
-                        }
+
+                    //store the command values in the form context so we can do some magic in the form.read() handler added above!
+                    currentForm.context('commandValues', command.values);
+
+                    //if we have a last result then we can dump these values NOW into the request body!
+                    if (lastResult) {
+                        bodyValues = lastResult.form.getNamedValues();
                     }
 
                     //set body values in the request
@@ -676,6 +699,22 @@ function createFormWithInputBool() {
     });
 }
 
+function createFormWithInputJson() {
+    return new TestDriverForm({
+        name: 'form1',
+        inputs: [
+            {
+                type: 'text',
+                name: 'input1',
+                json: {
+                    allowNull: true,
+                    error: 'CUSTOM_JSON_ERROR'
+                },
+            },
+        ]
+    });
+}
+
 //two input shortcuts
 function createFormWithTwoInputs() {
     return new TestDriverForm({
@@ -854,6 +893,16 @@ function createFormWithComponentRequired() {
         component: {
             name: 'component1',
             type: 'componentRequired',
+        },
+    });
+}
+
+function createFormWithComponentJson() {
+    return new TestDriverForm({
+        name: 'form1',
+        component: {
+            name: 'component1',
+            type: 'componentJson',
         },
     });
 }
@@ -1217,6 +1266,7 @@ const formBlueprints = {
     withInputPermanentOutput: createFormWithInputPermanentOutput,
     withInputOutputError: createFormWithInputOutputError,
     withInputBool: createFormWithInputBool,
+    withInputJson: createFormWithInputJson,
 
     withTwoInputs: createFormWithTwoInputs,
     withTwoInputsOneRequired: createFormWithTwoInputsOneRequired,
@@ -1229,6 +1279,7 @@ const formBlueprints = {
     withThreeGroupedInputs: createFormWithThreeGroupedInputs,
 
     withComponentRequired: createFormWithComponentRequired,
+    withComponentJson: createFormWithComponentJson,
     withComponentInputRequired: createFormWithComponentInputRequired,
     withComponentSetter: createFormWithComponentSetter,
     withComponentOutput: createFormWithComponentOutput,
