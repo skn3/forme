@@ -54,6 +54,8 @@ The project is still in development but feel free to have a play!
 ## <a name="changeLog"></a> Change Log
 
 ## Breaking changes in version 3.0.0
+- Added `element.getElementName(path)` to get the name of a descendant.  
+- Added *state* details to read handlers. State contains information about the current execution state.
 - Added support for `component.empty()`, `component.bool()`, `component.float()`, `component.int()`, `component.string()`.
 - Added `input.json()` and `component.json()` which will convert the value from a string to json!
 - Refactored element building lifecycle to add in more points elements can hook into.
