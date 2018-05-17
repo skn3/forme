@@ -54,7 +54,7 @@ The project is still in development but feel free to have a play!
 ## <a name="changeLog"></a> Change Log
 
 ## Breaking changes in version 3.0.0
-- Added `element.element({element: 'foo', name: 'bar'})` and `element.element(element, name, type)` as shortcut for adding either input or component, as specified by `"input"` or `"component"` as teh `element` argument.
+- Added `element.element({what: 'foo', name: 'bar'})` and `element.element(what, name, type)` as shortcut for adding either input or component, as specified by `"input"` or `"component"` as the `what` argument.
 - Added `element.getElementName(path)` to get the name of a descendant.  
 - Added *state* details to read handlers. State contains information about the current execution state.
 - Added support for `component.empty()`, `component.bool()`, `component.float()`, `component.int()`, `component.string()`.
@@ -111,7 +111,7 @@ The project is still in development but feel free to have a play!
 - Added `vars.hidden` to input template vars. This allows us to manually detect if a user has specified an input as hidden, even if the calculated type different!
 - Fixed bug in `element.className()` name parsing.
 - Added `templateVars.autoComplete` to input template vars. Please notice the forme casing differs from the expected *html* attribute casing.  `autoComplete` vs `autocomplete`, so your template might implement like so `<input autocomplete=${vars.autoComplete} />`
-- Added `input.autoComplete(string or null)` method to set teh autocomplete attribute of an input.  
+- Added `input.autoComplete(string or null)` method to set the autocomplete attribute of an input.  
 - Changed so when `_createElementState()` is called internally, it uses the new `options.isolate` flag for `_buildValues()`. This means that the `state.value` passed to validate handlers will now trim out the root group (as one would expect). So for example if you had a component on group `hello` that had an internal input, then previously the `state.value` would have been `{value: {hello: {input1: 'bar'}}}`. Now it will be `{value: {input1: 'bar'}}` as expected!   
 - Added `depth` param to all `_buildValue()` internal functions. This lets us track the REAL element depth to perform certain actions based on options.
 - Added `component.keep()` to set keep on all exposed elements.
@@ -121,7 +121,7 @@ The project is still in development but feel free to have a play!
 - Changed `state.value` comparison to use lodash `_.isEqual()`.
 - Changed component validate handlers to have two modes of operation. When added during the `.compose()` operation, then validate handlers should expect to receive the raw version of values (eg with no expose handling). Any other `.validate()` handlers, such as those added in the component initial configuration, these will respect the `.expose()` settings of the component. In english this means, `component.validate()` handlers added during compose are considered internal so receive all of the private values in `state.value`.   
 - Changed component execution handlers that recieve a `state` param, now respect the expose setting of the component! 
-- Changed all validation handles to have a unified `state.value` instead of a mix between `state.values` and `state.value` depending on who owned teh handler!
+- Changed all validation handles to have a unified `state.value` instead of a mix between `state.values` and `state.value` depending on who owned the handler!
 - Fixed non driver compose handlers which were not being called and also being called from the wrong context (container)
 - Fixed the order in which component handlers are called. Internally *composed* handlers (the ones added during compose) are always called before others!
 - Added `container.compose()` support to configuration.
@@ -133,7 +133,7 @@ The project is still in development but feel free to have a play!
 - Added `checkedValue` to input templateVars. So a checkbox will always be on if its `defaultValue` is set (or if it has been submitted with **any** non null value). The `checkedValue` lets us customise what value a checkbox should submit. 
 - Added `input.checkedValue()` (defaults to 'on') which allows to customise the vale that will be submitted for a checked checkbox. This is provided to the templateVars so it is upto user code to define the `<input>` correctly. If a checkedValue of `false`, `null`, `undefined` or *"empty"* is specified, then the default value of `on` will be used. If `true` is specified then the user must handle this is their template. Some template engines might interpret a `true` html attribute to resolve to `checked="checked"`
 - Created custom lodash mergeWith profile that handles the null values we use in forme. This previously was causing the page value merge operation to overwrite when newer source was null!
-- Refactored how the current "store" is saved. We now save a list of input names as well as teh complete structure.
+- Refactored how the current "store" is saved. We now save a list of input names as well as the complete structure.
 - Refactored how most of the request state is modified (might have missed a few). Now all state manipulation is done via `request._flagFoo()` calls. This lets us abstract the internal workings, and later we can turn it into a full state machine with 1 solitary state string! 
 - Fixed form not identifying that a page had already been visited on all scenarios. Was causing certain values not to repopulate.
 - Added `element.clearValue()`
@@ -257,7 +257,7 @@ The project is still in development but feel free to have a play!
 - Removed all public methods from `FormeRequest`. These are now all accessed via the `request.form.foo()`.
 - Changed `form.inputs()` to `form.getAllInputNames()` for clarity!
 - Added `.error()` to all form objects. Allows for generating error from any form object. The internal error piping will handle where the error goes.
-- Changed `input.pipe()` to new format and added `.pipe()` to all form objects. The path can now be an element path or one of the following `->form`, `->page`, `->container` or `-parent`. Error piping will keeping piping between targets until it finds teh request storage object! 
+- Changed `input.pipe()` to new format and added `.pipe()` to all form objects. The path can now be an element path or one of the following `->form`, `->page`, `->container` or `-parent`. Error piping will keeping piping between targets until it finds the request storage object! 
 - Refactored how forme stores results (per page identifier). We now just store whatever `_buildValues()` spits out!
 - Refactored how forme builds *"templateVars"*. Everything now pumped through the actual physical structure instead of being offloaded to a crusty `utils.group.merge.create.find.blah.foo` call.
 - Refactored how forme builds *"values"*. Everything now pumped through the actual physical structure instead of being offloaded to a monolithic `request._fetchValues()` call.
@@ -419,7 +419,7 @@ _ Removed dead variable `input._convert`. It was previously tracking if the inpu
 - Added `input.override(value)` this sets the forms value upon submit. Differs from `in 
 
 ## Breaking changes in version 2.5.0
-- renamed `form.value(name)` to `form.getValue(name, unsafe)` and added an unsafe flag for reading without enforcing teh input exists.
+- renamed `form.value(name)` to `form.getValue(name, unsafe)` and added an unsafe flag for reading without enforcing the input exists.
 - renamed `form.value(name, value)` to `form.setValue(name, value)`
 
 ## New in version 2.4.3
@@ -509,7 +509,7 @@ The only thing Forme assumes of your code, is a `storage` container to store/ret
 
 Forme has taken out all of the work and left us with the bare minimum of code to write. The only thing we really need to check for are the `result.reload` and `result.failed` flags. These result states indicate that the form needs reloading or there was an error building the form. Now while we could have designed Forme to handle page redirects and error output, we chose to retain the agnostic approach!
 
-It is only important to check for `result.failed` when you are *viewing* the form and have custom handlers that might produce a fail, before teh form has been built. The flag does not need to be checked when the form is submitting.
+It is only important to check for `result.failed` when you are *viewing* the form and have custom handlers that might produce a fail, before the form has been built. The flag does not need to be checked when the form is submitting.
 
 ## <a name="workingForm"></a> Working Form 
 
@@ -1574,7 +1574,7 @@ form.component([
 ]);
 ```
 
-You can see above, we are attaching a `component.validate()` handler during the `.compose()`. This allows us to validate the component as a whole. The state object passed to it contains values for all teh inputs you added in `.compose()`. Just like any other `.validate()` handler, we can modify these state values and forme will handle updating the values after the callback returns.
+You can see above, we are attaching a `component.validate()` handler during the `.compose()`. This allows us to validate the component as a whole. The state object passed to it contains values for all the inputs you added in `.compose()`. Just like any other `.validate()` handler, we can modify these state values and forme will handle updating the values after the callback returns.
 
 
 ## <a name="apiReference"></a> API Reference

@@ -242,7 +242,7 @@ class TestFormeDriver extends FormeDriver {
 
 class TestDriverForm extends Forme {
     constructor(name, driver=null) {
-        //pass in our driver to handle new FooForm() calls (although this is handled via teh defaultDriverClass too)
+        //pass in our driver to handle new FooForm() calls (although this is handled via the defaultDriverClass too)
         super(name, TestFormeDriver);
     }
 }
@@ -359,7 +359,7 @@ function runFormCommands(commands=null, globalForm=null) {
             throw new Error(`invalid form for command #${commandIndex} ('${command.command}') in runFormCommands()`)
         }
 
-        //save/reset action state on teh current form, for this command!
+        //save/reset action state on the current form, for this command!
         currentForm.context('commandIndex', commandIndex);
         currentForm.context('commandCurrent', command);
         currentForm.context('commandSuccess', false);
@@ -426,7 +426,7 @@ function runFormCommands(commands=null, globalForm=null) {
             request.setOriginalUrl(command.originalUrl);
         }
 
-        //execute teh main command!
+        //execute the main command!
         return Promise.resolve()
         .then(() => {
             switch (command.command) {
@@ -465,7 +465,7 @@ function runFormCommands(commands=null, globalForm=null) {
             const commandIndex = form.context('commandIndex');
             const request = result.storage;
 
-            //make sure teh success handler got called (or overidden in view mode)
+            //make sure the success handler got called (or overidden in view mode)
             if (command.expectSuccess === true && !result.form.context('commandSuccess')) {
                 throw new Error(`failed success handler for command #${commandIndex} ('${command.command}') in runFormCommands()`);
             }
@@ -491,7 +491,7 @@ function runFormCommands(commands=null, globalForm=null) {
                     throw new Error(`can't find goto page '${command.goto}' for command #${commandIndex} ('${command.command}') in runFormCommands()`);
                 }
 
-                //redirect teh request
+                //redirect the request
                 request.redirect(page._url);
             }
 
