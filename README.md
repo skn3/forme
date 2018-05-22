@@ -54,6 +54,8 @@ The project is still in development but feel free to have a play!
 ## <a name="changeLog"></a> Change Log
 
 ## Breaking changes in version 3.0.0
+- Fixed bug in `form.page()` configuration definition!
+- Fixed `element.getValue()` and other value get methods so that they `isolate` (dont include grouping at root level) their returned values.
 - Added `element.element({what: 'foo', name: 'bar'})` and `element.element(what, name, type)` as shortcut for adding either input or component, as specified by `"input"` or `"component"` as the `what` argument.
 - Added `element.getElementName(path)` to get the name of a descendant.  
 - Added *state* details to read handlers. State contains information about the current execution state.
