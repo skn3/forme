@@ -54,6 +54,7 @@ The project is still in development but feel free to have a play!
 ## <a name="changeLog"></a> Change Log
 
 ## Breaking changes in version 3.0.0
+- Added `element.before(handler)` and `element.after(handler)` which get executed before and after the `element.submit()` handlers. 
 - Fixed bug in `form.page()` configuration definition!
 - Fixed `element.getValue()` and other value get methods so that they `isolate` (dont include grouping at root level) their returned values.
 - Added `element.element({what: 'foo', name: 'bar'})` and `element.element(what, name, type)` as shortcut for adding either input or component, as specified by `"input"` or `"component"` as the `what` argument.
