@@ -54,6 +54,7 @@ The project is still in development but feel free to have a play!
 ## <a name="changeLog"></a> Change Log
 
 ## Breaking changes in version 3.0.0
+- Added `state.compose` flag to component handler `state`. This tells us if the handler was added during `.compose()`. Currently only supported by `validate` handlers.
 - Changed all `element.submit()` handlers to have an extra argument `state`.
 - Added `element.before(handler)` and `element.after(handler)` which get executed before and after the `element.submit()` handlers. 
 - Fixed bug in `form.page()` configuration definition!
