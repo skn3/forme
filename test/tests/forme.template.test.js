@@ -16,7 +16,7 @@ describe('Base', function () {
 
                 //check private
                 const input = result.form.getElement('input1');
-                expect(input.context('context1')).to.equal('privateValue1');
+                expect(input.getContext('context1')).to.equal('privateValue1');
             });
         });
     });

@@ -360,18 +360,18 @@ function runFormCommands(commands=null, globalForm=null) {
         }
 
         //save/reset action state on the current form, for this command!
-        currentForm.context('commandIndex', commandIndex);
-        currentForm.context('commandCurrent', command);
-        currentForm.context('commandSuccess', false);
+        currentForm.setContext('commandIndex', commandIndex);
+        currentForm.setContext('commandCurrent', command);
+        currentForm.setContext('commandSuccess', false);
 
         //attach command handlers if we have not already
-        if (!currentForm.context('commandHandlerAttached')) {
+        if (!currentForm.getContext('commandHandlerAttached')) {
             //flag as attached
-            currentForm.context('commandHandlerAttached', true);
+            currentForm.setContext('commandHandlerAttached', true);
 
             //load handler
             currentForm.load(form => {
-                const command = form.context('commandCurrent');
+                const command = form.getContext('commandCurrent');
 
                 //force fail the form
                 if (command.fail) {
@@ -383,7 +383,7 @@ function runFormCommands(commands=null, globalForm=null) {
             currentForm.read((form, values) => {
                 //as we have a complete form structure we can now safely inject our submit values.
                 //we have to go about this round about way to allow the tests to submit with external values!
-                let commandValues = form.context('commandValues');
+                let commandValues = form.getContext('commandValues');
 
                 if (commandValues && typeof commandValues === 'object') {
                     commandValues = form.convertElementValues(commandValues);
@@ -396,11 +396,11 @@ function runFormCommands(commands=null, globalForm=null) {
             //success handler
             currentForm.success(form => {
                 //this basically looks for a form success, and based on the currentCommand, performs some forme thang!
-                const commandIndex = form.context('commandIndex');
-                const command = form.context('commandCurrent');
+                const commandIndex = form.getContext('commandIndex');
+                const command = form.getContext('commandCurrent');
 
                 //flag success!
-                form.context('commandSuccess', true);
+                form.setContext('commandSuccess', true);
 
                 //move the page
                 switch (command.page) {
@@ -433,7 +433,7 @@ function runFormCommands(commands=null, globalForm=null) {
                 //view style actions
                 case 'view':
                     //flag success on view because the success handler doesnt obviously get called!
-                    currentForm.context('commandSuccess', true);
+                    currentForm.setContext('commandSuccess', true);
 
                     return currentForm.view(request);
 
@@ -443,7 +443,7 @@ function runFormCommands(commands=null, globalForm=null) {
                     let bodyValues;
 
                     //store the command values in the form context so we can do some magic in the form.read() handler added above!
-                    currentForm.context('commandValues', command.values);
+                    currentForm.setContext('commandValues', command.values);
 
                     //if we have a last result then we can dump these values NOW into the request body!
                     if (lastResult) {
@@ -461,12 +461,12 @@ function runFormCommands(commands=null, globalForm=null) {
         })
         .then(result => {
             const form = result.form;
-            const command = form.context('commandCurrent');
-            const commandIndex = form.context('commandIndex');
+            const command = form.getContext('commandCurrent');
+            const commandIndex = form.getContext('commandIndex');
             const request = result.storage;
 
             //make sure the success handler got called (or overidden in view mode)
-            if (command.expectSuccess === true && !result.form.context('commandSuccess')) {
+            if (command.expectSuccess === true && !result.form.getContext('commandSuccess')) {
                 throw new Error(`failed success handler for command #${commandIndex} ('${command.command}') in runFormCommands()`);
             }
 
@@ -630,8 +630,8 @@ function createFormWithInputContext() {
         name: 'input1',
     });
 
-    input.context('context1', 'privateValue1', false);
-    input.context('context2', 'publicValue2', true);
+    input.setContext('context1', 'privateValue1', false);
+    input.setContext('context2', 'publicValue2', true);
 
     return form;
 }

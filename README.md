@@ -54,6 +54,7 @@ The project is still in development but feel free to have a play!
 ## <a name="changeLog"></a> Change Log
 
 ## Breaking changes in version 3.0.0
+- Changed all calls to `element.context()` to `element.getContext()` and `element.setContext()` respectively. Configuration `context:` still available.
 - Added `container.getElementContext(path, context)`.
 - Added `state.compose` flag to component handler `state`. This tells us if the handler was added during `.compose()`. Currently only supported by `validate` handlers.
 - Changed all `element.submit()` handlers to have an extra argument `state`.
