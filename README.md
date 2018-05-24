@@ -54,6 +54,8 @@ The project is still in development but feel free to have a play!
 ## <a name="changeLog"></a> Change Log
 
 ## Breaking changes in version 3.0.0
+- Added `container.getElementsContext(path, context)` for retrieving context from multiple elements found via the `path`.
+- Added `container.getElements(path)` for finding multiple elements related to the `path`. This function handles a non exact path. So if you specify `parentElement.group1` then it will return **all** elements that match that path.
 - Added `container.setElementContext(path, ...)`.
 - Changed all calls to `element.context()` to `element.getContext()` and `element.setContext()` respectively. Configuration `context:` still available.
 - Added `container.getElementContext(path, context)`.
