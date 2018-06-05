@@ -297,7 +297,6 @@ class ExpressRequest {
             query: url,
             originalUrl: url,
         });
-        var wtf = 123;
     }
 
     setQuery(query) {

@@ -54,6 +54,8 @@ The project is still in development but feel free to have a play!
 ## <a name="changeLog"></a> Change Log
 
 ## Breaking changes in version 3.0.0
+- Added `errorLabel` to all element template vars.
+- Added `element.errorLabel(label)` for setting custom error label. This allows us to specify a label for errors that is different to the inputs display label.
 - Added `container.getElementsContext(path, context)` for retrieving context from multiple elements found via the `path`.
 - Added `container.getElements(path)` for finding multiple elements related to the `path`. This function handles a non exact path. So if you specify `parentElement.group1` then it will return **all** elements that match that path.
 - Added `container.setElementContext(path, ...)`.
