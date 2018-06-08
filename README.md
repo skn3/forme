@@ -54,6 +54,10 @@ The project is still in development but feel free to have a play!
 ## <a name="changeLog"></a> Change Log
 
 ## Breaking changes in version 3.0.0
+- Imporved error logging during element execution.
+- Fixed some bugs in JSON parsing.
+- Added `element.empty(handler)` to allow elements to add custom logic for determining if its value is empty during execution!
+- Changed `element.empty()` to `element.emptyValue()`. 
 - Added `errorLabel` to all element template vars.
 - Added `element.errorLabel(label)` for setting custom error label. This allows us to specify a label for errors that is different to the inputs display label.
 - Added `container.getElementsContext(path, context)` for retrieving context from multiple elements found via the `path`.

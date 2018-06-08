@@ -10,18 +10,18 @@ describe('Configuration', function () {
             expect(trackInputConfigurationCalls({
                 int: true,
                 required: true,
-                empty: 'hello',
+                emptyValue: 'hello',
                 label: 'hello',
-            })).to.deep.equal(['int', 'empty', 'require', 'label']);
+            })).to.deep.equal(['int', 'emptyValue', 'require', 'label']);
         });
 
         it('should re order configuration properties into percieved order #2', function () {
             expect(trackInputConfigurationCalls({
                 label: 'hello',
                 required: true,
-                empty: 'hello',
+                emptyValue: 'hello',
                 int: true,
-            })).to.deep.equal(['int', 'empty', 'require', 'label']);
+            })).to.deep.equal(['int', 'emptyValue', 'require', 'label']);
         });
     });
 });
