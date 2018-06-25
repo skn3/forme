@@ -93,4 +93,14 @@ describe('Container', function () {
             });
         });
     });
+
+    describe('#groups', function () {
+        it('should add templates to groups', function () {
+            return blueprints.view.withTwoGroupedInputsGroupTemplates()
+            .then(result => {
+                expect(result.templateVars).to.have.nested.property('children.main.children.group1.template.title').that.equals('The Group One');
+                expect(result.templateVars).to.have.nested.property('children.main.children.group2.template.title').that.equals('The Group Two');
+            });
+        });
+    });
 });

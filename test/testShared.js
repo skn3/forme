@@ -850,6 +850,32 @@ function createFormWithTwoGroupedInputsOneSecured() {
     });
 }
 
+function createFormWithTwoGroupedInputsGroupTemplates() {
+    return new TestDriverForm({
+        name: 'form1',
+        groupTemplate: {
+            'main.group1': {
+                title: 'The Group One',
+            },
+            'main.group2': {
+                title: 'The Group Two',
+            },
+        },
+        inputs: [
+            {
+                name: 'input1',
+                type: 'text',
+                group: ['main', 'group1'],
+            },
+            {
+                name: 'input2',
+                type: 'text',
+                group: ['main', 'group2'],
+            },
+        ]
+    });
+}
+
 //three input shortcuts
 function createFormWithThreeGroupedInputs() {
     return new TestDriverForm({
@@ -1273,6 +1299,7 @@ const formBlueprints = {
     withTwoGroupedInputs: createFormWithTwoGroupedInputs,
     withTwoGroupedInputsOneRequired: createFormWithTwoGroupedInputsOneRequired,
     withTwoGroupedInputsOneSecured: createFormWithTwoGroupedInputsOneSecured,
+    withTwoGroupedInputsGroupTemplates: createFormWithTwoGroupedInputsGroupTemplates,
     withTwoCheckboxes: createFormWithTwoCheckboxes,
 
     withThreeGroupedInputs: createFormWithThreeGroupedInputs,

@@ -54,7 +54,8 @@ The project is still in development but feel free to have a play!
 ## <a name="changeLog"></a> Change Log
 
 ## Breaking changes in version 3.0.0
-- Imporved error logging during element execution.
+- Added `container.groupTemplate()` for applying template vars to groups found within that container. Template vars get added to the group structure like `{ __formeClass: 'group', children:{}, template: {} }`.
+- Improved error logging during element execution.
 - Fixed some bugs in JSON parsing.
 - Added `element.empty(handler)` to allow elements to add custom logic for determining if its value is empty during execution!
 - Changed `element.empty()` to `element.emptyValue()`. 
