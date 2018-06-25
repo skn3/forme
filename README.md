@@ -54,6 +54,7 @@ The project is still in development but feel free to have a play!
 ## <a name="changeLog"></a> Change Log
 
 ## Breaking changes in version 3.0.0
+- Added `group.name` and `group.path` output to template vars.
 - Added `container.groupTemplate()` for applying template vars to groups found within that container. Template vars get added to the group structure like `{ __formeClass: 'group', children:{}, template: {} }`.
 - Improved error logging during element execution.
 - Fixed some bugs in JSON parsing.
