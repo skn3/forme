@@ -54,6 +54,13 @@ The project is still in development but feel free to have a play!
 ## <a name="changeLog"></a> Change Log
 
 ## Breaking changes in version 3.0.0
+- Added `element.getTags()`.
+- Added `tags: []` to element template output!
+- Added `container.getTaggedElementValuesFlattened(tags, or=true, wildcard=true)`.
+- Added `container.getTaggedElementValuesGrouped(tags, or=true, wildcard=true)`.
+- Added `container.getTaggedElements(tags, or=true, wildcard=true)`.
+- Added `element.hasTag(tags, or=true, wildcard=true)` for checking if an element has tags.
+- Added `element.tag()` for adding tags to an element.
 - Added `group.name` and `group.path` output to template vars.
 - Added `container.groupTemplate()` for applying template vars to groups found within that container. Template vars get added to the group structure like `{ __formeClass: 'group', children:{}, template: {} }`.
 - Improved error logging during element execution.

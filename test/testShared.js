@@ -900,6 +900,72 @@ function createFormWithThreeGroupedInputs() {
     });
 }
 
+function createFormWithThreeTaggedInputs() {
+    return new TestDriverForm({
+        name: 'form1',
+        inputs: [
+            {
+                type: 'text',
+                name: 'input1',
+                group: ['group1', 'group2'],
+                tags: ['tag1'],
+                defaultValue: 'value1',
+            },
+            {
+                type: 'text',
+                name: 'input2',
+                group: ['group1'],
+                tags: ['tag2', 'multiple'],
+                defaultValue: 'value2',
+            },
+            {
+                type: 'text',
+                name: 'input3',
+                group: ['group1', 'group2', 'group3'],
+                tags: ['tag3', 'tag3', 'multiple'],//has duplicate tag :D
+                defaultValue: 'value3',
+            },
+        ],
+    });
+}
+
+//four input shortcuts
+function createFormWithFourTaggedInputsTwoWildcard() {
+    return new TestDriverForm({
+        name: 'form1',
+        inputs: [
+            {
+                type: 'text',
+                name: 'input1',
+                group: ['group1', 'group2'],
+                tags: ['*'],
+                defaultValue: 'value1',
+            },
+            {
+                type: 'text',
+                name: 'input2',
+                group: ['group1'],
+                tags: ['tag2', 'multiple'],
+                defaultValue: 'value2',
+            },
+            {
+                type: 'text',
+                name: 'input3',
+                group: ['group1', 'group2', 'group3'],
+                tags: ['tag3', '*', 'multiple'],//has duplicate tag :D
+                defaultValue: 'value3',
+            },
+            {
+                type: 'text',
+                name: 'input4',
+                group: ['group1'],
+                tags: ['tag4', 'another'],
+                defaultValue: 'value4',
+            },
+        ],
+    });
+}
+
 //component shortcuts
 function createFormWithGroupedComponent() {
     return new TestDriverForm({
@@ -1303,6 +1369,9 @@ const formBlueprints = {
     withTwoCheckboxes: createFormWithTwoCheckboxes,
 
     withThreeGroupedInputs: createFormWithThreeGroupedInputs,
+    withThreeTaggedInputs: createFormWithThreeTaggedInputs,
+
+    withFourTaggedInputsTwoWildcard: createFormWithFourTaggedInputsTwoWildcard,
 
     withComponentRequired: createFormWithComponentRequired,
     withComponentJson: createFormWithComponentJson,
