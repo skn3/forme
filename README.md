@@ -54,6 +54,8 @@ The project is still in development but feel free to have a play!
 ## <a name="changeLog"></a> Change Log
 
 ## Breaking changes in version 3.0.0
+- Added `{map: ['element1', 'element2', ...]}` to each node of template vars. The map is a list of child names in correct order! 
+- Added `element.order()` to set order of element. This currently only used when generating template map.
 - Added `element.getTags()`.
 - Added `tags: []` to element template output!
 - Added `container.getTaggedElementValuesFlattened(tags, or=true, wildcard=true)`.
@@ -62,7 +64,7 @@ The project is still in development but feel free to have a play!
 - Added `element.hasTag(tags, or=true, wildcard=true)` for checking if an element has tags.
 - Added `element.tag()` for adding tags to an element.
 - Added `group.name` and `group.path` output to template vars.
-- Added `container.groupTemplate()` for applying template vars to groups found within that container. Template vars get added to the group structure like `{ __formeClass: 'group', children:{}, template: {} }`.
+- Added `container.groupTemplate()` for applying template vars to groups found within that container. Template vars get added to the group template structure like `{ __formeClass: 'group', children:{}, *insert_vars_here*}` but they cannot overwrite internals.
 - Improved error logging during element execution.
 - Fixed some bugs in JSON parsing.
 - Added `element.empty(handler)` to allow elements to add custom logic for determining if its value is empty during execution!
