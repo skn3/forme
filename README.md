@@ -54,6 +54,7 @@ The project is still in development but feel free to have a play!
 ## <a name="changeLog"></a> Change Log
 
 ## Breaking changes in version 3.0.0
+- Added `container.getTaggedElementValuesTrimmed(tags, trimPaths, or=true, wildcard=true)` which acts the same as `container.getTaggedElementValuesGrouped()` but allows us to automatically trim any of the provided paths before adding to the return structure.
 - Changed how template map ordering works. All elements assumed to have order of zero unless otherwise specified. So this may cause unexpected (but by design) results when mixing elements with and without order specified! 
 - Added `{map: ['element1', 'element2', ...]}` to each node of template vars. The map is a list of child names in correct order! 
 - Added `element.order()` to set order of element. This currently only used when generating template map.
